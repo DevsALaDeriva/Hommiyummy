@@ -1,6 +1,5 @@
 package com.example.homiyummy.service;
 
-import com.google.firebase.auth.UserRecord;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;

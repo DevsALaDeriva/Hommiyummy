@@ -1,6 +1,5 @@
 package com.example.homiyummy.model.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.ArrayList;

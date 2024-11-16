@@ -3,15 +3,11 @@ package com.example.homiyummy.repository;
 import com.example.homiyummy.model.restaurant.RestaurantEntity;
 import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
 import com.example.homiyummy.model.restaurant.RestaurantResponse;
-import com.example.homiyummy.model.user.UserResponse;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.crypto.Data;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 
 @Repository
@@ -24,6 +20,8 @@ public class RestaurantRepository {
         this.firebaseDatabase = firebaseDatabase;
         this.databaseReference = databaseReference;
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
     public void saveRestaurant(RestaurantEntity restaurantEntity, getSaveRestaurantCallback callback) {
 
@@ -66,7 +64,7 @@ public class RestaurantRepository {
         }));
     }
 
-// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     // INTERFAZ PARA MANEJAR LA DEVOLUCIÓN DEL RestaurantResponse DESDE EL REPOSITORIO
     public interface getSaveRestaurantCallback{
@@ -75,8 +73,7 @@ public class RestaurantRepository {
 
     }
 
-// ----------------------------------------------------------------------------------------------------------------
-
+    // ----------------------------------------------------------------------------------------------------------------
 
     public void updateRestaurantData(RestaurantEntity restaurantEntity, GetUpdateRestaurantCallback callback) {
 
@@ -150,10 +147,7 @@ public class RestaurantRepository {
                         }
                     }));
 
-
                 }
-
-
 
             }
 
@@ -178,24 +172,31 @@ public class RestaurantRepository {
 // ----------------------------------------------------------------------------------------------------------------
 
     // USADO PARA VER SI UN RESTAURANTE EXISTE
-    public CompletableFuture<Boolean> existsByUid(String uid) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
+    public void exists(String uid, ExistsRestaurantCallback callback) {
 
+       // CompletableFuture<Boolean> future = new CompletableFuture<>();
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(uid);
         restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                // Completa el future con `true` si existe, `false` si no existe
-                future.complete(snapshot.exists());
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    // Completa el future con `true` si existe, `false` si no existe
+                    callback.onSuccess(true);
+                }
+                else{
+                    callback.onSuccess(false);
+                }
+
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-                future.completeExceptionally(error.toException());
+                callback.onSuccess(false);
+                //future.completeExceptionally(error.toException());
             }
         });
 
-        return future;
+        //return future;
     }
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -234,6 +235,11 @@ public class RestaurantRepository {
     public interface FindRestaurantCallback{
         void onSuccess(RestaurantReadResponse response);
         void onFailure(RestaurantReadResponse response);
+    }
+
+    public interface ExistsRestaurantCallback{
+        void onSuccess(Boolean response);
+        void onFailure(Exception exception);
     }
 
 

@@ -1,8 +1,6 @@
 package com.example.homiyummy.model.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.springframework.asm.SpringAsmInfo;
 
 import java.io.Serializable;
 import java.util.ArrayList;

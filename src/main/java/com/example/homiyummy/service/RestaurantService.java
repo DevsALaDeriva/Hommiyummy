@@ -4,9 +4,8 @@ import com.example.homiyummy.model.restaurant.RestaurantDTO;
 import com.example.homiyummy.model.restaurant.RestaurantEntity;
 import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
 import com.example.homiyummy.model.restaurant.RestaurantResponse;
-import com.example.homiyummy.model.user.UserResponse;
 import com.example.homiyummy.repository.RestaurantRepository;
-import com.google.firebase.database.*;
+import com.google.firebase.database.FirebaseDatabase;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
@@ -24,7 +23,7 @@ public class RestaurantService {
     }
 
 
-// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     public RestaurantResponse createRestaurant(RestaurantDTO restaurantDTO) {
 
@@ -64,7 +63,7 @@ public class RestaurantService {
         }
     }
 
-// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     public Boolean updateRestaurant(RestaurantDTO restaurantDTO) {
 
@@ -106,29 +105,27 @@ public class RestaurantService {
 
     }
 
-
-// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<Boolean> existsByUid(String uid) {
+
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-        // Suponiendo que RestaurantRepository hace la consulta a Firebase de forma similar a UserRepository
-        DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(uid);
-        restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        restaurantRepository.exists(uid, new RestaurantRepository.ExistsRestaurantCallback() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                future.complete(snapshot.exists());
+            public void onSuccess(Boolean response) {
+                future.complete(response);
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
-                future.completeExceptionally(error.toException());
+            public void onFailure(Exception exception) {
+                future.completeExceptionally(exception);
             }
         });
-
         return future;
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
 
     public RestaurantReadResponse findByUid(String uid) {
 
@@ -148,10 +145,10 @@ public class RestaurantService {
 
         try {
             return future.get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
+    // ----------------------------------------------------------------------------------------------------------------
+
 }

@@ -2,7 +2,6 @@ package com.example.homiyummy.repository;
 
 import com.example.homiyummy.model.menu.MenuEntity;
 import com.example.homiyummy.model.menu.MenuResponse;
-import com.example.homiyummy.model.restaurant.RestaurantResponse;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
 

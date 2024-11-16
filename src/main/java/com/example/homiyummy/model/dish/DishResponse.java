@@ -1,5 +1,4 @@
-package com.example.homiyummy.model.plato;
-
+package com.example.homiyummy.model.dish;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +11,8 @@ import java.util.ArrayList;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlatoResponse {
+
+public class DishResponse {
     private String uid = "";
     private int id;
     private String name = "";

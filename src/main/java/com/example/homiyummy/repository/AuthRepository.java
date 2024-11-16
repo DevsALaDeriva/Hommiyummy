@@ -1,13 +1,11 @@
 package com.example.homiyummy.repository;
 
-import com.example.homiyummy.service.AuthService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 
 @Repository

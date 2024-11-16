@@ -19,12 +19,12 @@ public class FirebaseDataConfig {
 
     @Bean
     public FirebaseDatabase firebaseDatabase(FirebaseApp firebaseApp) {
-        return FirebaseDatabase.getInstance(firebaseApp);  // Obtiene la instancia de FirebaseDatabase utilizando FirebaseApp
+        return FirebaseDatabase.getInstance(firebaseApp);  // Proporciona una instancia de FirebaseDatabase, que es el punto de entrada general para trabajar con Firebase Realtime Database en tu proyecto. Se usa para realizar configuraciones adicionales o acceder a distintas referencias dentro de la base de datos.
     }
 
     @Bean
     public DatabaseReference databaseReference(FirebaseDatabase firebaseDatabase) {
-        return firebaseDatabase.getReference(); // Define el bean DatabaseReference
+        return firebaseDatabase.getReference();            // Proporciona una referencia específica dentro de Firebase Realtime Database (normalmente la raíz, en este caso). Simplifica el acceso directo a los nodos de la base de datos.
     }
 
 
