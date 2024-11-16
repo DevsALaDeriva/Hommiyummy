@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * 2. Clase FirebaseAuthConfiguration
  * Es una clase de configuración de Spring Boot que asegura que FirebaseAuth esté disponible como un Bean en el contenedor de Spring, lo que significa que puede ser inyectado automáticamente en otros lugares de la aplicación.
- * El método firebaseAuth primero llama a FirebaseInitializer.initializeFirebase() para asegurarse de que Firebase está inicializado antes de devolver una instancia de FirebaseAuth.
+ * El métod o firebaseAuth primero llama a FirebaseInitializer.initializeFirebase() para asegurarse de que Firebase está inicializado antes de devolver una instancia de FirebaseAuth.
  * Luego, FirebaseAuth.getInstance() se utiliza para obtener una instancia de la clase FirebaseAuth, que maneja todas las operaciones de autenticación, como crear usuarios o verificar tokens.
  *
  * Contexto general:
@@ -27,6 +27,6 @@ public class FirebaseAuthConfig {
     @Bean
     public FirebaseAuth firebaseAuth() throws IOException {
         FirebaseInitializer.initializeFirebase(); // NOS ASEGURAMOS DE Q FIREBASE ESTÁ INICIALIZADO
-        return FirebaseAuth.getInstance();        // OBTENGO INSTANCIA DE FirebaseAuth
+        return FirebaseAuth.getInstance();        // OBTENGO INSTANCIA DE FirebaseAuth QUE USAREMOS PARA CREAR Y VERIFICAR USUARIOS
     }
 }

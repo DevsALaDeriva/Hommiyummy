@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -31,7 +30,7 @@ public class UserRepository {
 
     // ------------------------------------------------------------------------------------------------------------
 
-    // QUIEN LLAME A ESTE MÉTODO ESPERARÁ RECIBIR LA RESPUESTA (el UserResponse) VÍA CALLBACK
+    // QUIEN LLAME A ESTE MÉTO DO ESPERARÁ RECIBIR LA RESPUESTA (el UserResponse) VÍA CALLBACK
     public void saveUser(UserEntity userEntity, SaveUserCallback callback)  {
 
         // GUARDO EN BASE DE DATOS AL USUARIO
@@ -86,7 +85,7 @@ public class UserRepository {
        System.out.println("uid: " + userEntity.getUid());
        DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
 
-       UserResponse userResponse = new UserResponse();
+       //UserResponse userResponse = new UserResponse();
 
        //EL uid NO SE INCLUYE ENTRE LOS DATOS DEL USUARIO, VA A PARTE (EN EL NODO)
 
@@ -94,6 +93,7 @@ public class UserRepository {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
+
                         String currentName = dataSnapshot.child("name").getValue(String.class);
                         String currentSurname = dataSnapshot.child("surname").getValue(String.class);
                         String currentPhone = dataSnapshot.child("phone").getValue(String.class);
@@ -146,14 +146,14 @@ public class UserRepository {
         });
     }
 
-// -----------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     public interface GetUpdateConfirmationCallback {
         void onSuccess(Boolean confirmation);
         void onFailure(Exception exception);
     }
 
-// -----------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     // DICE SI EL USUARIO EXISTE EN EL NODO "users" POR LO QUE DE EXISTIR SERÍA UN "user"
     public CompletableFuture<Boolean> existsByUid(String uid) {
@@ -175,7 +175,7 @@ public class UserRepository {
         return future;
     }
 
-// -----------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     public void find(String uid, FindUserCallback callback){
         DatabaseReference userRef = databaseReference.child("users").child(uid);
@@ -206,11 +206,15 @@ public class UserRepository {
             });
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
 
     public interface FindUserCallback{
         void onSuccess(UserReadResponse userReadResponse);
         void onFailure(UserReadResponse userReadResponse);
     }
+    // ----------------------------------------------------------------------------------------------------------------
+
+
 
 
 
@@ -273,7 +277,7 @@ public class UserRepository {
 //
 //
 //
-//    // Método para convertir UserEntity en un Map
+//    // Métod o para convertir UserEntity en un Map
 //    private Map<String, Object> convertToMap(UserEntity userEntity) {
 //        Map<String, Object> userMap = new HashMap<>();
 //        userMap.put("name", userEntity.getName());

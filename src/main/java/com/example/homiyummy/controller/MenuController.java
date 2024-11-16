@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.example.homiyummy.controller;
 
 import com.example.homiyummy.model.menu.MenuDTO;
@@ -34,3 +35,9 @@ public class MenuController {
         
     }
 }
+=======
+package com.example.homiyummy.controller;
+
+public class MenuController {
+}
+>>>>>>> dev/alfredo

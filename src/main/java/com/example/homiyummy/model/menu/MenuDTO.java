@@ -1,3 +1,4 @@
+
 package com.example.homiyummy.model.menu;
 
 import lombok.AllArgsConstructor;
@@ -23,3 +24,4 @@ public class MenuDTO {
     private float priceNoDessert;
     
 }
+

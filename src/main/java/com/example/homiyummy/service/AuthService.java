@@ -1,17 +1,13 @@
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.user.UserDTO;
-import com.example.homiyummy.model.user.UserEntity;
-import com.example.homiyummy.model.user.UserResponse;
 import com.example.homiyummy.repository.AuthRepository;
 import com.example.homiyummy.repository.UserRepository;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
-import com.google.firebase.database.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

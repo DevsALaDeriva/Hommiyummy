@@ -7,14 +7,16 @@ import com.example.homiyummy.model.user.UserResponse;
 import com.example.homiyummy.service.AuthService;
 import com.example.homiyummy.service.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.database.DatabaseReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @RestController // RestController para que nos permita manejar peticiones entrantes
 @RequestMapping("/client") // Es el path base
@@ -82,6 +84,7 @@ public class UserController {
     }
 
 // ------------------------------------------------------------------------------------------------------------
+
 @PostMapping("/getByUID")
 public UserReadResponse getClient(@RequestBody UserReadRequest userReadRequest){
         String uid = userReadRequest.getUid();

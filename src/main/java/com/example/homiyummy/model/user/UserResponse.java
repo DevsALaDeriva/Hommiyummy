@@ -1,11 +1,9 @@
 package com.example.homiyummy.model.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.boot.SpringApplication;
 
 import java.util.ArrayList;
 
