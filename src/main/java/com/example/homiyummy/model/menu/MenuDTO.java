@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class MenuDTO {
     
-    private Integer uid;
+    private String uid;
     private int date;
     private ArrayList<String> firstCourse;
     private ArrayList<String> secondCourse;
