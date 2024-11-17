@@ -1,9 +1,7 @@
 package com.example.homiyummy.repository;
 
-import com.example.homiyummy.model.dish.DishEntity;
-import com.example.homiyummy.model.dish.DishResponse;
-import com.example.homiyummy.model.dish.DishSaveEntity;
-import com.example.homiyummy.model.dish.DishUpdateEntity;
+import com.example.homiyummy.model.dish.*;
+import com.example.homiyummy.service.RestaurantService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -11,14 +9,19 @@ import com.google.firebase.database.ValueEventListener;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Repository
 public class DishRepository {
 
     private final  DatabaseReference databaseReference;
-
-    public DishRepository(DatabaseReference databaseReference){
+    private final RestaurantRepository restaurantRepository;
+    private final RestaurantService restaurantService;
+    public DishRepository(DatabaseReference databaseReference, RestaurantRepository restaurantRepository, RestaurantService restaurantService){
         this.databaseReference = databaseReference;
+        this.restaurantRepository = restaurantRepository;
+        this.restaurantService = restaurantService;
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -99,7 +102,9 @@ public class DishRepository {
                                 callback.onSuccess(dishResponse);
                             }
                             else {
-                                callback.onFailure(new Exception("El plato guardado es nulo"));
+                                DishResponse dishResponse = new DishResponse();
+                                dishResponse.setId(0);
+                                callback.onSuccess(dishResponse); // DEVUELVO UN DISRESPONSE VACIO, CON EL ID:0
                             }
                         }
                         else {
@@ -119,7 +124,7 @@ public class DishRepository {
     // -----------------------------------------------------------------------------------------------------------------
 
     public void update(DishEntity dishEntity, UpdateDishCallback callback){
-    System.out.println("asfasdfasdfasdfasfd");
+        //System.out.println("asfasdfasdfasdfasfd");
         DatabaseReference dishRef = databaseReference.child("restaurants")
                 .child(dishEntity.getUid())
                 .child("dishes/items")
@@ -144,10 +149,8 @@ public class DishRepository {
 
                     dishRef.setValue(dishEntityToBeSaved, (databaseError, databaseReference1) -> {
                         if(databaseError != null){
-
-
-                            // TODO -------------
-
+                            callback.onFailure(new Exception("Error al guardar el plato" + databaseError.getMessage()));
+                            return;
                         }
 
                         dishRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -163,7 +166,7 @@ public class DishRepository {
 
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
-                                // TODO -------------
+                                callback.onFailure(new Exception("Error al leer el plato guardado: " + databaseError.getMessage()));
                             }
                         });
                     });
@@ -176,6 +179,94 @@ public class DishRepository {
             }
         });
 
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public void getAll(String uid, FindAllDishesCallback callback) {
+
+        CompletableFuture<Boolean> futureExists = restaurantService.existsByUid(uid); // MÉTOD O ASÍNCRONO QUE COMPRUEBA SI EL RESTAURANTE EXISTE
+
+        futureExists.thenAccept(exists -> { // LA MEJOR SOLUCIÓN. ENCADENAR EL RESULTADO DEL FUTURO  -----
+            if (exists) {
+
+                DatabaseReference dishesRef = databaseReference.child("restaurants")
+                        .child(uid)
+                        .child("dishes/items");
+
+                dishesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+
+                            ArrayList<DishResponse> allDishes = new ArrayList<>();
+                            for (DataSnapshot dishSnapshot : dataSnapshot.getChildren()) {
+                                DishResponse dish = dishSnapshot.getValue(DishResponse.class);
+                                if (dish != null) {
+                                    allDishes.add(dish);
+                                }
+                            }
+
+                            DishAllResponse dishAllResponse = new DishAllResponse();
+                            dishAllResponse.setDishes(allDishes);
+                            callback.onSuccess(dishAllResponse);
+                        } else {
+
+                            DishAllResponse emptyResponse = new DishAllResponse();
+                            emptyResponse.setDishes(new ArrayList<>());
+                            callback.onSuccess(emptyResponse); // SI NO HAY PLATOS OBJETO VACÍO
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        callback.onFailure(new Exception("Error al leer los platos: " + databaseError.getMessage()));
+                    }
+                });
+            } else {
+                DishAllResponse emptyResponse = new DishAllResponse();
+                emptyResponse.setDishes(new ArrayList<>());
+                callback.onSuccess(emptyResponse); // SI EL RESTAURANTE NO EXISTE DEVOLVEMOS UN OBJETO VACÍO
+            }
+        }).exceptionally(ex -> {
+            callback.onFailure(new Exception("Error al verificar la existencia del restaurante: " + ex.getMessage())); // MANEJAMSO CUALQUIER EXCPECIÓN
+            return null;
+        });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<Boolean> delete(String uid, int dishId) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        DatabaseReference dishRef = databaseReference.child("restaurants")
+                .child(uid)
+                .child("dishes/items")
+                .child(String.valueOf(dishId));
+
+        dishRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    dishRef.removeValue((databaseError, databaseReference1) -> {
+                        if (databaseError != null) {
+                            future.completeExceptionally(databaseError.toException());
+                        } else {
+                            future.complete(true);
+                        }
+                    });
+                } else {
+                    future.complete(false); // Objeto no encontrado
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                future.completeExceptionally(databaseError.toException());
+            }
+        });
+
+        return future;
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -200,5 +291,18 @@ public class DishRepository {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    public interface FindAllDishesCallback{
+        void onSuccess(DishAllResponse allDish);
+        void onFailure(Exception exception);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public interface DeleteDishCallback{
+        void onSuccess(DishDeleteResponse dishDeleteResponse);
+        void onFailure(Exception exception);
+    }
+
 
 }

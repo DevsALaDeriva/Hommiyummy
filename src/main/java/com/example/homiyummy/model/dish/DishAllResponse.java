@@ -12,13 +12,7 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class DishDTO {
-    private String uid = "";
-    private int id = 0;
-    private String name = "";
-    private String ingredients = "";
-    private ArrayList<String> allergens = new ArrayList<>();;
-    private String type = "";
-
+public class DishAllResponse {
+    private ArrayList<DishResponse> dishes;
 
 }

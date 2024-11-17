@@ -1,8 +1,6 @@
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.dish.DishDTO;
-import com.example.homiyummy.model.dish.DishEntity;
-import com.example.homiyummy.model.dish.DishResponse;
+import com.example.homiyummy.model.dish.*;
 import com.example.homiyummy.repository.DishRepository;
 import com.google.firebase.database.DatabaseError;
 import org.springframework.stereotype.Service;
@@ -115,4 +113,51 @@ public class DishService {
         }
 
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<DishAllResponse> getAll(String uid) {
+
+        CompletableFuture<DishAllResponse> future = new CompletableFuture<>();
+
+        dishRepository.getAll(uid, new DishRepository.FindAllDishesCallback(){
+
+            @Override
+            public void onSuccess(DishAllResponse allDishes) {
+                future.complete(allDishes);
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                future.completeExceptionally(exception);
+            }
+        });
+
+        return future;
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<Boolean> deleteDish(String uid, int id){
+
+        return dishRepository.delete(uid, id);
+//        CompletableFuture<DishDeleteResponse> future = new CompletableFuture<>();
+//
+//        dishRepository.delete(uid, id, new DishRepository.DeleteDishCallback() {
+//
+//            @Override
+//            public void onSuccess(DishDeleteResponse dishDeleteResponse) {
+//                future.complete(dishDeleteResponse);
+//            }
+//
+//            @Override
+//            public void onFailure(Exception exception) {
+//                future.completeExceptionally(exception);
+//            }
+//        });
+//        return future;
+    }
+
+
+
 }
