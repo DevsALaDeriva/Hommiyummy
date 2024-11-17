@@ -31,47 +31,7 @@ public class DishController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-//    @PostMapping("/create")
-//    public ResponseEntity<String> create(@RequestBody DishDTO dishDTO) {
-//
-//        String uid = dishDTO.getUid();
-//
-//        if (!uid.isEmpty()) {
-//            Boolean restaurantExists;
-//            try {
-//                // Assuming existsByUid can be called synchronously
-//                restaurantExists = restaurantService.existsByUid(uid).get();
-//            } catch (InterruptedException | ExecutionException e) {
-//                e.printStackTrace();
-//                return new ResponseEntity<>("{\"error\": \"Failed to check restaurant existence.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-//            }
-//
-//            System.out.println("Does the restaurant exist? -> " + restaurantExists);
-//
-//            if (restaurantExists) {
-//                // Proceed with dish creation
-//                int lastIdSaved = dishService.findLastId(uid);
-//                int newDishId = lastIdSaved + 1;
-//                System.out.println("NEW DISH ID -1--------------> " + newDishId);
-//
-//                try {
-//                    DishResponse dishResponse = dishService.create(dishDTO, newDishId);
-//                    System.out.println("NEW DISH ID -2--------------> " + newDishId);
-//                    return new ResponseEntity<>("{\"id\": \"" + dishResponse.getId() + "\"}", HttpStatus.OK);
-//                } catch (RuntimeException e) {
-//                    e.printStackTrace();
-//                    return new ResponseEntity<>("{\"error\": \"Failed to create dish.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-//                }
-//            } else {
-//                return new ResponseEntity<>("{\"error\": \"Restaurant not found.\"}", HttpStatus.NOT_FOUND);
-//            }
-//        } else {
-//            return new ResponseEntity<>("{\"error\": \"UID is empty.\"}", HttpStatus.BAD_REQUEST);
-//        }
-//    }
 
-
-//
     @PostMapping("/create")
     public ResponseEntity<String> create(@RequestBody DishDTO dishDTO){
 

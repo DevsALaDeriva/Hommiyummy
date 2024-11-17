@@ -60,17 +60,17 @@ public class DishService {
         dishRepository.save(dishEntity, new DishRepository.SavePlatoCallback() {
             @Override
             public void onSuccess(DishResponse dishResponse) {
-                System.out.println("-------------1---------------id del plato: " + dishResponse.getId());
+                //System.out.println("-------------1---------------id del plato: " + dishResponse.getId());
                 futurePlatoResponse.complete(dishResponse);
             }
             @Override
             public void onFailure(Exception exception) {
-                System.out.println("-------------2---------------");
+                //System.out.println("-------------2---------------");
                 futurePlatoResponse.completeExceptionally(exception);
             }
         });
         try {
-            System.out.println("-------------3---------------");
+            //System.out.println("-------------3---------------");
             return futurePlatoResponse.get();
         } catch (InterruptedException | ExecutionException e) {
             // Manejar la interrupción del hilo
@@ -82,7 +82,7 @@ public class DishService {
     // ----------------------------------------------------------------------------------------------------------------
 
     public Boolean updateDish(DishDTO dishDTO){
-        System.out.println("asfasdfasdfasdfasfd");
+        //System.out.println("asfasdfasdfasdfasfd");
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
@@ -139,24 +139,10 @@ public class DishService {
     // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<Boolean> deleteDish(String uid, int id){
-
         return dishRepository.delete(uid, id);
-//        CompletableFuture<DishDeleteResponse> future = new CompletableFuture<>();
-//
-//        dishRepository.delete(uid, id, new DishRepository.DeleteDishCallback() {
-//
-//            @Override
-//            public void onSuccess(DishDeleteResponse dishDeleteResponse) {
-//                future.complete(dishDeleteResponse);
-//            }
-//
-//            @Override
-//            public void onFailure(Exception exception) {
-//                future.completeExceptionally(exception);
-//            }
-//        });
-//        return future;
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 
 

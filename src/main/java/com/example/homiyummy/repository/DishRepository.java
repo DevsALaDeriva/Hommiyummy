@@ -51,7 +51,7 @@ public class DishRepository {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 callback.onFailure(databaseError, 0);
-                System.err.println("Error al obtener el ID: " + databaseError.getMessage());
+                //System.err.println("Error al obtener el ID: " + databaseError.getMessage());
             }
         });
     }
@@ -303,6 +303,8 @@ public class DishRepository {
         void onSuccess(DishDeleteResponse dishDeleteResponse);
         void onFailure(Exception exception);
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 
 }
