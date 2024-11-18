@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @RestController // RestController para que nos permita manejar peticiones entrantes
 @RequestMapping("/client") // Es el path base
@@ -51,36 +52,60 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO) {
 
         try {
-                //CREO USUARIO EN AUTH Y DEVUELVE EL Id
-             String uid = authService.createUser(userDTO.getEmail(), userDTO.getPassword());
-             System.out.println("------>" + uid);
-             userDTO.setUid(uid); // PONEMOS EL ID GENERADO AL UserDTO
+            if(userDTO.getEmail() == null || userDTO.getEmail().isEmpty()){
+                //System.out.println("----------");
+                return ResponseEntity.badRequest().body("{\"uid\": \"\"}");
+            }
 
-                // AUNQUE DEVOLVEMOS UN STRING, QUIERO RECIBIR EL UserResponse
-                // LO MANDO AL SERVICE DEL USER PARA QUE LO CREE EN REALTIME
+            String uid = authService.createUser(userDTO.getEmail(), userDTO.getPassword());
+            userDTO.setUid(uid);
             UserResponse userResponse = userService.createUser(userDTO);                              // COMO createUser EN EL SERVICIO DEVUELVE UN UserResponse ENTREGADO POR UN FUTURO, LA OPERACIÓN ES ASÍNCRONA Y NO DA ERROR AQUÍ
 
-                // DE ESE UserResponse OBTENIDO, SÓLO DEVUELVO UN JSON CON EL ID
-            return ResponseEntity.ok("{\"uid\": \"" + userResponse.getUid() + "\"}");            // DEVOLVEMOS EL ID AL FRONTEND
-
-        } catch (FirebaseAuthException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": false }");  // DEVOLVEMOS false AL FRONTEND SI HAY UN ERROR
+            return ResponseEntity.ok("{\"uid\": \"" + userResponse.getUid() + "\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": \"\"}");
         }
     }
+
 // ------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Boolean>> updateUser( @RequestBody UserDTO userDTO) {
+    public CompletableFuture<ResponseEntity<Map<String, Boolean>>> updateUser( @RequestBody UserDTO userDTO) {
 
-        // Verifica si `allergens` es una cadena vacía y, si es así, la reemplaza con una lista vacía
-        if (userDTO.getAllergens() != null && userDTO.getAllergens().size() == 1 && userDTO.getAllergens().get(0).isEmpty()) {
-            userDTO.setAllergens(new ArrayList<>()); // Reemplaza con lista vacía
+        Map<String, Boolean> response = new HashMap<>();
+        //System.out.println("--------------------1");
+        String uid = userDTO.getUid();
+
+        if (uid == null || uid.isEmpty()) {
+            //System.out.println("--------------------2");
+            response.put("change", false);
+            return CompletableFuture.completedFuture(ResponseEntity.badRequest().body(response)); // SI NO HAY UID DEVUELE UN  404
         }
 
-        Boolean change = userService.updateUser(userDTO);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("change", change);
-        return ResponseEntity.ok(response);
+        return userService.existsByUid(uid)
+                .thenCompose(exists -> { // THENCOMPOSE PERMITE ENCADENAR UN FUTURO A OTRO
+            if(!exists) {
+                response.put("change", false);
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)); // Devuelve 404 si no existe
+            }
+            else {
+                if (userDTO.getAllergens() != null && userDTO.getAllergens().size() == 1 && userDTO.getAllergens().get(0).isEmpty()) {
+                    userDTO.setAllergens(new ArrayList<>());
+                }
+
+                return userService.updateUser(userDTO)
+                        .thenApply(success -> {
+                            response.put("change", success);
+                            if(success) {
+                                return ResponseEntity.ok(response);
+                            }
+                            else {
+                                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                            }
+                        });
+
+            }
+        });
     }
 
 // ------------------------------------------------------------------------------------------------------------

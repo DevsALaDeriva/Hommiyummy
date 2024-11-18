@@ -23,7 +23,7 @@ public class RestaurantDTO {
     private String phone = "";
     private String schedule = "";
     private String image = "";
-    private String foodType = "";
+    private String food_type = "";
 
 
 
@@ -38,7 +38,7 @@ public class RestaurantDTO {
                           String phone,
                           String schedule,
                           String image,
-                          String foodtype){
+                          String food_type){
         this.uid = uid;
         this.name = name;
         this.description_mini = description_mini;
@@ -49,7 +49,7 @@ public class RestaurantDTO {
         this.phone = phone;
         this.schedule = schedule;
         this.image = image;
-        this.foodType = foodtype;
+        this.food_type = food_type;
     }
 
 }

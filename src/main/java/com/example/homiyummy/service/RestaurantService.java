@@ -40,7 +40,7 @@ public class RestaurantService {
         restaurantEntity.setPhone(restaurantDTO.getPhone());
         restaurantEntity.setSchedule(restaurantDTO.getSchedule());
         restaurantEntity.setImage(restaurantDTO.getImage());
-        restaurantEntity.setFoodType(restaurantDTO.getFoodType());
+        restaurantEntity.setFood_type(restaurantDTO.getFood_type());
 
         CompletableFuture<RestaurantResponse> future = new CompletableFuture<>();
 
@@ -81,7 +81,7 @@ public class RestaurantService {
         restaurantEntity.setPhone(restaurantDTO.getPhone());
         restaurantEntity.setSchedule(restaurantDTO.getSchedule());
         restaurantEntity.setImage(restaurantDTO.getImage());
-        restaurantEntity.setFoodType(restaurantDTO.getFoodType());
+        restaurantEntity.setFood_type(restaurantDTO.getFood_type());
 
         restaurantRepository.updateRestaurantData(restaurantEntity, new RestaurantRepository.GetUpdateRestaurantCallback() {
             @Override
@@ -94,7 +94,6 @@ public class RestaurantService {
                 futureResponse.completeExceptionally(exception);
             }
         });
-
 
         try {
             return futureResponse.get();

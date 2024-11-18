@@ -36,7 +36,7 @@ public class RestaurantRepository {
         restaurantEntityToSave.put("city", restaurantEntity.getCity());
         restaurantEntityToSave.put("phone", restaurantEntity.getPhone());
         restaurantEntityToSave.put("image", restaurantEntity.getImage());
-        restaurantEntityToSave.put("foodType", restaurantEntity.getFoodType());
+        restaurantEntityToSave.put("food_type", restaurantEntity.getFood_type());
         restaurantEntityToSave.put("schedule", restaurantEntity.getSchedule());
 
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(restaurantEntity.getUid());
@@ -97,7 +97,7 @@ public class RestaurantRepository {
                     String currentPhone = dataSnapshot.child("phone").getValue(String.class);
                     String currentSchedule = dataSnapshot.child("schedule").getValue(String.class);
                     String currentImage = dataSnapshot.child("image").getValue(String.class);
-                    String currentFoodType = dataSnapshot.child("foodType").getValue(String.class);
+                    String currentFoodType = dataSnapshot.child("food_type").getValue(String.class);
 
                     RestaurantEntity restaurantEntityToBeSaved = new RestaurantEntity();
 
@@ -110,7 +110,7 @@ public class RestaurantRepository {
                     restaurantEntityToBeSaved.setPhone(restaurantEntity.getPhone() != null && !restaurantEntity.getPhone().isEmpty() ? restaurantEntity.getPhone() : currentPhone);
                     restaurantEntityToBeSaved.setSchedule(restaurantEntity.getSchedule() != null && !restaurantEntity.getSchedule().isEmpty() ? restaurantEntity.getSchedule() : currentSchedule);
                     restaurantEntityToBeSaved.setImage(restaurantEntity.getImage() != null && !restaurantEntity.getImage().isEmpty() ? restaurantEntity.getImage() : currentImage);
-                    restaurantEntityToBeSaved.setFoodType(restaurantEntity.getFoodType() != null && !restaurantEntity.getFoodType().isEmpty() ? restaurantEntity.getFoodType() : currentFoodType);
+                    restaurantEntityToBeSaved.setFood_type(restaurantEntity.getFood_type() != null && !restaurantEntity.getFood_type().isEmpty() ? restaurantEntity.getFood_type() : currentFoodType);
 
                     // EL VALOR PARA EMAIL SE MANTIENE EL QUE HABÍA GUARDADO
                     restaurantEntityToBeSaved.setEmail(currentEmail);
@@ -125,8 +125,8 @@ public class RestaurantRepository {
 
                                     if(!rr.getName().isEmpty() || !rr.getAddress().isEmpty() || !rr.getCity().isEmpty()
                                             || !rr.getPhone().isEmpty() || !rr.getSchedule().isEmpty()
-                                            || !rr.getImage().isEmpty() || !rr.getFoodType().isEmpty()){
-                                        System.out.println("Restaurante actualizado.");
+                                            || !rr.getImage().isEmpty() || !rr.getFood_type().isEmpty()){
+                                        //System.out.println("Restaurante actualizado.");
                                         callback.onSuccess(true);
                                     }
                                     else{
@@ -136,13 +136,13 @@ public class RestaurantRepository {
 
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
-                                    System.out.println("No ha sido posible confirmar la actualización de los datos del restaurante.");
+                                    //System.out.println("No ha sido posible confirmar la actualización de los datos del restaurante.");
                                     callback.onFailure(databaseError.toException());
                                 }
                             });
                         }
                         else{
-                            System.out.println("No ha sido posible la actualización del restaurante.");
+                            //System.out.println("No ha sido posible la actualización del restaurante.");
                             callback.onFailure(databaseError.toException());
                         }
                     }));

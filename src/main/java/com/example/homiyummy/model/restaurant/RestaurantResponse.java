@@ -22,5 +22,5 @@ public class RestaurantResponse {
     private String phone;
     private String schedule;
     private String image;
-    private String foodType;
+    private String food_type;
 }

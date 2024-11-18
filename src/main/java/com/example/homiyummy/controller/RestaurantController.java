@@ -44,6 +44,11 @@ public class RestaurantController {
     @PostMapping("/register")
     public ResponseEntity<String> registerRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
             try {
+
+                if(restaurantDTO.getEmail() == null || restaurantDTO.getEmail().isEmpty()){
+                    //System.out.println("Error:-------------x------------ ");
+                    return ResponseEntity.badRequest().body("{\"uid\": \"\"}");
+                }
                     String uid = authService.createUser(restaurantDTO.getEmail(), restaurantDTO.getPassword()); // REGISTRO EN AUTHENTICATION
                     restaurantDTO.setUid(uid);                                                                  // AÑADO EL UID RECIÉN CREADO AL USERDTO
 
@@ -52,15 +57,14 @@ public class RestaurantController {
                     return ResponseEntity.ok("{\"uid\": \"" + restaurantResponse.getUid() + "\"}");       // METEMOS EL UID QUE TRAE EL RestaurantResponse DESDE REALTIME EN FORMATO JSON
             }
             catch (FirebaseAuthException e) {
-                System.out.println("Error: " + e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": false }");       // DEVOLVEMOS false AL FRONTEND SI HAY UN ERROR
+                //System.out.println("Error: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": \"\" }");       // DEVOLVEMOS false AL FRONTEND SI HAY UN ERROR
             }
     }
     // ----------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/update")
     public ResponseEntity<Map<String, Boolean>> updateRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
-
         Boolean change = restaurantService.updateRestaurant(restaurantDTO);
         Map<String, Boolean> response = new HashMap<>();
         response.put("change", change);

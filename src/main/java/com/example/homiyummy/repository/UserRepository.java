@@ -82,7 +82,7 @@ public class UserRepository {
 // ------------------------------------------------------------------------------------------------------------
 
     public void updateUserData(UserEntity userEntity, GetUpdateConfirmationCallback callback) { // IMPLEMENTA LA INTERFAZ QUE LE SERVIRÁ AL SERVICIO PARA OBTENER LA CONFIRMACIÓN DEL ÉXITO O FALLO DE LA ACTUALIZACIÓN
-       System.out.println("uid: " + userEntity.getUid());
+       //System.out.println("uid: " + userEntity.getUid());
        DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
 
        //UserResponse userResponse = new UserResponse();
