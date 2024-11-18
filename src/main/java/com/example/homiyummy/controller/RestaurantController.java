@@ -1,10 +1,13 @@
 package com.example.homiyummy.controller;
 
+import com.example.homiyummy.model.dish.DishAllResponse;
 import com.example.homiyummy.model.restaurant.RestaurantDTO;
 import com.example.homiyummy.model.restaurant.RestaurantReadRequest;
 import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
 import com.example.homiyummy.model.restaurant.RestaurantResponse;
+import com.example.homiyummy.model.user.UserReadRequest;
 import com.example.homiyummy.service.AuthService;
+import com.example.homiyummy.service.DishService;
 import com.example.homiyummy.service.RestaurantService;
 import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.http.HttpStatus;
@@ -14,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 
 @RestController
@@ -23,12 +28,15 @@ import java.util.Map;
 public class RestaurantController {
 
     private final AuthService authService;
+    private final DishService dishService;
 
     private final RestaurantService restaurantService;
     public RestaurantController(
             AuthService authService,
+            DishService dishService,
             RestaurantService restaurantService) {
         this.authService = authService;
+        this.dishService = dishService;
         this.restaurantService = restaurantService;
     }
 
@@ -64,9 +72,33 @@ public class RestaurantController {
     @PostMapping("/getByUID")
     public RestaurantReadResponse getRestaurant(@RequestBody RestaurantReadRequest request){
         String uid = request.getUid();
-        System.out.println("--------------- uid       "+uid);
+        //System.out.println("--------------- uid       "+uid);
         return restaurantService.findByUid(uid);
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    @PostMapping("/getAllDishes")
+    public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) { //-----------------------
+
+        String uid = userReadRequest.getUid(); // UID DEL RESTAURANTE
+
+        if (!uid.isEmpty()) {
+            //System.out.println("NEW DISH ID -11--------------> ");
+            return dishService.getAll(uid).thenApply(dishAllResponse ->
+                    new ResponseEntity<>(dishAllResponse, HttpStatus.OK));
+        }
+        else {
+            DishAllResponse dishAllResponse = new DishAllResponse();
+            dishAllResponse.setDishes(new ArrayList<>());
+            //System.out.println("NEW DISH ID -22--------------> ");
+            return CompletableFuture.completedFuture(
+                    new ResponseEntity<>(dishAllResponse, HttpStatus.NOT_FOUND));
+        }
+
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 }
 

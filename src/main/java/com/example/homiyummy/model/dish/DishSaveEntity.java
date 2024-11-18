@@ -17,7 +17,8 @@ import java.util.ArrayList;
         private int id = 0;
         private String name = "";
         private String ingredients = "";
-        private ArrayList<String> allergens = new ArrayList<>();;
+        private ArrayList<String> allergens = new ArrayList<>();
+        private String image = "";
         private String type = "";
 
     }

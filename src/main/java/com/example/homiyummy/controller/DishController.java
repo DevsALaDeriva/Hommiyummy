@@ -118,26 +118,7 @@ public class DishController {
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
-    @PostMapping("/getAll")
-    public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) { //-----------------------
-
-        String uid = userReadRequest.getUid(); // UID DEL RESTAURANTE
-
-        if (!uid.isEmpty()) {
-            //System.out.println("NEW DISH ID -11--------------> ");
-            return dishService.getAll(uid).thenApply(dishAllResponse ->
-                    new ResponseEntity<>(dishAllResponse, HttpStatus.OK));
-        }
-        else {
-            DishAllResponse dishAllResponse = new DishAllResponse();
-            dishAllResponse.setDishes(new ArrayList<>());
-            return CompletableFuture.completedFuture(
-                    new ResponseEntity<>(dishAllResponse, HttpStatus.NOT_FOUND));
-        }
-
-    }
 
     // ----------------------------------------------------------------------------------------------------------------
 

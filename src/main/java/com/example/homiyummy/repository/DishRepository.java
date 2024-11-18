@@ -73,6 +73,7 @@ public class DishRepository {
                 dishEntity.getName(),
                 dishEntity.getIngredients(),
                 dishEntity.getAllergens(),
+                dishEntity.getImage(),
                 dishEntity.getType());
 
         counterRef.setValue(dishSaveEntity.getId(), (databaseCounterError, databaseCounterReference) -> {                // AUNQUE NO TIENE QUE VER CON LA FOTO DEL PLATO, APROVECHAMOS PARA ASIGNAR EL NUEVO ID A CONTADOR (PARA QUE LO TENGA DE REFERENCIA EL PRÓXIMO PLATO Q SE GUARDE)
@@ -98,6 +99,7 @@ public class DishRepository {
                                         savedDishEntity.getName(),
                                         savedDishEntity.getIngredients(),
                                         savedDishEntity.getAllergens(),
+                                        savedDishEntity.getImage(),
                                         savedDishEntity.getType());
                                 callback.onSuccess(dishResponse);
                             }
