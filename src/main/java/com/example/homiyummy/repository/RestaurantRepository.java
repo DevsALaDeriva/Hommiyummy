@@ -1,13 +1,16 @@
 package com.example.homiyummy.repository;
 
+import com.example.homiyummy.model.dish.DishEntity;
 import com.example.homiyummy.model.restaurant.RestaurantEntity;
 import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
 import com.example.homiyummy.model.restaurant.RestaurantResponse;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Repository
@@ -241,6 +244,159 @@ public class RestaurantRepository {
         void onSuccess(Boolean response);
         void onFailure(Exception exception);
     }
+
+// ----------------------------------------------------------------------------------------------------------------
+
+    public void getAllRestaurantList(OnRestaurantListCallback callback){
+
+        DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
+
+        allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {                                     // UBICACIÓN DEL NODO "restaurants"
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    ArrayList<RestaurantEntity> restaurantList = new ArrayList<>();                                     // ARRAY DONDE GUARDAREMOS TODOS LOS RESTAURANTES
+                    int totalRestaurants = (int)dataSnapshot.getChildrenCount();
+                    int[] contados = {0};
+                    //AtomicInteger contadorAtomic = new AtomicInteger(0);                                      //USAMOS AtomicInteger PARA MANEJAR EL CONTADOR DE FORMA SEGURA EN UN ENTORNO ASÍNCRONO
+                    for(DataSnapshot restaurantSnapshot: dataSnapshot.getChildren()){                                   // RECORRO EL SNAPSHOT DEL NODO "RESTAURANTS"
+                        String uid = restaurantSnapshot.getKey();                                                       // OBTENEMOS EL UID DEL RESTAURANTE ( QUE ES SU KEY)
+                            //System.out.println(restaurantSnapshot.getKey());
+                        DatabaseReference eachRestaurantRef = allRestaurantsRef.child(uid);                             // OBTENEMOS LA REFERENCIA DE CADA RESTAURANTE.
+                        eachRestaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {                     // APUNTAMOS A LA REF DEL RESTAURANTE
+                            @Override
+                            public void onDataChange(DataSnapshot restaurantSnapshot) {
+
+                                if(restaurantSnapshot.exists()){
+
+                                    String uid = restaurantSnapshot.getKey();                                           // GUARDAMOS EL VALOR DE CADA PROPIEDAD DEL RESTAURANTE
+                                    String email = restaurantSnapshot.child("email").getValue(String.class);
+                                    String name = restaurantSnapshot.child("name").getValue(String.class);
+                                    String description_mini = restaurantSnapshot.child("description_mini").getValue(String.class);
+                                    String description = restaurantSnapshot.child("description").getValue(String.class);
+                                    String url = restaurantSnapshot.child("url").getValue(String.class);
+                                    String address = restaurantSnapshot.child("address").getValue(String.class);
+                                    String city = restaurantSnapshot.child("city").getValue(String.class);
+                                    String phone = restaurantSnapshot.child("phone").getValue(String.class);
+                                    String schedule = restaurantSnapshot.child("schedule").getValue(String.class);
+                                    String image = restaurantSnapshot.child("image").getValue(String.class);
+                                    String food_type = restaurantSnapshot.child("food_type").getValue(String.class);
+
+                                    // FALTAN LOS PLATOS
+                                    //ArrayList<DishResponse> dishes = new ArrayList<>();
+                                    ArrayList<DishEntity> dishes = new ArrayList<>();
+                                    DataSnapshot dishesSnapshot = restaurantSnapshot.child("dishes/items");        // COMO YA TENEMOS EL DATASNAPSHOT PRINCIPAL, DESDE EL PODEMOS ACCEDER A "HIJOS" SIN TENER QUE VOLVER A HACER UNA PETICIÓN A LA BBDD
+
+                                    if(dishesSnapshot.exists()) {
+                                        for(DataSnapshot dishSnapSoht : dishesSnapshot.getChildren()){
+                                            int id = dishSnapSoht.child("id").getValue(Integer.class);
+                                            String dishName = dishSnapSoht.child("name").getValue(String.class);
+                                            String ingredients = dishSnapSoht.child("ingredients").getValue(String.class);
+
+                                            DataSnapshot allergensSnapshot = dishSnapSoht.child("allergens");      // CREO OTRA IMAGEN PARTIENDO DE LA QUE YA TENÍA SIN TENER QUE HACER OTRA PETICIÓN A BBDD
+                                            ArrayList<String> allergens = new ArrayList<>();
+
+                                            if(allergensSnapshot.exists()){
+                                                for(DataSnapshot allergen : allergensSnapshot.getChildren()){
+                                                    allergens.add(allergen.getValue().toString());
+                                                }
+                                            }
+
+                                            String dishImage = dishSnapSoht.child("image").getValue(String.class);
+                                            String dishType = dishSnapSoht.child("type").getValue(String.class);
+                                            // 1º CREAMOS EL DISH ENTITY PQ LO EXTRAEMOS DE LA BBDD
+                                            DishEntity dishEntity = new DishEntity(id, dishName, ingredients, allergens, dishImage, dishType);
+
+                                            // 2º PASAMOS EL ENTITY A RESPONSE
+//                                            DishResponse dishResponse = new DishResponse(); // CREAMOS UN DISH RESPONSE PARA GUARDAR EL ENTITY
+//                                            dishResponse.setUid(dishEntity.getUid());
+//                                            dishResponse.setId(dishEntity.getId());
+//                                            dishResponse.setName(dishEntity.getName());
+//                                            dishResponse.setIngredients(dishEntity.getIngredients());
+//                                            dishResponse.setAllergens(dishEntity.getAllergens());
+//                                            dishResponse.setImage(dishEntity.getImage());
+//                                            dishResponse.setType(dishEntity.getType());
+
+                                            //dishes.add(dishResponse); // AÑADIMOS EL RESPONSE AL ARRAY
+                                            dishes.add(dishEntity); // AÑADIMOS EL RESPONSE AL ARRAY
+                                        }
+                                    }
+
+                                    RestaurantEntity restaurantEntity = new RestaurantEntity(
+                                            uid, email, name, description_mini, description, url, address,
+                                            city, phone, schedule, image, food_type, dishes);
+
+//                                    RestaurantResponse restaurantResponse = new RestaurantResponse();
+//                                    restaurantResponse.setUid(restaurantEntity.getUid());
+//                                    restaurantResponse.setEmail(restaurantEntity.getEmail());
+//                                    restaurantResponse.setName(restaurantEntity.getName());
+//                                    restaurantResponse.setDescription_mini(restaurantEntity.getDescription_mini());
+//                                    restaurantResponse.setDescription(restaurantEntity.getDescription());
+//                                    restaurantResponse.setUrl(restaurantEntity.getUrl());
+//                                    restaurantResponse.setAddress(restaurantEntity.getAddress());
+//                                    restaurantResponse.setCity(restaurantEntity.getCity());
+//                                    restaurantResponse.setPhone(restaurantEntity.getPhone());
+//                                    restaurantResponse.setSchedule(restaurantEntity.getSchedule());
+//                                    restaurantResponse.setImage(restaurantEntity.getImage());
+//                                    restaurantResponse.setFood_type(restaurantEntity.getFood_type());
+//                                    restaurantResponse.setDishes(restaurantEntity.getDishes());
+//                                    restaurantList.add(restaurantResponse);
+                                      restaurantList.add(restaurantEntity);                                             // AÑADIMOS EL RESTAURANTE AL ARRAY
+                                }
+
+                                // Incrementar contador y verificar
+                                //int currentCount = contadorAtomic.incrementAndGet(); // AUMENTO EN 1 LOS RESTAURANTES PROCESADOS Y GUARDAMOS RESULTADO
+                                //System.out.println("Restaurantes procesados: " + currentCount + " de " + totalRestaurants);
+
+                                contados[0]++;
+                                //System.out.println("Restaurantes procesados: " + contados[0]++ + " de " + totalRestaurants);
+                                //contadorAtomic.incrementAndGet();
+                                //System.out.println("2 Total restaurantes: " + totalRestaurants);
+                                //System.out.println("2 Total contados: " + contadorAtomic.get());
+                                //System.out.println(contadorAtomic.get() == totalRestaurants);
+
+                                if (contados[0] == totalRestaurants) {                                                // SOLO SEGUIMOS CUANDO HEMOS AÑADIDO TODOS
+                                    //System.out.println("Todos los restaurantes procesados. Llamando al callback."); // ---- Añadido para depuración
+                                    //RestaurantAllResponse restaurantAllResponse = new RestaurantAllResponse(); // CREO EL OBJETO RESPUESTA QUE EL FRONTEND ENVIARÁ
+                                    //restaurantAllResponse.setRestaurantResponses(restaurantList);
+                                    //callback.onSearchingSuccess(restaurantAllResponse);
+                                    callback.onSearchingSuccess(restaurantList);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                // TODO --------> FALTA
+                                System.out.println("-----------2-----------");
+                            }
+                        });
+                    }
+                }
+                else{
+                    System.out.println("-----------3-----------");
+                    callback.onSearchingSuccess(new ArrayList<>());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("-----------4-----------");
+                callback.onSearchingFailure(new Exception());
+            }
+        });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public interface OnRestaurantListCallback{
+        void onSearchingSuccess(ArrayList<RestaurantEntity> restaurants);
+        void onSearchingFailure(Exception exception);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------------------------------------
+
 
 
 }

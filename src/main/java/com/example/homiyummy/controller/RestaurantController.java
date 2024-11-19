@@ -1,10 +1,7 @@
 package com.example.homiyummy.controller;
 
 import com.example.homiyummy.model.dish.DishAllResponse;
-import com.example.homiyummy.model.restaurant.RestaurantDTO;
-import com.example.homiyummy.model.restaurant.RestaurantReadRequest;
-import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
-import com.example.homiyummy.model.restaurant.RestaurantResponse;
+import com.example.homiyummy.model.restaurant.*;
 import com.example.homiyummy.model.user.UserReadRequest;
 import com.example.homiyummy.service.AuthService;
 import com.example.homiyummy.service.DishService;
@@ -19,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -99,10 +97,38 @@ public class RestaurantController {
             return CompletableFuture.completedFuture(
                     new ResponseEntity<>(dishAllResponse, HttpStatus.NOT_FOUND));
         }
-
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+    // OBTINE EL RESTAURANTE DESTACADO ENTRE LOS QUE TIENEN 7 O MÁS MENÚS
+    @PostMapping("/featured")
+    public CompletableFuture<ResponseEntity<FeaturedRestaurantResponse>> getOneFeaturedRestaurant() {
+        return restaurantService.getTheOneFeaturedRestaurant()
+                .thenApply(chosenRestaurant -> new ResponseEntity<>(chosenRestaurant, HttpStatus.OK))
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                    // TODO PERSONALIZAR ERROR
+                });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN 7 O MÁS MENÚS
+    @PostMapping("/featuredAll")
+    public CompletableFuture<ResponseEntity<ArrayList<RestaurantResponse>>> getALLFeaturedRestaurant() {
+        return restaurantService.getAllFeaturedRestaurants()
+                .thenApply(chosenRestaurant -> new ResponseEntity<>(chosenRestaurant, HttpStatus.OK))
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                    // TODO PERSONALIZAR ERROR
+                });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+
+
 
 }
 

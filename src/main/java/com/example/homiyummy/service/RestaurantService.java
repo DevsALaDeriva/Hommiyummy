@@ -1,13 +1,14 @@
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.restaurant.RestaurantDTO;
-import com.example.homiyummy.model.restaurant.RestaurantEntity;
-import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
-import com.example.homiyummy.model.restaurant.RestaurantResponse;
+import com.example.homiyummy.model.dish.DishEntity;
+import com.example.homiyummy.model.dish.DishResponse;
+import com.example.homiyummy.model.restaurant.*;
 import com.example.homiyummy.repository.RestaurantRepository;
 import com.google.firebase.database.FirebaseDatabase;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -148,6 +149,148 @@ public class RestaurantService {
             throw new RuntimeException(e);
         }
     }
+
     // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<FeaturedRestaurantResponse> getTheOneFeaturedRestaurant(){
+
+        CompletableFuture<FeaturedRestaurantResponse> futureList = new CompletableFuture<>();
+
+        restaurantRepository.getAllRestaurantList(new RestaurantRepository.OnRestaurantListCallback() {
+            @Override
+            public void onSearchingSuccess(ArrayList<RestaurantEntity> allRestaurantsInApp) {
+                //System.out.println("Size en el service "  + restaurants.size());
+                //ArrayList<RestaurantResponse> allRests = restaurants.getRestaurantResponses();
+
+                // TODO----------->: AHORA FUNCIONANDO CON MENUS. SUSTITUIR PLATOS POR MENÚS CUANDO ESTÉN CON LA CONDICIÓN DE MÍNIMO 7
+
+                ArrayList<RestaurantEntity> restaurantsWithSevenMenus = new ArrayList<>();
+
+                for(RestaurantEntity restaurant : allRestaurantsInApp){
+                    //System.out.println("Este restaurante tiene: " + restaurant.getDishes().size()+ " platos" );
+                    if(restaurant.getDishes().size() >= 2) {
+                        //System.out.println("Este restaurante tiene: " + restaurant.getDishes().size()+ " platos" );
+                        restaurantsWithSevenMenus.add(restaurant);
+                    }
+                }
+                //System.out.println("Tamaño array Restaurantes " + restaurantsWithSevenMenus.size());
+                FeaturedRestaurantResponse featuredRestaurantResponse = new FeaturedRestaurantResponse(); // OBJETO QUE VOY A MANDAR AL FRONTTEND
+
+                if(restaurantsWithSevenMenus.isEmpty()){
+                    //System.out.println("-----X-----");
+                    futureList.complete(featuredRestaurantResponse);                                      // MANDO UN OBJETO VACÍO
+                }
+
+                int quantity = restaurantsWithSevenMenus.size();                                          // TAMAÑO DEL ARRAY CON RESTAURANTES Q CUMPLEN EL REQUISITO DE LOS MENÚS
+                int random = (int) (Math.random() * quantity) + 1;
+
+                RestaurantEntity chosenRestaurantEntity = restaurantsWithSevenMenus.get(random - 1);      // RESTAURANTE ELEGIDO PARA FEATURED
+
+                featuredRestaurantResponse.setUid(chosenRestaurantEntity.getUid());
+                featuredRestaurantResponse.setName(chosenRestaurantEntity.getName());
+                featuredRestaurantResponse.setDescription(chosenRestaurantEntity.getDescription());
+                featuredRestaurantResponse.setUrl(chosenRestaurantEntity.getUrl());
+                featuredRestaurantResponse.setImage(chosenRestaurantEntity.getImage());
+                featuredRestaurantResponse.setFood_type(chosenRestaurantEntity.getFood_type());
+
+
+                futureList.complete(featuredRestaurantResponse);
+            }
+
+            @Override
+            public void onSearchingFailure(Exception exception) {
+                // TODO -------> PREGUNTAR QUÉ QUIERE EL FRONTEND SI DA ERROR
+            }
+        });
+
+        getAllFeaturedRestaurants();
+
+        return futureList;
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<ArrayList<RestaurantResponse>> getAllFeaturedRestaurants(){
+
+        CompletableFuture<ArrayList<RestaurantResponse>> futureList = new CompletableFuture<>();
+
+        // return restaurantRepository.getRestaurantList();
+        restaurantRepository.getAllRestaurantList(new RestaurantRepository.OnRestaurantListCallback() {
+            @Override
+            public void onSearchingSuccess(ArrayList<RestaurantEntity> allRestaurantsInApp) {
+                //System.out.println("Size en el service "  + restaurants.size());
+                //ArrayList<RestaurantResponse> allRests = restaurants.getRestaurantResponses();
+
+                ArrayList<RestaurantEntity> restaurantsWithSevenMenusEntity = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
+
+                for(RestaurantEntity restaurant : allRestaurantsInApp){
+                    //System.out.println("Este restaurante tiene: " + restaurant.getDishes().size()+ " platos" );
+                    // TODO----------->: AHORA FUNCIONANDO CON MENUS. SUSTITUIR PLATOS POR MENÚS CUANDO ESTÉN CON LA CONDICIÓN DE MÍNIMO 7
+                    if(restaurant.getDishes().size() >= 2) {
+                        //System.out.println("Este restaurante tiene: " + restaurant.getDishes().size()+ " platos" );
+                        restaurantsWithSevenMenusEntity.add(restaurant);
+                    }
+                }
+
+                if(restaurantsWithSevenMenusEntity.isEmpty()){
+                    //System.out.println("-----X-----");
+                    futureList.complete(new ArrayList<RestaurantResponse>());                                      // MANDO UN OBJETO VACÍO
+                }
+                else {
+                    //System.out.println("tamaño: " + restaurantsWithSevenMenus.size());
+                    ArrayList<RestaurantResponse> restaurantsWithAtLeastSevenMenusResponse = new ArrayList<>();
+
+                    for(RestaurantEntity re : restaurantsWithSevenMenusEntity){
+
+                        RestaurantResponse restResponseToBeAdded = new RestaurantResponse();
+
+                        restResponseToBeAdded.setEmail(re.getEmail());
+                        restResponseToBeAdded.setName(re.getName());
+                        restResponseToBeAdded.setDescription_mini(re.getDescription_mini());
+                        restResponseToBeAdded.setDescription(re.getDescription());
+                        restResponseToBeAdded.setUrl(re.getUrl());
+                        restResponseToBeAdded.setAddress(re.getAddress());
+                        restResponseToBeAdded.setCity(re.getCity());
+                        restResponseToBeAdded.setPhone(re.getPhone());
+                        restResponseToBeAdded.setSchedule(re.getSchedule());
+                        restResponseToBeAdded.setFood_type(re.getFood_type());
+
+                        ArrayList<DishResponse> dishResponses = new ArrayList<>();
+
+                        for(DishEntity de : re.getDishes()){
+
+                            DishResponse dr = new DishResponse();
+
+                            dr.setUid(de.getUid());
+                            dr.setId(de.getId());
+                            dr.setName(de.getName());
+                            dr.setIngredients(de.getIngredients());
+                            dr.setAllergens(de.getAllergens());
+                            dr.setImage(de.getImage());
+                            dr.setType(de.getType());
+
+                            dishResponses.add(dr);
+                        }
+                        restaurantsWithAtLeastSevenMenusResponse.add(restResponseToBeAdded);
+                    }
+                    //System.out.println(restaurantsWithAtLeastSevenMenusResponse.size());
+                    for(RestaurantResponse r : restaurantsWithAtLeastSevenMenusResponse){
+                        System.out.println("Name: " + r.getName());
+                    }
+                    futureList.complete(restaurantsWithAtLeastSevenMenusResponse);
+                }
+            }
+
+            @Override
+            public void onSearchingFailure(Exception exception) {
+                // TODO -------> PREGUNTAR QUÉ QUIERE EL FRONTEND SI DA ERROR
+            }
+        });
+
+        return futureList;
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
 
 }
