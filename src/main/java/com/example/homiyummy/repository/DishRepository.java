@@ -94,7 +94,8 @@ public class DishRepository {
                         if(dataSnapshot.exists()){
                             DishEntity savedDishEntity = dataSnapshot.getValue(DishEntity.class);
                             if(savedDishEntity != null) {
-                                DishResponse dishResponse = new DishResponse(savedDishEntity.getUid(),
+                                DishResponse dishResponse = new DishResponse(
+
                                         savedDishEntity.getId(),
                                         savedDishEntity.getName(),
                                         savedDishEntity.getIngredients(),

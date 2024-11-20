@@ -131,9 +131,9 @@ public class DishController {
             return dishService.deleteDish(uid, id).thenApply( success -> // DISHSERVICE DEVUELVE UN FUTURO  ¿?¿?¿¿   SE ESPERA A QUE SE RESUELVA PARA CONTINUAR CON SU RESULTADO
                     new ResponseEntity<>(new DishDeleteResponse(success), HttpStatus.OK));
         }
-        else {
+        else {gi
             DishDeleteResponse dishDeleteResponse = new DishDeleteResponse();
-            dishDeleteResponse.setDone(false);
+            dishDeleteResponse.setDelete(false);
             return CompletableFuture.completedFuture(
                     new ResponseEntity<>(dishDeleteResponse, HttpStatus.NOT_FOUND));
         }
