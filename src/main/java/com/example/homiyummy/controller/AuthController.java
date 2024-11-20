@@ -55,7 +55,7 @@ public class AuthController {
             LoginResponseDTO errorResponse = new LoginResponseDTO("", "");
             CompletableFuture<ResponseEntity<LoginResponseDTO>> failedFuture = new CompletableFuture<>();
             failedFuture.complete(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse));
-            System.out.println("---------- ENTRA ------- ");
+            //System.out.println("---------- ENTRA ------- ");
             return failedFuture;
         }
     }

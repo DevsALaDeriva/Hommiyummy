@@ -101,8 +101,6 @@ public class AuthService {
         return authRepository.getUidFromEmail(email);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
-
 //    public Boolean changeUserPassword(String uid, String newPass) {
 //
 //        try {
@@ -124,7 +122,7 @@ public class AuthService {
         try {
             UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid).setPassword(newPass);  // CREAMOS UNA PETICIÓN PARA CAMBIAR LA CONTRASEÑA
             UserRecord userRecord = FirebaseAuth.getInstance().updateUser(request);                     // ACTUALIZAMOS EL USUARIO CON LA NUEVA CONTRASEÑA
-            System.out.println("Contraseña actualizada para el usuario: " + userRecord.getUid());
+            //System.out.println("Contraseña actualizada para el usuario: " + userRecord.getUid());
 
             Map<String, Boolean> result = new HashMap<>();  // MAP EN EL QUE METEREMOS EL RESULTADO QUE ESPERA EL FRONTEND
             result.put("change", true);                     // FORMATO Q ESPERA RECIBIR EL FRONTEND
@@ -135,11 +133,13 @@ public class AuthService {
             errorResult.put("change", false); // RESPUESTA AL FRONTEND SI LA CONTRASEÑA NO CUMPLE
             data.complete(errorResult);
 
-            System.err.println("Error al actualizar la contraseña: " + e.getMessage());
+            //System.err.println("Error al actualizar la contraseña: " + e.getMessage());
         }
 
         return data;
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 
 

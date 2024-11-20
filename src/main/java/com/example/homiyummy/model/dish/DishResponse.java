@@ -17,6 +17,7 @@ public class DishResponse {
     private int id;
     private String name = "";
     private String ingredients = "";
-    private ArrayList<String> allergens = new ArrayList<>();;
+    private ArrayList<String> allergens = new ArrayList<>();
+    private String image = "";
     private String type = "";
 }

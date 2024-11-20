@@ -1,25 +1,19 @@
-package com.example.homiyummy.model.dish;
+package com.example.homiyummy.model.restaurant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class DishDTO {
+public class FeaturedRestaurantResponse {
     private String uid = "";
-    private int id = 0;
     private String name = "";
-    private String ingredients = "";
-    private ArrayList<String> allergens = new ArrayList<>();;
+    private String description = "";
+    private String url = "";
     private String image = "";
-    private String type = "";
-
-
+    private String food_type = "";
 }

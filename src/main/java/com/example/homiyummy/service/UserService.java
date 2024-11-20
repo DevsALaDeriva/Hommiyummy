@@ -42,7 +42,7 @@ public class UserService {
         userEntity.setPhone(userDTO.getPhone());
         userEntity.setAllergens(userDTO.getAllergens());
 
-        System.out.println("Allergens: " + userDTO.getAllergens());
+        //System.out.println("Allergens: " + userDTO.getAllergens());
 
         /**
          * COMO EL saveUser DEL REPOSITORIO DEVUELVE EL UserResponse QUE QUEREMOS RECIBIR (PARA LUEGO MANDÁRSELO DESDE AQUÍ AL CONTROLLER)
@@ -75,7 +75,7 @@ public class UserService {
 
 // ------------------------------------------------------------------------------------------------------------
 
-    public Boolean updateUser(UserDTO userDTO)  {
+    public CompletableFuture<Boolean> updateUser(UserDTO userDTO)  {
 
         CompletableFuture<Boolean> futureBoolean = new CompletableFuture<>();
 
@@ -97,7 +97,7 @@ public class UserService {
             }
         });
         try {
-            return futureBoolean.get();
+            return futureBoolean;
         }
         catch (Exception e){
             throw new RuntimeException("Error al obtener confirmación de la actualización del usuario", e);

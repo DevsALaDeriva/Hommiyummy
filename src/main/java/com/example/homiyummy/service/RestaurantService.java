@@ -1,13 +1,19 @@
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.restaurant.RestaurantDTO;
-import com.example.homiyummy.model.restaurant.RestaurantEntity;
-import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
-import com.example.homiyummy.model.restaurant.RestaurantResponse;
+import com.example.homiyummy.model.dish.DishEntity;
+import com.example.homiyummy.model.dish.DishResponse;
+import com.example.homiyummy.model.restaurant.*;
 import com.example.homiyummy.repository.RestaurantRepository;
 import com.google.firebase.database.FirebaseDatabase;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -40,7 +46,10 @@ public class RestaurantService {
         restaurantEntity.setPhone(restaurantDTO.getPhone());
         restaurantEntity.setSchedule(restaurantDTO.getSchedule());
         restaurantEntity.setImage(restaurantDTO.getImage());
-        restaurantEntity.setFoodType(restaurantDTO.getFoodType());
+        restaurantEntity.setFood_type(restaurantDTO.getFood_type());
+        //System.out.println(restaurantDTO.getLocation().getLat());
+        //System.out.println(restaurantDTO.getLocation().getLng());
+        restaurantEntity.setLocation(restaurantDTO.getLocation());
 
         CompletableFuture<RestaurantResponse> future = new CompletableFuture<>();
 
@@ -81,7 +90,8 @@ public class RestaurantService {
         restaurantEntity.setPhone(restaurantDTO.getPhone());
         restaurantEntity.setSchedule(restaurantDTO.getSchedule());
         restaurantEntity.setImage(restaurantDTO.getImage());
-        restaurantEntity.setFoodType(restaurantDTO.getFoodType());
+        restaurantEntity.setFood_type(restaurantDTO.getFood_type());
+        restaurantEntity.setLocation(restaurantDTO.getLocation());
 
         restaurantRepository.updateRestaurantData(restaurantEntity, new RestaurantRepository.GetUpdateRestaurantCallback() {
             @Override
@@ -94,7 +104,6 @@ public class RestaurantService {
                 futureResponse.completeExceptionally(exception);
             }
         });
-
 
         try {
             return futureResponse.get();
@@ -149,6 +158,73 @@ public class RestaurantService {
             throw new RuntimeException(e);
         }
     }
+
     // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<Map<String,ArrayList<String>>> getFoodTypes() {
+        CompletableFuture<Map<String,ArrayList<String>>> futureTypes = new CompletableFuture<>();
+        Map<String, ArrayList<String>> objeto = new HashMap<>();
+        restaurantRepository.getAllFoodTypes(new RestaurantRepository.OnTypesGot() {
+            @Override
+            public void onTypesSuccess(ArrayList<String> types) {
+                objeto.put("food_type", types);
+                futureTypes.complete(objeto);
+            }
+
+            @Override
+            public void onTypesFailure(Exception exception) {
+                //futureTypes.complete(exception);
+                // TODO -------> PREGUNTAR QUÉ QUIERE EL FRONTEND SI DA ERROR
+            }
+        });
+        return futureTypes;
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getAllRestaurants(){
+
+        CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> futureAllRestaurants = new CompletableFuture<>();
+
+        restaurantRepository.getAllRestaurantList(new RestaurantRepository.OnRestaurantListCallback() {
+            @Override
+            public void onSearchingSuccess(ArrayList<RestaurantEntity> restaurants) {
+
+                ArrayList<RestaurantGetAllFormatResponse> restListResponse = new ArrayList<>();
+
+                for(RestaurantEntity restaurant : restaurants){
+
+                    RestaurantGetAllFormatResponse restaurantGetAllFormatResponse = new RestaurantGetAllFormatResponse();
+
+                    restaurantGetAllFormatResponse.setUid(restaurant.getUid());
+                    restaurantGetAllFormatResponse.setName(restaurant.getName());
+                    restaurantGetAllFormatResponse.setDescription_mini(restaurant.getDescription_mini());
+                    restaurantGetAllFormatResponse.setUrl(restaurant.getUrl());
+                    restaurantGetAllFormatResponse.setAddress(restaurant.getAddress());
+                    restaurantGetAllFormatResponse.setPhone(restaurant.getPhone());
+                    restaurantGetAllFormatResponse.setSchedule(restaurant.getSchedule());
+                    restaurantGetAllFormatResponse.setFood_type(restaurant.getFood_type());
+                    restaurantGetAllFormatResponse.setImage(restaurant.getImage());
+                    restaurantGetAllFormatResponse.setRate(restaurant.getRate());
+                    restaurantGetAllFormatResponse.setAverage_price(restaurant.getAverage_price());
+                    restaurantGetAllFormatResponse.setLocation(restaurant.getLocation());
+
+                    restListResponse.add(restaurantGetAllFormatResponse);
+
+                }
+
+                Map<String, ArrayList<RestaurantGetAllFormatResponse>> dataResponse = new HashMap<>();
+                dataResponse.put("restaurants", restListResponse);
+
+                futureAllRestaurants.complete(dataResponse);
+            }
+
+            @Override
+            public void onSearchingFailure(Exception exception) {
+                futureAllRestaurants.completeExceptionally(exception);
+            }
+        });
+        return futureAllRestaurants;
+    }
 
 }
