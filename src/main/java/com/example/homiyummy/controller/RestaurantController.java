@@ -63,8 +63,18 @@ public class RestaurantController {
 
     @PostMapping("/update")
     public ResponseEntity<Map<String, Boolean>> updateRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
-        Boolean change = restaurantService.updateRestaurant(restaurantDTO);
         Map<String, Boolean> response = new HashMap<>();
+
+        String uid = restaurantDTO.getUid();
+
+        if (uid == null || uid.isEmpty()) {
+            //System.out.println("--------------------2");
+            response.put("change", false);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND); // SI NO HAY UID DEVUELE UN  404
+        }
+
+        Boolean change = restaurantService.updateRestaurant(restaurantDTO);
+
         response.put("change", change);
         return ResponseEntity.ok(response);
     }
@@ -100,35 +110,32 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-    // OBTINE EL RESTAURANTE DESTACADO ENTRE LOS QUE TIENEN 7 O MÁS MENÚS
-    @PostMapping("/featured")
-    public CompletableFuture<ResponseEntity<FeaturedRestaurantResponse>> getOneFeaturedRestaurant() {
-        return restaurantService.getTheOneFeaturedRestaurant()
-                .thenApply(chosenRestaurant -> new ResponseEntity<>(chosenRestaurant, HttpStatus.OK))
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                    // TODO PERSONALIZAR ERROR
-                });
-    }
 
-    // ----------------------------------------------------------------------------------------------------------------
     // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN 7 O MÁS MENÚS
-    @PostMapping("/featuredAll")
-    public CompletableFuture<ResponseEntity<ArrayList<RestaurantResponse>>> getALLFeaturedRestaurant() {
-        return restaurantService.getAllFeaturedRestaurants()
-                .thenApply(chosenRestaurant -> new ResponseEntity<>(chosenRestaurant, HttpStatus.OK))
+    @PostMapping("/getTypeFood")
+    public CompletableFuture<ResponseEntity<Map<String,ArrayList<String>>>> getAllTypes() {
+        return restaurantService.getFoodTypes()
+                .thenApply(types -> new ResponseEntity<>(types, HttpStatus.OK))
                 .exceptionally(ex -> {
                     ex.printStackTrace();
                     return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                    // TODO PERSONALIZAR ERROR
+                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
     }
 
     // ----------------------------------------------------------------------------------------------------------------
 
-
-
+    // OBTIENE TODOS LOS RESTAURANTES
+    @PostMapping("/getAll")
+    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getALL() {
+        return restaurantService.getAllRestaurants()
+                //.thenApply(allRestaurants -> new ResponseEntity<>(allRestaurants, HttpStatus.OK))
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return new HashMap<>(); // Retorna un mapa vacío en caso de error
+                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
+                });
+    }
 
 }
 

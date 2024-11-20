@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -24,6 +26,9 @@ public class RestaurantDTO {
     private String schedule = "";
     private String image = "";
     private String food_type = "";
+    private Integer rate = 0;
+    private Float average_price = 0.0F;
+    private RestaurantLocation location = new RestaurantLocation(0.0F,0.0F);
 
 
 
@@ -38,7 +43,11 @@ public class RestaurantDTO {
                           String phone,
                           String schedule,
                           String image,
-                          String food_type){
+                          String food_type,
+                          Integer rate,
+                          Float average_price,
+                          RestaurantLocation location
+                          ){
         this.uid = uid;
         this.name = name;
         this.description_mini = description_mini;
@@ -50,6 +59,9 @@ public class RestaurantDTO {
         this.schedule = schedule;
         this.image = image;
         this.food_type = food_type;
+        this.rate = rate;
+        this.average_price = average_price;
+        this.location = location;
     }
 
 }

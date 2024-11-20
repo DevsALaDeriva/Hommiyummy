@@ -2,6 +2,7 @@ package com.example.homiyummy.repository;
 
 import com.example.homiyummy.model.dish.DishEntity;
 import com.example.homiyummy.model.restaurant.RestaurantEntity;
+import com.example.homiyummy.model.restaurant.RestaurantLocation;
 import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
 import com.example.homiyummy.model.restaurant.RestaurantResponse;
 import com.google.firebase.database.*;
@@ -41,6 +42,9 @@ public class RestaurantRepository {
         restaurantEntityToSave.put("image", restaurantEntity.getImage());
         restaurantEntityToSave.put("food_type", restaurantEntity.getFood_type());
         restaurantEntityToSave.put("schedule", restaurantEntity.getSchedule());
+        restaurantEntityToSave.put("location", restaurantEntity.getLocation());
+
+
 
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(restaurantEntity.getUid());
 
@@ -101,6 +105,10 @@ public class RestaurantRepository {
                     String currentSchedule = dataSnapshot.child("schedule").getValue(String.class);
                     String currentImage = dataSnapshot.child("image").getValue(String.class);
                     String currentFoodType = dataSnapshot.child("food_type").getValue(String.class);
+                    //Integer currentRate = dataSnapshot.child("rate").getValue(Integer.class);
+                    //Float currentAveragePrice = dataSnapshot.child("average_price").getValue(Float.class);
+                    RestaurantLocation currentLocation = dataSnapshot.child("location").getValue(RestaurantLocation.class);
+
 
                     RestaurantEntity restaurantEntityToBeSaved = new RestaurantEntity();
 
@@ -114,6 +122,9 @@ public class RestaurantRepository {
                     restaurantEntityToBeSaved.setSchedule(restaurantEntity.getSchedule() != null && !restaurantEntity.getSchedule().isEmpty() ? restaurantEntity.getSchedule() : currentSchedule);
                     restaurantEntityToBeSaved.setImage(restaurantEntity.getImage() != null && !restaurantEntity.getImage().isEmpty() ? restaurantEntity.getImage() : currentImage);
                     restaurantEntityToBeSaved.setFood_type(restaurantEntity.getFood_type() != null && !restaurantEntity.getFood_type().isEmpty() ? restaurantEntity.getFood_type() : currentFoodType);
+                    //restaurantEntityToBeSaved.setRate(restaurantEntity.getRate() != null ? restaurantEntity.getRate() : currentRate);
+                    //restaurantEntityToBeSaved.setAverage_price((restaurantEntity.getAverage_price() != null && restaurantEntity.getAverage_price() != 0) ? restaurantEntity.getAverage_price() : currentAveragePrice);
+                    restaurantEntityToBeSaved.setLocation(restaurantEntity.getLocation() != null ? restaurantEntity.getLocation() : currentLocation);
 
                     // EL VALOR PARA EMAIL SE MANTIENE EL QUE HABÍA GUARDADO
                     restaurantEntityToBeSaved.setEmail(currentEmail);
@@ -257,6 +268,7 @@ public class RestaurantRepository {
                 if(dataSnapshot.exists()){
                     ArrayList<RestaurantEntity> restaurantList = new ArrayList<>();                                     // ARRAY DONDE GUARDAREMOS TODOS LOS RESTAURANTES
                     int totalRestaurants = (int)dataSnapshot.getChildrenCount();
+                    //System.out.println("Nºde restaurantes: " + totalRestaurants);
                     int[] contados = {0};
                     //AtomicInteger contadorAtomic = new AtomicInteger(0);                                      //USAMOS AtomicInteger PARA MANEJAR EL CONTADOR DE FORMA SEGURA EN UN ENTORNO ASÍNCRONO
                     for(DataSnapshot restaurantSnapshot: dataSnapshot.getChildren()){                                   // RECORRO EL SNAPSHOT DEL NODO "RESTAURANTS"
@@ -281,6 +293,9 @@ public class RestaurantRepository {
                                     String schedule = restaurantSnapshot.child("schedule").getValue(String.class);
                                     String image = restaurantSnapshot.child("image").getValue(String.class);
                                     String food_type = restaurantSnapshot.child("food_type").getValue(String.class);
+                                    Integer rate = restaurantSnapshot.child("rate").getValue(Integer.class);
+                                    Float average_rate = restaurantSnapshot.child("average_rate").getValue(Float.class);
+                                    RestaurantLocation location = restaurantSnapshot.child("location").getValue(RestaurantLocation.class);
 
                                     // FALTAN LOS PLATOS
                                     //ArrayList<DishResponse> dishes = new ArrayList<>();
@@ -288,6 +303,7 @@ public class RestaurantRepository {
                                     DataSnapshot dishesSnapshot = restaurantSnapshot.child("dishes/items");        // COMO YA TENEMOS EL DATASNAPSHOT PRINCIPAL, DESDE EL PODEMOS ACCEDER A "HIJOS" SIN TENER QUE VOLVER A HACER UNA PETICIÓN A LA BBDD
 
                                     if(dishesSnapshot.exists()) {
+
                                         for(DataSnapshot dishSnapSoht : dishesSnapshot.getChildren()){
                                             int id = dishSnapSoht.child("id").getValue(Integer.class);
                                             String dishName = dishSnapSoht.child("name").getValue(String.class);
@@ -297,6 +313,7 @@ public class RestaurantRepository {
                                             ArrayList<String> allergens = new ArrayList<>();
 
                                             if(allergensSnapshot.exists()){
+
                                                 for(DataSnapshot allergen : allergensSnapshot.getChildren()){
                                                     allergens.add(allergen.getValue().toString());
                                                 }
@@ -323,8 +340,8 @@ public class RestaurantRepository {
                                     }
 
                                     RestaurantEntity restaurantEntity = new RestaurantEntity(
-                                            uid, email, name, description_mini, description, url, address,
-                                            city, phone, schedule, image, food_type, dishes);
+                                            uid, email, name, description_mini, description, url, address, city,
+                                            phone, schedule, image, food_type, dishes, rate, average_rate, location);
 
 //                                    RestaurantResponse restaurantResponse = new RestaurantResponse();
 //                                    restaurantResponse.setUid(restaurantEntity.getUid());
@@ -356,6 +373,7 @@ public class RestaurantRepository {
                                 //System.out.println(contadorAtomic.get() == totalRestaurants);
 
                                 if (contados[0] == totalRestaurants) {                                                // SOLO SEGUIMOS CUANDO HEMOS AÑADIDO TODOS
+                                    //System.out.println("-----------4-----------");
                                     //System.out.println("Todos los restaurantes procesados. Llamando al callback."); // ---- Añadido para depuración
                                     //RestaurantAllResponse restaurantAllResponse = new RestaurantAllResponse(); // CREO EL OBJETO RESPUESTA QUE EL FRONTEND ENVIARÁ
                                     //restaurantAllResponse.setRestaurantResponses(restaurantList);
@@ -367,20 +385,20 @@ public class RestaurantRepository {
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
                                 // TODO --------> FALTA
-                                System.out.println("-----------2-----------");
+                                //System.out.println("-----------5-----------");
                             }
                         });
                     }
                 }
                 else{
-                    System.out.println("-----------3-----------");
+                    //System.out.println("-----------3-----------");
                     callback.onSearchingSuccess(new ArrayList<>());
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.println("-----------4-----------");
+                //System.out.println("-----------4-----------");
                 callback.onSearchingFailure(new Exception());
             }
         });
@@ -395,8 +413,44 @@ public class RestaurantRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    public void getAllFoodTypes (OnTypesGot callback){
+
+        DatabaseReference restaurantsRef = databaseReference.child("restaurants");
+
+        restaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                ArrayList<String> types = new ArrayList<>();
+
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot individualRestaurantSnaphost : dataSnapshot.getChildren()){
+                        if(individualRestaurantSnaphost.child("food_type").exists()){
+                            String foodType = individualRestaurantSnaphost.child("food_type").getValue(String.class);
+                            types.add(foodType);
+                        }
+                    }
+                    callback.onTypesSuccess(types);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // TODO ------------------------XXXXXXXX
+            }
+        });
+
+    }
+
+
     // ----------------------------------------------------------------------------------------------------------------
 
+    public interface OnTypesGot{
+        void onTypesSuccess(ArrayList<String> types);
+        void onTypesFailure(Exception exception);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 
 }
