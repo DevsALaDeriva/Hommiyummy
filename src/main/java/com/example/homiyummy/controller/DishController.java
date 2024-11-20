@@ -120,7 +120,7 @@ public class DishController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    @PostMapping("/getAll")
+    @PostMapping("/getAllDishes")
     public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) { //-----------------------
 
         String uid = userReadRequest.getUid(); // UID DEL RESTAURANTE

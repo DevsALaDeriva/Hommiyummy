@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class MenuEntity {
 
     private String uid;
+    private int id;
     private int date;
     private ArrayList<String> firstCourse;
     private ArrayList<String> secondCourse;

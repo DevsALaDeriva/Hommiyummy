@@ -13,6 +13,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class MenuResponse {
     private String uid;
+    private int id; 
     private int date;
     private ArrayList<String> firstCourse;
     private ArrayList<String> secondCourse;
