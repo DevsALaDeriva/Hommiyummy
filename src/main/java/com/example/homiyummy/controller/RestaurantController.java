@@ -1,10 +1,13 @@
 package com.example.homiyummy.controller;
 
 import com.example.homiyummy.model.dish.DishAllResponse;
+import com.example.homiyummy.model.menu.MenuByPeriodRequest;
+import com.example.homiyummy.model.menu.MenuResponseByPeriod;
 import com.example.homiyummy.model.restaurant.*;
 import com.example.homiyummy.model.user.UserReadRequest;
 import com.example.homiyummy.service.AuthService;
 import com.example.homiyummy.service.DishService;
+import com.example.homiyummy.service.MenuService;
 import com.example.homiyummy.service.RestaurantService;
 import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.http.HttpStatus;
@@ -27,14 +30,16 @@ public class RestaurantController {
 
     private final AuthService authService;
     private final DishService dishService;
+    private final MenuService menuService;
 
     private final RestaurantService restaurantService;
     public RestaurantController(
             AuthService authService,
             DishService dishService,
-            RestaurantService restaurantService) {
+            MenuService menuService, RestaurantService restaurantService) {
         this.authService = authService;
         this.dishService = dishService;
+        this.menuService = menuService;
         this.restaurantService = restaurantService;
     }
 
@@ -135,6 +140,24 @@ public class RestaurantController {
                     return new HashMap<>(); // Retorna un mapa vacío en caso de error
                     // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
+    }
+
+    @PostMapping("/getMenuByPeriod")
+    public ResponseEntity<List<MenuResponseByPeriod>> getMenuByPeriod(@RequestBody MenuByPeriodRequest menuByPeriodRequest) {
+        String uid = menuByPeriodRequest.getUid();
+        int startDate = menuByPeriodRequest.getStart_date();
+        int endDate = menuByPeriodRequest.getEnd_date();
+
+        if (uid.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            List<MenuResponseByPeriod> menus = menuService.getMenusByDateRange(uid, startDate, endDate);
+            return new ResponseEntity<>(menus, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

@@ -133,23 +133,7 @@ public class MenuController {
         
     }
 
-    @PostMapping("/getMenuByPeriod")
-    public ResponseEntity<List<MenuResponseByPeriod>> getMenuByPeriod(@RequestBody MenuByPeriodRequest menuByPeriodRequest) {
-        String uid = menuByPeriodRequest.getUid();
-        int startDate = menuByPeriodRequest.getStart_date();
-        int endDate = menuByPeriodRequest.getEnd_date();
 
-        if (uid.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            List<MenuResponseByPeriod> menus = menuService.getMenusByDateRange(uid, startDate, endDate);
-            return new ResponseEntity<>(menus, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     
 }
 
