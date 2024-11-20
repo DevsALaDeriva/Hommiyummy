@@ -120,6 +120,29 @@ public class DishController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+
+    @PostMapping("/getAllDishes")
+    public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) { //-----------------------
+
+        String uid = userReadRequest.getUid(); // UID DEL RESTAURANTE
+
+        if (!uid.isEmpty()) {
+            //System.out.println("NEW DISH ID -11--------------> ");
+            return dishService.getAll(uid).thenApply(dishAllResponse ->
+                    new ResponseEntity<>(dishAllResponse, HttpStatus.OK));
+        }
+        else {
+            DishAllResponse dishAllResponse = new DishAllResponse();
+            dishAllResponse.setDishes(new ArrayList<>());
+            return CompletableFuture.completedFuture(
+                    new ResponseEntity<>(dishAllResponse, HttpStatus.NOT_FOUND));
+        }
+
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+
     @PostMapping("/delete")
     public CompletableFuture<ResponseEntity<DishDeleteResponse>> delete(@RequestBody DishDeleteRequest dishDeleteRequest) { //-----------------------
 
@@ -131,7 +154,7 @@ public class DishController {
             return dishService.deleteDish(uid, id).thenApply( success -> // DISHSERVICE DEVUELVE UN FUTURO  ¿?¿?¿¿   SE ESPERA A QUE SE RESUELVA PARA CONTINUAR CON SU RESULTADO
                     new ResponseEntity<>(new DishDeleteResponse(success), HttpStatus.OK));
         }
-        else {gi
+        else {
             DishDeleteResponse dishDeleteResponse = new DishDeleteResponse();
             dishDeleteResponse.setDelete(false);
             return CompletableFuture.completedFuture(
