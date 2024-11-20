@@ -230,7 +230,7 @@ public class MenuRepository {
     public void findMenusByDateRange(String uid, int startDate, int endDate, FindMenusCallback callback) {
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
         DatabaseReference menuItemsRef = restaurantRef.child("menus/items");
-
+     
         menuItemsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

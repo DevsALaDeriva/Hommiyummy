@@ -12,6 +12,6 @@ import lombok.Setter;
 public class MenuByPeriodRequest {
 
     private String uid;
-    private int start_Date;
-    private int end_Date;
+    private int start_date;
+    private int end_date;
 }

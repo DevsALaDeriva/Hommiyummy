@@ -148,7 +148,7 @@ public class MenuService {
 
     public List<MenuResponseByPeriod> getMenusByDateRange(String uid, int startDate, int endDate) {
         CompletableFuture<List<MenuResponseByPeriod>> futureMenus = new CompletableFuture<>();
-
+  
         menuRepository.findMenusByDateRange(uid, startDate, endDate, new MenuRepository.FindMenusCallback() {
 
             @Override
