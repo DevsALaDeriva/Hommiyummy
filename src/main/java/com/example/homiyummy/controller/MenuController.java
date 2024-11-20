@@ -133,11 +133,11 @@ public class MenuController {
         
     }
 
-    @PostMapping("/menusByDateRange")
+    @PostMapping("/getMenuByPeriod")
     public ResponseEntity<List<MenuResponseByPeriod>> getMenusByDateRange(@RequestBody MenuByPeriodRequest menuByPeriodRequest) {
         String uid = menuByPeriodRequest.getUid();
-        int startDate = menuByPeriodRequest.getStartDate();
-        int endDate = menuByPeriodRequest.getEndDate();
+        int startDate = menuByPeriodRequest.getStart_Date();
+        int endDate = menuByPeriodRequest.getEnd_Date();
 
         if (uid.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

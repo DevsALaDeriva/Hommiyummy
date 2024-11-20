@@ -62,8 +62,8 @@ public class MenuService {
         
         CompletableFuture<MenuResponse> futureMenuResponse = new CompletableFuture<>();
 
-        ArrayList<String> firstcourse = new ArrayList<>();
-        ArrayList<String> secondcourse = new ArrayList<>();
+        ArrayList<Integer> firstcourse = new ArrayList<>();
+        ArrayList<Integer> secondcourse = new ArrayList<>();
         firstcourse.add(menuDTO.getFirstCourse().get(0));
         firstcourse.add(menuDTO.getFirstCourse().get(1));
         
@@ -108,8 +108,8 @@ public class MenuService {
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-        ArrayList<String> firstcourse = new ArrayList<>();
-        ArrayList<String> secondcourse = new ArrayList<>();
+        ArrayList<Integer> firstcourse = new ArrayList<>();
+        ArrayList<Integer> secondcourse = new ArrayList<>();
         firstcourse.add(menuDTO.getFirstCourse().get(0));
         firstcourse.add(menuDTO.getFirstCourse().get(1));
 

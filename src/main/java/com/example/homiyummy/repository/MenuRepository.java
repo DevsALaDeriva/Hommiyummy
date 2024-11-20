@@ -144,8 +144,8 @@ public class MenuRepository {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // Leer datos actuales de Firebase si es necesario
-                    ArrayList<String> currentFirstCourse = (ArrayList<String>) dataSnapshot.child("firstCourse").getValue();
-                    ArrayList<String> currentSecondCourse = (ArrayList<String>) dataSnapshot.child("secondCourse").getValue();
+                    ArrayList<Integer> currentFirstCourse = (ArrayList<Integer>) dataSnapshot.child("firstCourse").getValue();
+                    ArrayList<Integer> currentSecondCourse = (ArrayList<Integer>) dataSnapshot.child("secondCourse").getValue();
 
                     // Crear una nueva entidad para actualizar el menú
                     MenuSaveEntity menuEntityToBeSaved = new MenuSaveEntity();

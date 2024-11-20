@@ -15,8 +15,8 @@ import java.util.ArrayList;
 public class MenuSaveEntity {
     private int id;
     private int date;
-    private ArrayList<String> firstCourse;
-    private ArrayList<String> secondCourse;
+    private ArrayList<Integer> firstCourse;
+    private ArrayList<Integer> secondCourse;
     private int dessert;
     private float priceWithDessert;
     private float priceNoDessert;
