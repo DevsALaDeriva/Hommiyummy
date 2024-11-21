@@ -36,10 +36,10 @@ public class DishService {
             }
         });
         try {
-            return futureId.get();      // ENVIAMOS EL ID
+            return futureId.get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace(); // Log para identificar el error exacto
-            return 0; // Devuelve 0 en caso de fallo para cumplir con las expectativas del frontend
+            e.printStackTrace();
+            return 0;
         }
     }
 
@@ -55,25 +55,22 @@ public class DishService {
         dishEntity.setName(dishDTO.getName());
         dishEntity.setType(dishDTO.getType());
         dishEntity.setIngredients(dishDTO.getIngredients());
+        dishEntity.setImage(dishDTO.getImage());
         dishEntity.setAllergens(dishDTO.getAllergens());
 
         dishRepository.save(dishEntity, new DishRepository.SavePlatoCallback() {
             @Override
             public void onSuccess(DishResponse dishResponse) {
-                //System.out.println("-------------1---------------id del plato: " + dishResponse.getId());
                 futurePlatoResponse.complete(dishResponse);
             }
             @Override
             public void onFailure(Exception exception) {
-                //System.out.println("-------------2---------------");
                 futurePlatoResponse.completeExceptionally(exception);
             }
         });
         try {
-            //System.out.println("-------------3---------------");
             return futurePlatoResponse.get();
         } catch (InterruptedException | ExecutionException e) {
-            // Manejar la interrupción del hilo
             Thread.currentThread().interrupt();
             throw new RuntimeException("Error al crear el plato: " + e.getMessage(), e);
         }
@@ -82,8 +79,6 @@ public class DishService {
     // ----------------------------------------------------------------------------------------------------------------
 
     public Boolean updateDish(DishDTO dishDTO){
-        //System.out.println("asfasdfasdfasdfasfd");
-
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
@@ -141,6 +136,33 @@ public class DishService {
 
     public CompletableFuture<Boolean> deleteDish(String uid, int id){
         return dishRepository.delete(uid, id);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<DishResponse> getDish(String uid, int id){
+
+        CompletableFuture<DishResponse> futureDishResponse = new CompletableFuture<>();
+
+        dishRepository.get(uid, id, new DishRepository.OnDishGotCallback() {
+            @Override
+            public void onSuccess(DishEntity dishEntity) {
+                DishResponse dishResponse = new DishResponse(dishEntity.getId(),
+                        dishEntity.getName(),
+                        dishEntity.getIngredients(),
+                        dishEntity.getAllergens(),
+                        dishEntity.getImage(),
+                        dishEntity.getType());
+
+                futureDishResponse.complete(dishResponse);
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                    // TODO : ------------------------------
+            }
+        });
+        return futureDishResponse;
     }
 
     // ----------------------------------------------------------------------------------------------------------------

@@ -181,7 +181,6 @@ public class DishRepository {
                             // TODO -------------
             }
         });
-
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -209,12 +208,10 @@ public class DishRepository {
                                     allDishes.add(dish);
                                 }
                             }
-
                             DishAllResponse dishAllResponse = new DishAllResponse();
                             dishAllResponse.setDishes(allDishes);
                             callback.onSuccess(dishAllResponse);
                         } else {
-
                             DishAllResponse emptyResponse = new DishAllResponse();
                             emptyResponse.setDishes(new ArrayList<>());
                             callback.onSuccess(emptyResponse); // SI NO HAY PLATOS OBJETO VACÍO
@@ -274,6 +271,30 @@ public class DishRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    public void get(String uid, int id, OnDishGotCallback callback){
+
+
+        DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
+        DatabaseReference dishesRef = restaurantRef.child("dishes/items");
+        dishesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    DishEntity dishEntity = dataSnapshot.child(String.valueOf(id)).getValue(DishEntity.class);
+                    callback.onSuccess(dishEntity);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                    callback.onSuccess(new DishEntity()); // MANDAMOS UN DISH VACÍO
+            }
+        });
+
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
     public interface SavePlatoCallback{
         void onSuccess(DishResponse dishResponse);
         void onFailure(Exception exception);
@@ -309,5 +330,11 @@ public class DishRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    public interface OnDishGotCallback{
+        void onSuccess(DishEntity dishEntity);
+        void onFailure(Exception exception);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 }

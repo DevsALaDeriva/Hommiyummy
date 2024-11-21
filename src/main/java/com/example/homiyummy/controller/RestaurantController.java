@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -91,19 +91,17 @@ public class RestaurantController {
     // ----------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/getAllDishes")
-    public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) { //-----------------------
+    public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) {
 
         String uid = userReadRequest.getUid(); // UID DEL RESTAURANTE
 
         if (!uid.isEmpty()) {
-            //System.out.println("NEW DISH ID -11--------------> ");
             return dishService.getAll(uid).thenApply(dishAllResponse ->
                     new ResponseEntity<>(dishAllResponse, HttpStatus.OK));
         }
         else {
             DishAllResponse dishAllResponse = new DishAllResponse();
             dishAllResponse.setDishes(new ArrayList<>());
-            //System.out.println("NEW DISH ID -22--------------> ");
             return CompletableFuture.completedFuture(
                     new ResponseEntity<>(dishAllResponse, HttpStatus.NOT_FOUND));
         }
@@ -113,7 +111,7 @@ public class RestaurantController {
 
     // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN 7 O MÁS MENÚS
     @PostMapping("/getTypeFood")
-    public CompletableFuture<ResponseEntity<Map<String,ArrayList<String>>>> getAllTypes() {
+    public CompletableFuture<ResponseEntity<Map<String, Set<String>>>> getAllTypes() {
         return restaurantService.getFoodTypes()
                 .thenApply(types -> new ResponseEntity<>(types, HttpStatus.OK))
                 .exceptionally(ex -> {
@@ -129,13 +127,42 @@ public class RestaurantController {
     @PostMapping("/getAll")
     public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getALL() {
         return restaurantService.getAllRestaurants()
-                //.thenApply(allRestaurants -> new ResponseEntity<>(allRestaurants, HttpStatus.OK))
                 .exceptionally(ex -> {
                     ex.printStackTrace();
                     return new HashMap<>(); // Retorna un mapa vacío en caso de error
                     // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    // OBTINE EL RESTAURANTE DESTACADO ENTRE LOS QUE TIENEN 7 O MÁS MENÚS
+    @PostMapping("/featured")
+    public CompletableFuture<ResponseEntity<FeaturedRestaurantResponse>> getOneFeaturedRestaurant() {
+        return restaurantService.getTheOneFeaturedRestaurant()
+                .thenApply(chosenRestaurant -> new ResponseEntity<>(chosenRestaurant, HttpStatus.OK))
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
+                });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN 7 O MÁS MENÚS
+    @PostMapping("/featuredAll")
+    public CompletableFuture<ResponseEntity<ArrayList<RestaurantWithSevenDaysMenusResponse>>> getALLFeaturedRestaurant() {
+        return restaurantService.getRestaurantsWithNextSevenDaysMenus()
+                .thenApply(restaurants -> new ResponseEntity<>(restaurants, HttpStatus.OK))
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
+                });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 }
 

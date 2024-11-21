@@ -21,4 +21,14 @@ public class MenuEntity {
     private int dessert;
     private float priceWithDessert;
     private float priceNoDessert;
+
+    public MenuEntity(int id, int date, ArrayList<Integer> firstCourse, ArrayList<Integer> secondCourse, int dessert, float priceWithDessert, float priceNoDessert){
+        this.id = id;
+        this.date = date;
+        this.firstCourse = firstCourse;
+        this.secondCourse = secondCourse;
+        this.dessert = dessert;
+        this.priceWithDessert = priceWithDessert;
+        this.priceNoDessert = priceNoDessert;
+    }
 }

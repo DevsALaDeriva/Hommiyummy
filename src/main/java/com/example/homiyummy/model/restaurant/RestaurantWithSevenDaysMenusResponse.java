@@ -5,17 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-/**
- * CLASE CREADA PARA ENVIAR AL FRONTEND TODOS LOS RESTAURANTES CON TODAS SUS PROPIEDADES
- */
-public class RestaurantGetAllFormatResponse {
-    //private String uid ="";
+public class RestaurantWithSevenDaysMenusResponse {
     private String name = "";
     private String description_mini = "";
     private String url = "";
