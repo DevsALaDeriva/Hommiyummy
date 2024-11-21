@@ -3,10 +3,7 @@ package com.example.homiyummy.repository;
 import com.example.homiyummy.model.dish.DishEntity;
 import com.example.homiyummy.model.dish.DishResponse;
 import com.example.homiyummy.model.dish.DishUpdateEntity;
-import com.example.homiyummy.model.menu.MenuEntity;
-import com.example.homiyummy.model.menu.MenuResponse;
-import com.example.homiyummy.model.menu.MenuResponseByPeriod;
-import com.example.homiyummy.model.menu.MenuSaveEntity;
+import com.example.homiyummy.model.menu.*;
 import com.example.homiyummy.service.RestaurantService;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
@@ -262,6 +259,48 @@ public class MenuRepository {
             }
         });
     }
+
+    public void findMenuById(String uid, int menuId, FindMenuByIdCallback callback) {
+        DatabaseReference menuRef = databaseReference.child("restaurants")
+                .child(uid)
+                .child("menus/items")
+                .child(String.valueOf(menuId));
+
+        menuRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    MenuEntityById menu = dataSnapshot.getValue(MenuEntityById.class);
+                    if (menu != null) {
+                        callback.onSuccess(new MenuByIdResponse(
+                                menu.getId(),
+                                menu.getDate(),
+                                menu.getFirstCourse(),
+                                menu.getSecondCourse(),
+                                menu.getDessert(),
+                                menu.getPriceWithDessert(),
+                                menu.getPriceNoDessert()
+                        ));
+                    } else {
+                        callback.onFailure(new Exception("Menu no encontrado o datos inválidos"));
+                    }
+                } else {
+                    callback.onFailure(new Exception("No existe un menú con ese ID"));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onFailure(new Exception("Error al acceder a la base de datos: " + databaseError.getMessage()));
+            }
+        });
+    }
+
+    public interface FindMenuByIdCallback {
+        void onSuccess(MenuByIdResponse menu);
+        void onFailure(Exception exception);
+    }
+
 
     public interface FindMenuIdCallback{
         void onSuccess(Integer id);

@@ -133,7 +133,22 @@ public class MenuController {
         
     }
 
+    @PostMapping("/getById")
+    public ResponseEntity<MenuByIdResponse> getById(@RequestBody MenuByIdRequest menuByIdRequest) {
+        String uid = menuByIdRequest.getUid();
+        int id = menuByIdRequest.getId();
 
-    
+        if (uid.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        
+        try{
+            MenuByIdResponse menu = menuService.getMenuById(uid, id);
+            return new ResponseEntity<>(menu, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }
 

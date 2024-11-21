@@ -4,10 +4,7 @@ package com.example.homiyummy.service;
 import com.example.homiyummy.model.dish.DishDTO;
 import com.example.homiyummy.model.dish.DishEntity;
 import com.example.homiyummy.model.dish.DishResponse;
-import com.example.homiyummy.model.menu.MenuDTO;
-import com.example.homiyummy.model.menu.MenuEntity;
-import com.example.homiyummy.model.menu.MenuResponse;
-import com.example.homiyummy.model.menu.MenuResponseByPeriod;
+import com.example.homiyummy.model.menu.*;
 import com.example.homiyummy.model.restaurant.RestaurantEntity;
 import com.example.homiyummy.repository.DishRepository;
 import com.example.homiyummy.repository.MenuRepository;
@@ -173,8 +170,30 @@ public class MenuService {
     public CompletableFuture<Boolean> deleteMenu(String uid, int id){
         return menuRepository.delete(uid, id);
     }
-    
-    
-    
-    
+
+    public MenuByIdResponse getMenuById(String uid, int menuId) {
+        CompletableFuture<MenuByIdResponse> futureMenu = new CompletableFuture<>();
+
+        menuRepository.findMenuById(uid, menuId, new MenuRepository.FindMenuByIdCallback() {
+
+            @Override
+            public void onSuccess(MenuByIdResponse menu) {
+                futureMenu.complete(menu);
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                futureMenu.completeExceptionally(exception);
+            }
+        });
+
+        try {
+            return futureMenu.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Error al obtener el menú por ID: " + e.getMessage(), e);
+        }
+    }
+
+
+
 }
