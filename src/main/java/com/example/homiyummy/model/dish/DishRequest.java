@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class DishDeleteRequest {
+public class DishRequest {
     private  String uid = "";
     private  int id = 0;
 }

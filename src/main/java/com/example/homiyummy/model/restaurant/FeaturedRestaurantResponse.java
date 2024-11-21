@@ -12,8 +12,10 @@ import lombok.Setter;
 public class FeaturedRestaurantResponse {
     private String uid = "";
     private String name = "";
+    private String food_type = "";
+    private String image = "";
     private String description = "";
     private String url = "";
-    private String image = "";
-    private String food_type = "";
+
+
 }

@@ -1,7 +1,6 @@
 package com.example.homiyummy.controller;
 
 import com.example.homiyummy.model.dish.*;
-import com.example.homiyummy.model.user.UserReadRequest;
 import com.example.homiyummy.service.DishService;
 import com.example.homiyummy.service.RestaurantService;
 import com.google.firebase.auth.FirebaseAuth;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -36,7 +34,6 @@ public class DishController {
     public ResponseEntity<String> create(@RequestBody DishDTO dishDTO){
 
         String uid = dishDTO.getUid();
-
         if(!uid.isEmpty()){
 
             CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -53,19 +50,15 @@ public class DishController {
                 return new ResponseEntity<>("{\"id\": 0}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            //System.out.println("Existe el restaurante? -> " + restaurantExists);
-
             if(restaurantExists){ // SI EXISTE SEGUIMOS
 
                 // 2º AVERIGÜAMOS EL ID DEL ÚLTIMO PLATO GUARDADO
                 int lastIdSaved = dishService.findLastId(uid);
                 int newDishId = lastIdSaved + 1;
-                //System.out.println("NEW DISH ID -1--------------> " + newDishId);
 
                 // 3º TRAMITAMOS EL GUARDADO DE DATOS
                 try{
                     DishResponse dishResponse = dishService.create(dishDTO, newDishId);
-                    //System.out.println("NEW DISH ID -2--------------> " + newDishId);
                     return new ResponseEntity<>("{\"id\": \"" + dishResponse.getId() + "\"}", HttpStatus.OK);
                 }
                 catch (RuntimeException e) {
@@ -105,8 +98,6 @@ public class DishController {
                 throw new RuntimeException(e);
             }
 
-            //System.out.println("Existe el restaurante? -> " + restaurantExists);
-
             if (restaurantExists) {
                 Boolean result = dishService.updateDish(dishDTO);
                 return new ResponseEntity<>("{\"change\": \"" + result + "\"}", HttpStatus.OK);
@@ -121,36 +112,13 @@ public class DishController {
     // ----------------------------------------------------------------------------------------------------------------
 
 
-    @PostMapping("/getAllDishes")
-    public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) { //-----------------------
-
-        String uid = userReadRequest.getUid(); // UID DEL RESTAURANTE
-
-        if (!uid.isEmpty()) {
-            //System.out.println("NEW DISH ID -11--------------> ");
-            return dishService.getAll(uid).thenApply(dishAllResponse ->
-                    new ResponseEntity<>(dishAllResponse, HttpStatus.OK));
-        }
-        else {
-            DishAllResponse dishAllResponse = new DishAllResponse();
-            dishAllResponse.setDishes(new ArrayList<>());
-            return CompletableFuture.completedFuture(
-                    new ResponseEntity<>(dishAllResponse, HttpStatus.NOT_FOUND));
-        }
-
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-
     @PostMapping("/delete")
-    public CompletableFuture<ResponseEntity<DishDeleteResponse>> delete(@RequestBody DishDeleteRequest dishDeleteRequest) { //-----------------------
+    public CompletableFuture<ResponseEntity<DishDeleteResponse>> delete(@RequestBody DishRequest dishRequest) {
 
-        String uid = dishDeleteRequest.getUid(); // UID DEL RESTAURANTE
-        int id = dishDeleteRequest.getId();
+        String uid = dishRequest.getUid(); // UID DEL RESTAURANTE
+        int id = dishRequest.getId();
 
         if (!uid.isEmpty()) {
-            //System.out.println("NEW DISH ID -11--------------> ");
             return dishService.deleteDish(uid, id).thenApply( success -> // DISHSERVICE DEVUELVE UN FUTURO  ¿?¿?¿¿   SE ESPERA A QUE SE RESUELVA PARA CONTINUAR CON SU RESULTADO
                     new ResponseEntity<>(new DishDeleteResponse(success), HttpStatus.OK));
         }
@@ -160,10 +128,27 @@ public class DishController {
             return CompletableFuture.completedFuture(
                     new ResponseEntity<>(dishDeleteResponse, HttpStatus.NOT_FOUND));
         }
-
     }
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    @PostMapping("/getById")
+    public CompletableFuture<ResponseEntity<DishResponse>> getById(@RequestBody DishRequest dishRequest) {
+
+        String uid = dishRequest.getUid(); // UID DEL RESTAURANTE
+        int id = dishRequest.getId();
+
+        if (!uid.isEmpty()) {
+            return dishService.getDish(uid, id).thenApply( success ->
+                    new ResponseEntity<>(success, HttpStatus.OK));
+        }
+        else {
+            DishResponse dishResponse = new DishResponse();
+            return CompletableFuture.completedFuture(
+                    new ResponseEntity<>(dishResponse, HttpStatus.NOT_FOUND));
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 }

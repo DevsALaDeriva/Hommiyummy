@@ -1,10 +1,6 @@
 package com.example.homiyummy.controller;
 
-import com.example.homiyummy.model.dish.DishDeleteRequest;
-import com.example.homiyummy.model.dish.DishDeleteResponse;
-import com.example.homiyummy.model.dish.DishResponse;
 import com.example.homiyummy.model.menu.*;
-import com.example.homiyummy.service.AuthService;
 import com.example.homiyummy.service.MenuService;
 import com.example.homiyummy.service.RestaurantService;
 import org.springframework.http.HttpStatus;

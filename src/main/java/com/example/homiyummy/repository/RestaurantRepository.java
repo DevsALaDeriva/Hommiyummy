@@ -1,6 +1,7 @@
 package com.example.homiyummy.repository;
 
 import com.example.homiyummy.model.dish.DishEntity;
+import com.example.homiyummy.model.menu.MenuEntity;
 import com.example.homiyummy.model.restaurant.RestaurantEntity;
 import com.example.homiyummy.model.restaurant.RestaurantLocation;
 import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
@@ -8,9 +9,7 @@ import com.example.homiyummy.model.restaurant.RestaurantResponse;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -160,20 +159,14 @@ public class RestaurantRepository {
                             callback.onFailure(databaseError.toException());
                         }
                     }));
-
                 }
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                    // TODO -----------------XXXXXXXX-------------
             }
         });
-
-
-
-
     }
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -297,7 +290,8 @@ public class RestaurantRepository {
                                     Float average_rate = restaurantSnapshot.child("average_rate").getValue(Float.class);
                                     RestaurantLocation location = restaurantSnapshot.child("location").getValue(RestaurantLocation.class);
 
-                                    // FALTAN LOS PLATOS
+
+                                    // AHORA LOS PLATOS
                                     //ArrayList<DishResponse> dishes = new ArrayList<>();
                                     ArrayList<DishEntity> dishes = new ArrayList<>();
                                     DataSnapshot dishesSnapshot = restaurantSnapshot.child("dishes/items");        // COMO YA TENEMOS EL DATASNAPSHOT PRINCIPAL, DESDE EL PODEMOS ACCEDER A "HIJOS" SIN TENER QUE VOLVER A HACER UNA PETICIÓN A LA BBDD
@@ -313,7 +307,6 @@ public class RestaurantRepository {
                                             ArrayList<String> allergens = new ArrayList<>();
 
                                             if(allergensSnapshot.exists()){
-
                                                 for(DataSnapshot allergen : allergensSnapshot.getChildren()){
                                                     allergens.add(allergen.getValue().toString());
                                                 }
@@ -339,9 +332,41 @@ public class RestaurantRepository {
                                         }
                                     }
 
+                                    // AHORA LOS MENÚS
+                                    ArrayList<MenuEntity> menus = new ArrayList<>();
+                                    DataSnapshot menusSnapshot = restaurantSnapshot.child("menus/items");
+
+                                    if(menusSnapshot.exists()){
+                                        for(DataSnapshot singleMenuSnapshot : menusSnapshot.getChildren()){
+                                            int date = singleMenuSnapshot.child("date").getValue(Integer.class);
+                                            int dessert = singleMenuSnapshot.child("dessert").getValue(Integer.class);
+                                            int id = singleMenuSnapshot.child("id").getValue(Integer.class);
+                                            float priceWithDessert = singleMenuSnapshot.child("priceWithDessert").getValue(Float.class);
+                                            float priceNoDessert = singleMenuSnapshot.child("priceNoDessert").getValue(Float.class);
+                                            ArrayList<Integer> firstCourses = new ArrayList<>();
+                                            DataSnapshot firstCoursesSnapshot = singleMenuSnapshot.child("firstCourse");
+                                            if(firstCoursesSnapshot.exists()){
+                                                for(DataSnapshot first : firstCoursesSnapshot.getChildren()){
+                                                    firstCourses.add(Integer.parseInt(first.getValue().toString()));
+                                                }
+                                            }
+                                            ArrayList<Integer> secondCourses = new ArrayList<>();
+                                            DataSnapshot secondCoursesSnapshot = singleMenuSnapshot.child("secondCourse");
+                                            if(secondCoursesSnapshot.exists()){
+                                                for(DataSnapshot second : secondCoursesSnapshot.getChildren()){
+                                                    secondCourses.add(Integer.parseInt(second.getValue().toString()));
+                                                }
+                                            }
+                                            MenuEntity menuEntity = new MenuEntity(id, date, firstCourses, secondCourses, dessert, priceWithDessert, priceNoDessert);
+                                            menus.add(menuEntity);
+                                        }
+
+
+                                    }
+
                                     RestaurantEntity restaurantEntity = new RestaurantEntity(
-                                            uid, email, name, description_mini, description, url, address, city,
-                                            phone, schedule, image, food_type, dishes, rate, average_rate, location);
+                                            uid, email, name, description_mini, description, url, address, city, phone,
+                                            schedule, image, food_type, dishes, rate, average_rate, location, menus);
 
 //                                    RestaurantResponse restaurantResponse = new RestaurantResponse();
 //                                    restaurantResponse.setUid(restaurantEntity.getUid());
@@ -421,12 +446,12 @@ public class RestaurantRepository {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                ArrayList<String> types = new ArrayList<>();
+                Set<String> types = new HashSet<>();
 
                 if(dataSnapshot.exists()){
-                    for(DataSnapshot individualRestaurantSnaphost : dataSnapshot.getChildren()){
-                        if(individualRestaurantSnaphost.child("food_type").exists()){
-                            String foodType = individualRestaurantSnaphost.child("food_type").getValue(String.class);
+                    for(DataSnapshot individualRestaurantSnapshott : dataSnapshot.getChildren()){
+                        if(individualRestaurantSnapshott.child("food_type").exists()){
+                            String foodType = individualRestaurantSnapshott.child("food_type").getValue(String.class);
                             types.add(foodType);
                         }
                     }
@@ -446,7 +471,7 @@ public class RestaurantRepository {
     // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnTypesGot{
-        void onTypesSuccess(ArrayList<String> types);
+        void onTypesSuccess(Set<String> types);
         void onTypesFailure(Exception exception);
     }
 

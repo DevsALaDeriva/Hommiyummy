@@ -2,6 +2,7 @@ package com.example.homiyummy.model.restaurant;
 
 import com.example.homiyummy.model.dish.DishEntity;
 import com.example.homiyummy.model.dish.DishResponse;
+import com.example.homiyummy.model.menu.MenuEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,4 +33,5 @@ public class RestaurantEntity {
     private Integer rate = 0;
     private Float average_price = 0.0F;
     RestaurantLocation location = new RestaurantLocation();
+    private ArrayList<MenuEntity> menus;
 }
