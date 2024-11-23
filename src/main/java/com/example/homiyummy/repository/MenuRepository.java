@@ -72,8 +72,8 @@ public class MenuRepository {
         MenuSaveEntity menuSaveEntity = new MenuSaveEntity(
                 menuEntity.getId(),
                 menuEntity.getDate(),
-                menuEntity.getFirstCourse(),
-                menuEntity.getSecondCourse(),
+                menuEntity.getFirst_course(),
+                menuEntity.getSecond_course(),
                 menuEntity.getDessert(),
                 menuEntity.getPriceWithDessert(),
                 menuEntity.getPriceNoDessert());
@@ -100,8 +100,8 @@ public class MenuRepository {
                                         savedMenuEntity.getUid(),
                                         savedMenuEntity.getId(),
                                         savedMenuEntity.getDate(),
-                                        savedMenuEntity.getFirstCourse(),
-                                        savedMenuEntity.getSecondCourse(),
+                                        savedMenuEntity.getFirst_course(),
+                                        savedMenuEntity.getSecond_course(),
                                         savedMenuEntity.getDessert(),
                                         savedMenuEntity.getPriceWithDessert(),
                                         savedMenuEntity.getPriceNoDessert());
@@ -148,8 +148,8 @@ public class MenuRepository {
                     MenuSaveEntity menuEntityToBeSaved = new MenuSaveEntity();
                     menuEntityToBeSaved.setId(menuEntity.getId());
                     menuEntityToBeSaved.setDate(menuEntity.getDate());
-                    menuEntityToBeSaved.setFirstCourse(menuEntity.getFirstCourse() != null ? menuEntity.getFirstCourse() : currentFirstCourse);
-                    menuEntityToBeSaved.setSecondCourse(menuEntity.getSecondCourse() != null ? menuEntity.getSecondCourse() : currentSecondCourse);
+                    menuEntityToBeSaved.setFirst_course(menuEntity.getFirst_course() != null ? menuEntity.getFirst_course() : currentFirstCourse);
+                    menuEntityToBeSaved.setSecond_course(menuEntity.getSecond_course() != null ? menuEntity.getSecond_course() : currentSecondCourse);
                     menuEntityToBeSaved.setDessert(menuEntity.getDessert());
                     menuEntityToBeSaved.setPriceWithDessert(menuEntity.getPriceWithDessert());
                     menuEntityToBeSaved.setPriceNoDessert(menuEntity.getPriceNoDessert());
@@ -239,8 +239,8 @@ public class MenuRepository {
                             menus.add(new MenuResponseByPeriod(
                                     menu.getId(),
                                     menu.getDate(),
-                                    menu.getFirstCourse(),
-                                    menu.getSecondCourse(),
+                                    menu.getFirst_course(),
+                                    menu.getSecond_course(),
                                     menu.getDessert(),
                                     menu.getPriceWithDessert(),
                                     menu.getPriceNoDessert()
@@ -275,8 +275,8 @@ public class MenuRepository {
                         callback.onSuccess(new MenuByIdResponse(
                                 menu.getId(),
                                 menu.getDate(),
-                                menu.getFirstCourse(),
-                                menu.getSecondCourse(),
+                                menu.getFirst_course(),
+                                menu.getSecond_course(),
                                 menu.getDessert(),
                                 menu.getPriceWithDessert(),
                                 menu.getPriceNoDessert()

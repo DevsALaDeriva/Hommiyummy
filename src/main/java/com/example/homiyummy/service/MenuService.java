@@ -61,19 +61,19 @@ public class MenuService {
 
         ArrayList<Integer> firstcourse = new ArrayList<>();
         ArrayList<Integer> secondcourse = new ArrayList<>();
-        firstcourse.add(menuDTO.getFirstCourse().get(0));
-        firstcourse.add(menuDTO.getFirstCourse().get(1));
+        firstcourse.add(menuDTO.getFirst_course().get(0));
+        firstcourse.add(menuDTO.getFirst_course().get(1));
         
-        secondcourse.add(menuDTO.getSecondCourse().get(0));
-        secondcourse.add(menuDTO.getSecondCourse().get(1));
+        secondcourse.add(menuDTO.getSecond_course().get(0));
+        secondcourse.add(menuDTO.getSecond_course().get(1));
         
 
         MenuEntity menuEntity = new MenuEntity();
         menuEntity.setUid(menuDTO.getUid());
         menuEntity.setId(newMenuId);
         menuEntity.setDate(menuDTO.getDate());
-        menuEntity.setFirstCourse(firstcourse);
-        menuEntity.setSecondCourse(secondcourse);
+        menuEntity.setFirst_course(firstcourse);
+        menuEntity.setSecond_course(secondcourse);
         menuEntity.setDessert(menuDTO.getDessert());
         menuEntity.setPriceWithDessert(menuDTO.getPriceWithDessert());
         menuEntity.setPriceNoDessert(menuDTO.getPriceNoDessert());
@@ -107,18 +107,18 @@ public class MenuService {
 
         ArrayList<Integer> firstcourse = new ArrayList<>();
         ArrayList<Integer> secondcourse = new ArrayList<>();
-        firstcourse.add(menuDTO.getFirstCourse().get(0));
-        firstcourse.add(menuDTO.getFirstCourse().get(1));
+        firstcourse.add(menuDTO.getFirst_course().get(0));
+        firstcourse.add(menuDTO.getFirst_course().get(1));
 
-        secondcourse.add(menuDTO.getSecondCourse().get(0));
-        secondcourse.add(menuDTO.getSecondCourse().get(1));
+        secondcourse.add(menuDTO.getSecond_course().get(0));
+        secondcourse.add(menuDTO.getSecond_course().get(1));
 
         MenuEntity menuEntity = new MenuEntity();
         menuEntity.setUid(menuDTO.getUid());
         menuEntity.setId(menuDTO.getId());
         menuEntity.setDate(menuDTO.getDate());
-        menuEntity.setFirstCourse(firstcourse);
-        menuEntity.setSecondCourse(secondcourse);
+        menuEntity.setFirst_course(firstcourse);
+        menuEntity.setSecond_course(secondcourse);
         menuEntity.setDessert(menuDTO.getDessert());
         menuEntity.setPriceWithDessert(menuDTO.getPriceWithDessert());
         menuEntity.setPriceNoDessert(menuDTO.getPriceNoDessert());

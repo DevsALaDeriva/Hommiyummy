@@ -16,8 +16,8 @@ public class MenuEntity {
     private String uid;
     private int id;
     private int date;
-    private ArrayList<Integer> firstCourse;
-    private ArrayList<Integer> secondCourse;
+    private ArrayList<Integer> first_course;
+    private ArrayList<Integer> second_course;
     private int dessert;
     private float priceWithDessert;
     private float priceNoDessert;
@@ -25,8 +25,8 @@ public class MenuEntity {
     public MenuEntity(int id, int date, ArrayList<Integer> firstCourse, ArrayList<Integer> secondCourse, int dessert, float priceWithDessert, float priceNoDessert){
         this.id = id;
         this.date = date;
-        this.firstCourse = firstCourse;
-        this.secondCourse = secondCourse;
+        this.first_course = firstCourse;
+        this.second_course = secondCourse;
         this.dessert = dessert;
         this.priceWithDessert = priceWithDessert;
         this.priceNoDessert = priceNoDessert;
