@@ -95,13 +95,13 @@ public class DishRepository {
                             DishEntity savedDishEntity = dataSnapshot.getValue(DishEntity.class);
                             if(savedDishEntity != null) {
                                 DishResponse dishResponse = new DishResponse(
-
                                         savedDishEntity.getId(),
                                         savedDishEntity.getName(),
                                         savedDishEntity.getIngredients(),
                                         savedDishEntity.getAllergens(),
                                         savedDishEntity.getImage(),
                                         savedDishEntity.getType());
+
                                 callback.onSuccess(dishResponse);
                             }
                             else {
@@ -146,6 +146,7 @@ public class DishRepository {
                     dishEntityToBeSaved.setName(dishEntity.getName());
                     dishEntityToBeSaved.setIngredients(dishEntity.getIngredients());
                     dishEntityToBeSaved.setAllergens(dishEntity.getAllergens());
+                    dishEntityToBeSaved.setImage(dishEntity.getImage());
                     dishEntityToBeSaved.setType(dishEntity.getType());
 
                     dishEntityToBeSaved.setAllergens(dishEntity.getAllergens() != null  ? dishEntity.getAllergens() : currentAllergens);

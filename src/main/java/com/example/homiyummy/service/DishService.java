@@ -88,6 +88,7 @@ public class DishService {
         dishEntity.setName(dishDTO.getName());
         dishEntity.setIngredients(dishDTO.getIngredients());
         dishEntity.setAllergens(dishDTO.getAllergens());
+        dishEntity.setImage(dishDTO.getImage());
         dishEntity.setType(dishDTO.getType());
 
         dishRepository.update(dishEntity, new DishRepository.UpdateDishCallback() {

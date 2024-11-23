@@ -169,14 +169,14 @@ public class RestaurantRepository {
         });
     }
 
-// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     public interface GetUpdateRestaurantCallback{
         void onSuccess(Boolean confirmation);
         void onFailure(Exception exception);
     }
 
-// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     // USADO PARA VER SI UN RESTAURANTE EXISTE
     public void exists(String uid, ExistsRestaurantCallback callback) {
@@ -193,7 +193,6 @@ public class RestaurantRepository {
                 else{
                     callback.onSuccess(false);
                 }
-
             }
 
             @Override
@@ -202,10 +201,8 @@ public class RestaurantRepository {
                 //future.completeExceptionally(error.toException());
             }
         });
-
-        //return future;
     }
-// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     public void findByUid(String uid, FindRestaurantCallback callback) {
 
@@ -238,6 +235,7 @@ public class RestaurantRepository {
         });
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
 
     public interface FindRestaurantCallback{
         void onSuccess(RestaurantReadResponse response);
@@ -249,7 +247,7 @@ public class RestaurantRepository {
         void onFailure(Exception exception);
     }
 
-// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     public void getAllRestaurantList(OnRestaurantListCallback callback){
 
@@ -287,9 +285,8 @@ public class RestaurantRepository {
                                     String image = restaurantSnapshot.child("image").getValue(String.class);
                                     String food_type = restaurantSnapshot.child("food_type").getValue(String.class);
                                     Integer rate = restaurantSnapshot.child("rate").getValue(Integer.class);
-                                    Float average_rate = restaurantSnapshot.child("average_rate").getValue(Float.class);
+                                    Float average_price = restaurantSnapshot.child("average_price").getValue(Float.class);
                                     RestaurantLocation location = restaurantSnapshot.child("location").getValue(RestaurantLocation.class);
-
 
                                     // AHORA LOS PLATOS
                                     //ArrayList<DishResponse> dishes = new ArrayList<>();
@@ -317,17 +314,6 @@ public class RestaurantRepository {
                                             // 1º CREAMOS EL DISH ENTITY PQ LO EXTRAEMOS DE LA BBDD
                                             DishEntity dishEntity = new DishEntity(id, dishName, ingredients, allergens, dishImage, dishType);
 
-                                            // 2º PASAMOS EL ENTITY A RESPONSE
-//                                            DishResponse dishResponse = new DishResponse(); // CREAMOS UN DISH RESPONSE PARA GUARDAR EL ENTITY
-//                                            dishResponse.setUid(dishEntity.getUid());
-//                                            dishResponse.setId(dishEntity.getId());
-//                                            dishResponse.setName(dishEntity.getName());
-//                                            dishResponse.setIngredients(dishEntity.getIngredients());
-//                                            dishResponse.setAllergens(dishEntity.getAllergens());
-//                                            dishResponse.setImage(dishEntity.getImage());
-//                                            dishResponse.setType(dishEntity.getType());
-
-                                            //dishes.add(dishResponse); // AÑADIMOS EL RESPONSE AL ARRAY
                                             dishes.add(dishEntity); // AÑADIMOS EL RESPONSE AL ARRAY
                                         }
                                     }
@@ -360,42 +346,16 @@ public class RestaurantRepository {
                                             MenuEntity menuEntity = new MenuEntity(id, date, firstCourses, secondCourses, dessert, priceWithDessert, priceNoDessert);
                                             menus.add(menuEntity);
                                         }
-
-
                                     }
 
                                     RestaurantEntity restaurantEntity = new RestaurantEntity(
                                             uid, email, name, description_mini, description, url, address, city, phone,
-                                            schedule, image, food_type, dishes, rate, average_rate, location, menus);
+                                            schedule, image, food_type, dishes, rate, average_price, location, menus);
 
-//                                    RestaurantResponse restaurantResponse = new RestaurantResponse();
-//                                    restaurantResponse.setUid(restaurantEntity.getUid());
-//                                    restaurantResponse.setEmail(restaurantEntity.getEmail());
-//                                    restaurantResponse.setName(restaurantEntity.getName());
-//                                    restaurantResponse.setDescription_mini(restaurantEntity.getDescription_mini());
-//                                    restaurantResponse.setDescription(restaurantEntity.getDescription());
-//                                    restaurantResponse.setUrl(restaurantEntity.getUrl());
-//                                    restaurantResponse.setAddress(restaurantEntity.getAddress());
-//                                    restaurantResponse.setCity(restaurantEntity.getCity());
-//                                    restaurantResponse.setPhone(restaurantEntity.getPhone());
-//                                    restaurantResponse.setSchedule(restaurantEntity.getSchedule());
-//                                    restaurantResponse.setImage(restaurantEntity.getImage());
-//                                    restaurantResponse.setFood_type(restaurantEntity.getFood_type());
-//                                    restaurantResponse.setDishes(restaurantEntity.getDishes());
-//                                    restaurantList.add(restaurantResponse);
                                       restaurantList.add(restaurantEntity);                                             // AÑADIMOS EL RESTAURANTE AL ARRAY
                                 }
 
-                                // Incrementar contador y verificar
-                                //int currentCount = contadorAtomic.incrementAndGet(); // AUMENTO EN 1 LOS RESTAURANTES PROCESADOS Y GUARDAMOS RESULTADO
-                                //System.out.println("Restaurantes procesados: " + currentCount + " de " + totalRestaurants);
-
                                 contados[0]++;
-                                //System.out.println("Restaurantes procesados: " + contados[0]++ + " de " + totalRestaurants);
-                                //contadorAtomic.incrementAndGet();
-                                //System.out.println("2 Total restaurantes: " + totalRestaurants);
-                                //System.out.println("2 Total contados: " + contadorAtomic.get());
-                                //System.out.println(contadorAtomic.get() == totalRestaurants);
 
                                 if (contados[0] == totalRestaurants) {                                                // SOLO SEGUIMOS CUANDO HEMOS AÑADIDO TODOS
                                     //System.out.println("-----------4-----------");
@@ -466,7 +426,6 @@ public class RestaurantRepository {
         });
 
     }
-
 
     // ----------------------------------------------------------------------------------------------------------------
 
