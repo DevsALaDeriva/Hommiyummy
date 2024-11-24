@@ -280,72 +280,131 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    public CompletableFuture<ArrayList<RestaurantWithSevenDaysMenusResponse>> getRestaurantsWithNextSevenDaysMenus(){
+//    public CompletableFuture<ArrayList<RestaurantWithSevenDaysMenusResponse>> getRestaurantsWithNextSevenDaysMenus(){
+//
+//        CompletableFuture<ArrayList<RestaurantWithSevenDaysMenusResponse>> futureList = new CompletableFuture<>();
+//
+//        restaurantRepository.getAllRestaurantList(new RestaurantRepository.OnRestaurantListCallback() {
+//            @Override
+//            public void onSearchingSuccess(ArrayList<RestaurantEntity> allRestaurantsInApp) {
+//
+//                ArrayList<RestaurantEntity> restaurantsWithNextSevenDaysMenusEntity = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
+//
+//                System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
+//
+//                for(RestaurantEntity restaurant : allRestaurantsInApp){
+//                    // TODO----------->: CREAR CONDICIÓN MENÚ LOS PRÓXIMOS 7 DÍAS
+//                    if(!restaurant.getMenus().isEmpty()) {
+//                        restaurantsWithNextSevenDaysMenusEntity.add(restaurant);
+//                    }
+//                }
+//
+//                //System.out.println("Nº de restaurantes con más de 6 menús: " + restaurantsWithSevenDaysMenusEntity.size());
+//
+//                if(restaurantsWithNextSevenDaysMenusEntity.isEmpty()){
+//                    System.out.println("-----X-----");
+//                    futureList.complete(new ArrayList<RestaurantWithSevenDaysMenusResponse>());                                      // MANDO UN OBJETO VACÍO
+//                }
+//                else {
+//                    ArrayList<RestaurantWithSevenDaysMenusResponse> restaurantsWithNextSevenDaysMenusResponse = new ArrayList<>();
+//
+//                    for(RestaurantEntity re : restaurantsWithNextSevenDaysMenusEntity){
+//
+//                        RestaurantWithSevenDaysMenusResponse restResponseToBeAdded = new RestaurantWithSevenDaysMenusResponse();
+//
+//                        restResponseToBeAdded.setName(re.getName());
+//                        restResponseToBeAdded.setDescription_mini(re.getDescription_mini());
+//                        restResponseToBeAdded.setUrl(re.getUrl());
+//                        restResponseToBeAdded.setAddress(re.getAddress());
+//                        restResponseToBeAdded.setPhone(re.getPhone());
+//                        restResponseToBeAdded.setSchedule(re.getSchedule());
+//                        restResponseToBeAdded.setFood_type(re.getFood_type());
+//                        restResponseToBeAdded.setImage(re.getImage());
+//                        restResponseToBeAdded.setRate(re.getRate());
+//                        restResponseToBeAdded.setAverage_price(re.getAverage_price());
+//                        restResponseToBeAdded.setLocation(re.getLocation());
+//
+////                        ArrayList<DishResponse> dishResponses = new ArrayList<>();
+////
+////                        for(DishEntity de : re.getDishes()){
+////
+////                            DishResponse dr = new DishResponse();
+////
+////                            dr.setId(de.getId());
+////                            dr.setName(de.getName());
+////                            dr.setIngredients(de.getIngredients());
+////                            dr.setAllergens(de.getAllergens());
+////                            dr.setImage(de.getImage());
+////                            dr.setType(de.getType());
+////
+////                            dishResponses.add(dr);
+////                        }
+//                        restaurantsWithNextSevenDaysMenusResponse.add(restResponseToBeAdded);
+//                    }
+//                    //System.out.println(restaurantsWithAtLeastSevenMenusResponse.size());
+//                    //for(RestaurantGetAllFormatResponse r : restaurantsWithAtLeastSevenMenusResponse){
+//                        //System.out.println("Name: " + r.getName());
+//                    //}
+//                    futureList.complete(restaurantsWithNextSevenDaysMenusResponse);
+//                }
+//            }
+//
+//            @Override
+//            public void onSearchingFailure(Exception exception) {
+//                // TODO -------> PREGUNTAR QUÉ QUIERE EL FRONTEND SI DA ERROR
+//            }
+//        });
+//
+//        return futureList;
+//    }
 
-        CompletableFuture<ArrayList<RestaurantWithSevenDaysMenusResponse>> futureList = new CompletableFuture<>();
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<ArrayList<RestaurantWithMenusResponse>> getAllRestaurantWithMenus(){
+
+        CompletableFuture<ArrayList<RestaurantWithMenusResponse>> futureList = new CompletableFuture<>();
 
         restaurantRepository.getAllRestaurantList(new RestaurantRepository.OnRestaurantListCallback() {
             @Override
             public void onSearchingSuccess(ArrayList<RestaurantEntity> allRestaurantsInApp) {
 
-                ArrayList<RestaurantEntity> restaurantsWithNextSevenDaysMenusEntity = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
+                ArrayList<RestaurantEntity> restaurantsWithMenus = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
 
                 System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
 
                 for(RestaurantEntity restaurant : allRestaurantsInApp){
-                    // TODO----------->: CREAR CONDICIÓN MENÚ LOS PRÓXIMOS 7 DÍAS
                     if(!restaurant.getMenus().isEmpty()) {
-                        restaurantsWithNextSevenDaysMenusEntity.add(restaurant);
+                        restaurantsWithMenus.add(restaurant);
                     }
                 }
 
-                //System.out.println("Nº de restaurantes con más de 6 menús: " + restaurantsWithSevenDaysMenusEntity.size());
-
-                if(restaurantsWithNextSevenDaysMenusEntity.isEmpty()){
+                if(restaurantsWithMenus.isEmpty()){
                     System.out.println("-----X-----");
-                    futureList.complete(new ArrayList<RestaurantWithSevenDaysMenusResponse>());                                      // MANDO UN OBJETO VACÍO
+                    futureList.complete(new ArrayList<RestaurantWithMenusResponse>());                                      // MANDO UN OBJETO VACÍO
                 }
                 else {
-                    ArrayList<RestaurantWithSevenDaysMenusResponse> restaurantsWithNextSevenDaysMenusResponse = new ArrayList<>();
+                    ArrayList<RestaurantWithMenusResponse> restsWithMenuResponse = new ArrayList<>();
 
-                    for(RestaurantEntity re : restaurantsWithNextSevenDaysMenusEntity){
+                    for(RestaurantEntity re : restaurantsWithMenus){
 
-                        RestaurantWithSevenDaysMenusResponse restResponseToBeAdded = new RestaurantWithSevenDaysMenusResponse();
+                        RestaurantWithMenusResponse restToBeAddedResponse = new RestaurantWithMenusResponse();
 
-                        restResponseToBeAdded.setName(re.getName());
-                        restResponseToBeAdded.setDescription_mini(re.getDescription_mini());
-                        restResponseToBeAdded.setUrl(re.getUrl());
-                        restResponseToBeAdded.setAddress(re.getAddress());
-                        restResponseToBeAdded.setPhone(re.getPhone());
-                        restResponseToBeAdded.setSchedule(re.getSchedule());
-                        restResponseToBeAdded.setFood_type(re.getFood_type());
-                        restResponseToBeAdded.setImage(re.getImage());
-                        restResponseToBeAdded.setRate(re.getRate());
-                        restResponseToBeAdded.setAverage_price(re.getAverage_price());
-                        restResponseToBeAdded.setLocation(re.getLocation());
+                        restToBeAddedResponse.setName(re.getName());
+                        restToBeAddedResponse.setDescription_mini(re.getDescription_mini());
+                        restToBeAddedResponse.setUrl(re.getUrl());
+                        restToBeAddedResponse.setAddress(re.getAddress());
+                        restToBeAddedResponse.setPhone(re.getPhone());
+                        restToBeAddedResponse.setSchedule(re.getSchedule());
+                        restToBeAddedResponse.setFood_type(re.getFood_type());
+                        restToBeAddedResponse.setImage(re.getImage());
+                        restToBeAddedResponse.setRate(re.getRate());
+                        restToBeAddedResponse.setAverage_price(re.getAverage_price());
+                        restToBeAddedResponse.setLocation(re.getLocation());
 
-//                        ArrayList<DishResponse> dishResponses = new ArrayList<>();
-//
-//                        for(DishEntity de : re.getDishes()){
-//
-//                            DishResponse dr = new DishResponse();
-//
-//                            dr.setId(de.getId());
-//                            dr.setName(de.getName());
-//                            dr.setIngredients(de.getIngredients());
-//                            dr.setAllergens(de.getAllergens());
-//                            dr.setImage(de.getImage());
-//                            dr.setType(de.getType());
-//
-//                            dishResponses.add(dr);
-//                        }
-                        restaurantsWithNextSevenDaysMenusResponse.add(restResponseToBeAdded);
+                        restsWithMenuResponse.add(restToBeAddedResponse);
                     }
-                    //System.out.println(restaurantsWithAtLeastSevenMenusResponse.size());
-                    //for(RestaurantGetAllFormatResponse r : restaurantsWithAtLeastSevenMenusResponse){
-                        //System.out.println("Name: " + r.getName());
-                    //}
-                    futureList.complete(restaurantsWithNextSevenDaysMenusResponse);
+
+                    futureList.complete(restsWithMenuResponse);
                 }
             }
 
@@ -358,6 +417,5 @@ public class RestaurantService {
         return futureList;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
 }
