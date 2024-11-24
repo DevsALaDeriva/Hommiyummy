@@ -125,17 +125,19 @@ public class RestaurantController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    // OBTIENE TODOS LOS RESTAURANTES
+    // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN 7 O MÁS MENÚS
     @PostMapping("/getAll")
-    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getALL() {
-        return restaurantService.getAllRestaurants()
+    public CompletableFuture<ResponseEntity<ArrayList<RestaurantWithMenusResponse>>> getALLFeaturedRestaurant() {
+        return restaurantService.getAllRestaurantWithMenus()
+                .thenApply(restaurants -> new ResponseEntity<>(restaurants, HttpStatus.OK))
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return new HashMap<>(); // Retorna un mapa vacío en caso de error
+                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
                     // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/getMenuByPeriod")
     public ResponseEntity<List<MenuResponseByPeriod>> getMenuByPeriod(@RequestBody MenuByPeriodRequest menuByPeriodRequest) {
@@ -172,19 +174,22 @@ public class RestaurantController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN 7 O MÁS MENÚS
-    @PostMapping("/featuredAll")
-    public CompletableFuture<ResponseEntity<ArrayList<RestaurantWithSevenDaysMenusResponse>>> getALLFeaturedRestaurant() {
-        return restaurantService.getRestaurantsWithNextSevenDaysMenus()
-                .thenApply(restaurants -> new ResponseEntity<>(restaurants, HttpStatus.OK))
+    // ----------------------------------------------------------------------------------------------------------------
+    // OBTIENE TODOS LOS RESTAURANTES ------->                SIN USO ACTUAL
+    // ----------------------------------------------------------------------------------------------------------------
+    @PostMapping("/getAllRestaurants")
+    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getAllRestaurants() {
+        return restaurantService.getAllRestaurants()
                 .exceptionally(ex -> {
                     ex.printStackTrace();
-                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                    return new HashMap<>(); // Retorna un mapa vacío en caso de error
                     // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+
 
 
 }
