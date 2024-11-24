@@ -1,5 +1,7 @@
 package com.example.homiyummy.service;
 
+import com.example.homiyummy.model.menu.MenuEntity;
+import com.example.homiyummy.model.menu.MenuReadResponse;
 import com.example.homiyummy.model.restaurant.*;
 import com.example.homiyummy.repository.RestaurantRepository;
 import com.google.firebase.database.FirebaseDatabase;
@@ -177,7 +179,7 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getAllRestaurants(){
+    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getAll(){
 
         CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> futureAllRestaurants = new CompletableFuture<>();
 
@@ -370,7 +372,7 @@ public class RestaurantService {
 
                 ArrayList<RestaurantEntity> restaurantsWithMenus = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
 
-                System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
+                //System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
 
                 for(RestaurantEntity restaurant : allRestaurantsInApp){
                     if(!restaurant.getMenus().isEmpty()) {
@@ -383,6 +385,8 @@ public class RestaurantService {
                     futureList.complete(new ArrayList<RestaurantWithMenusResponse>());                                      // MANDO UN OBJETO VACÍO
                 }
                 else {
+
+                    // TRANSFORMO LOS ENTITY EN RESPONSE
                     ArrayList<RestaurantWithMenusResponse> restsWithMenuResponse = new ArrayList<>();
 
                     for(RestaurantEntity re : restaurantsWithMenus){
@@ -401,6 +405,28 @@ public class RestaurantService {
                         restToBeAddedResponse.setAverage_price(re.getAverage_price());
                         restToBeAddedResponse.setLocation(re.getLocation());
 
+                        ArrayList<MenuReadResponse> menus = new ArrayList<>();
+                        for(MenuEntity menu : re.getMenus()){
+                            int id = menu.getId();
+                            int date = menu.getDate();
+                            ArrayList<Integer> first_course = new ArrayList<>();
+                            for(Integer first : menu.getFirst_course()){
+                                first_course.add(first);
+                            }
+
+                            ArrayList<Integer> second_course = new ArrayList<>();
+                            for(Integer second : menu.getSecond_course()){
+                                second_course.add(second);
+                            }
+                            int dessert = menu.getDessert();
+
+                            float priceWithDessert = menu.getPriceWithDessert();
+                            float priceWithNoDessert = menu.getPriceNoDessert();
+
+                            menus.add(new MenuReadResponse(id, date, first_course, second_course ,dessert, priceWithDessert, priceWithNoDessert));
+                        }
+
+                        restToBeAddedResponse.setMenus(menus);
                         restsWithMenuResponse.add(restToBeAddedResponse);
                     }
 
@@ -416,6 +442,16 @@ public class RestaurantService {
 
         return futureList;
     }
+
+
+//    public CompletableFuture<RestaurantGetByUrlResponse> getRestaurantByUrl(String url){
+//
+//        CompletableFuture<RestaurantGetByUrlResponse> restResponse = new CompletableFuture<>();
+//
+//
+//
+//
+//    }
 
 
 }

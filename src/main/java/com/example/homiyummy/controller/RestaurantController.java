@@ -173,13 +173,11 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-
-    // ----------------------------------------------------------------------------------------------------------------
     // OBTIENE TODOS LOS RESTAURANTES ------->                SIN USO ACTUAL
     // ----------------------------------------------------------------------------------------------------------------
     @PostMapping("/getAllRestaurants")
     public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getAllRestaurants() {
-        return restaurantService.getAllRestaurants()
+        return restaurantService.getAll()
                 .exceptionally(ex -> {
                     ex.printStackTrace();
                     return new HashMap<>(); // Retorna un mapa vacío en caso de error
@@ -188,9 +186,16 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-
-
-
+/*
+    @PostMapping("/getByURL")
+    public CompletableFuture<RestaurantGetByUrlResponse> getByUrl(RestaurantGetByUrlRequest request) {
+        return restaurantService.getRestaurantByUrl(request.getUrl())
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return new RestaurantGetByUrlResponse();
+                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
+                });
+    }*/
 
 }
 

@@ -6,6 +6,7 @@ import com.example.homiyummy.model.restaurant.RestaurantEntity;
 import com.example.homiyummy.model.restaurant.RestaurantLocation;
 import com.example.homiyummy.model.restaurant.RestaurantReadResponse;
 import com.example.homiyummy.model.restaurant.RestaurantResponse;
+import com.example.homiyummy.model.reviews.ReviewsEntity;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
 
@@ -288,8 +289,30 @@ public class RestaurantRepository {
                                     Float average_price = restaurantSnapshot.child("average_price").getValue(Float.class);
                                     RestaurantLocation location = restaurantSnapshot.child("location").getValue(RestaurantLocation.class);
 
+                                    rate = rate != null ? rate : 0;
+                                    average_price = average_price != null ? average_price : 0;
+
+
+                                    // PREPARANDO LAS REVIEWS-----------------------
+                                    //----------------------------------------------
+//                                    ArrayList<ReviewsEntity> reviewsList = new ArrayList<>();
+//                                    DataSnapshot reviewsSnapshot = restaurantSnapshot.child("reviews");
+//
+//                                    if(reviewsSnapshot.exists()){
+//                                        for(DataSnapshot singleReviewSnapshot : reviewsSnapshot.getChildren()){
+//                                            String reviewName = singleReviewSnapshot.child("name").getValue(String.class);
+//                                            String reviewText = singleReviewSnapshot.child("review").getValue(String.class);
+//                                            Integer reviewRate = singleReviewSnapshot.child("rate").getValue(Integer.class);
+//
+//                                            ReviewsEntity reviewsEntity = new ReviewsEntity(reviewName, reviewText, reviewRate);
+//
+//                                            reviewsList.add(reviewsEntity);
+//                                        }
+//                                    }
+                                    //----------------------------------------------
+
+
                                     // AHORA LOS PLATOS
-                                    //ArrayList<DishResponse> dishes = new ArrayList<>();
                                     ArrayList<DishEntity> dishes = new ArrayList<>();
                                     DataSnapshot dishesSnapshot = restaurantSnapshot.child("dishes/items");        // COMO YA TENEMOS EL DATASNAPSHOT PRINCIPAL, DESDE EL PODEMOS ACCEDER A "HIJOS" SIN TENER QUE VOLVER A HACER UNA PETICIÓN A LA BBDD
 
@@ -330,15 +353,17 @@ public class RestaurantRepository {
                                             float priceWithDessert = singleMenuSnapshot.child("priceWithDessert").getValue(Float.class);
                                             float priceNoDessert = singleMenuSnapshot.child("priceNoDessert").getValue(Float.class);
                                             ArrayList<Integer> firstCourses = new ArrayList<>();
-                                            DataSnapshot firstCoursesSnapshot = singleMenuSnapshot.child("firstCourse");
+                                            DataSnapshot firstCoursesSnapshot = singleMenuSnapshot.child("first_course");
                                             if(firstCoursesSnapshot.exists()){
+                                                //System.out.println("Los primeros existen");
                                                 for(DataSnapshot first : firstCoursesSnapshot.getChildren()){
                                                     firstCourses.add(Integer.parseInt(first.getValue().toString()));
                                                 }
                                             }
                                             ArrayList<Integer> secondCourses = new ArrayList<>();
-                                            DataSnapshot secondCoursesSnapshot = singleMenuSnapshot.child("secondCourse");
+                                            DataSnapshot secondCoursesSnapshot = singleMenuSnapshot.child("second_course");
                                             if(secondCoursesSnapshot.exists()){
+                                                //System.out.println("Los segundos existen");
                                                 for(DataSnapshot second : secondCoursesSnapshot.getChildren()){
                                                     secondCourses.add(Integer.parseInt(second.getValue().toString()));
                                                 }
@@ -358,11 +383,6 @@ public class RestaurantRepository {
                                 contados[0]++;
 
                                 if (contados[0] == totalRestaurants) {                                                // SOLO SEGUIMOS CUANDO HEMOS AÑADIDO TODOS
-                                    //System.out.println("-----------4-----------");
-                                    //System.out.println("Todos los restaurantes procesados. Llamando al callback."); // ---- Añadido para depuración
-                                    //RestaurantAllResponse restaurantAllResponse = new RestaurantAllResponse(); // CREO EL OBJETO RESPUESTA QUE EL FRONTEND ENVIARÁ
-                                    //restaurantAllResponse.setRestaurantResponses(restaurantList);
-                                    //callback.onSearchingSuccess(restaurantAllResponse);
                                     callback.onSearchingSuccess(restaurantList);
                                 }
                             }

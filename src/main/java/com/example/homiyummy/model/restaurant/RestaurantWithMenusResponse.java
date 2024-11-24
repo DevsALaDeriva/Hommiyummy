@@ -1,9 +1,12 @@
 package com.example.homiyummy.model.restaurant;
 
+import com.example.homiyummy.model.menu.MenuReadResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +25,5 @@ public class RestaurantWithMenusResponse {
     private Integer rate = 0;
     private Float average_price = 0.0F;
     private RestaurantLocation location = new RestaurantLocation(0.0F, 0.0F);
+    private ArrayList<MenuReadResponse> menus = new ArrayList<>();
 }
