@@ -15,8 +15,8 @@ public class MenuResponse {
     private String uid;
     private int id; 
     private int date;
-    private ArrayList<Integer> firstCourse;
-    private ArrayList<Integer> secondCourse;
+    private ArrayList<Integer> first_course;
+    private ArrayList<Integer> second_course;
     private int dessert;
     private float priceWithDessert;
     private float priceNoDessert;
