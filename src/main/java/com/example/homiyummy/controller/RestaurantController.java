@@ -110,22 +110,22 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+ // YA NO LO NECESITAMOS - ESPERAR PARA ELMINARLO
 
-    // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN 7 O MÁS MENÚS
-    @PostMapping("/getTypeFood")
-    public CompletableFuture<ResponseEntity<Map<String, Set<String>>>> getAllTypes() {
-        return restaurantService.getFoodTypes()
-                .thenApply(types -> new ResponseEntity<>(types, HttpStatus.OK))
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
-                });
-    }
+//    @PostMapping("/getTypeFood")
+//    public CompletableFuture<ResponseEntity<Map<String, Set<String>>>> getAllTypes() {
+//        return restaurantService.getFoodTypes()
+//                .thenApply(types -> new ResponseEntity<>(types, HttpStatus.OK))
+//                .exceptionally(ex -> {
+//                    ex.printStackTrace();
+//                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
+//                });
+//    }
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN 7 O MÁS MENÚS
+    // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN MENÚS
     @PostMapping("/getAll")
     public CompletableFuture<ResponseEntity<ArrayList<RestaurantWithMenusResponse>>> getALLFeaturedRestaurant() {
         return restaurantService.getAllRestaurantWithMenus()
@@ -157,20 +157,19 @@ public class RestaurantController {
         }
     }
 
-
     // ----------------------------------------------------------------------------------------------------------------
-
-    // OBTINE EL RESTAURANTE DESTACADO ENTRE LOS QUE TIENEN 7 O MÁS MENÚS
-    @PostMapping("/featured")
-    public CompletableFuture<ResponseEntity<FeaturedRestaurantResponse>> getOneFeaturedRestaurant() {
-        return restaurantService.getTheOneFeaturedRestaurant()
-                .thenApply(chosenRestaurant -> new ResponseEntity<>(chosenRestaurant, HttpStatus.OK))
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
-                });
-    }
+// YA NO LO NECESITAMOS - ESPERAR PARA ELMINARLO
+    // OBTINE EL RESTAURANTE DESTACADO ENTRE LOS QUE TIENEN MENÚS
+//    @PostMapping("/featured")
+//    public CompletableFuture<ResponseEntity<FeaturedRestaurantResponse>> getOneFeaturedRestaurant() {
+//        return restaurantService.getTheOneFeaturedRestaurant()
+//                .thenApply(chosenRestaurant -> new ResponseEntity<>(chosenRestaurant, HttpStatus.OK))
+//                .exceptionally(ex -> {
+//                    ex.printStackTrace();
+//                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
+//                });
+//    }
 
     // ----------------------------------------------------------------------------------------------------------------
     // OBTIENE TODOS LOS RESTAURANTES ------->                SIN USO ACTUAL
@@ -186,16 +185,18 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-/*
+
     @PostMapping("/getByURL")
-    public CompletableFuture<RestaurantGetByUrlResponse> getByUrl(RestaurantGetByUrlRequest request) {
+    public CompletableFuture<RestaurantGetByUrlResponse> getByUrl(@RequestBody RestaurantGetByUrlRequest request) {
+        System.out.println("La URL en controller es: " + request.getUrl());
+
         return restaurantService.getRestaurantByUrl(request.getUrl())
                 .exceptionally(ex -> {
                     ex.printStackTrace();
                     return new RestaurantGetByUrlResponse();
                     // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
-    }*/
+    }
 
 }
 

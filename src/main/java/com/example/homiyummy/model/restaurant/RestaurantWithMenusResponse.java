@@ -18,9 +18,11 @@ public class RestaurantWithMenusResponse {
     private String description_mini = "";
     private String url = "";
     private String address = "";
+    private String city = "";
     private String phone = "";
     private String schedule = "";
     private String food_type = "";
+    private String description = "";
     private String image = "";
     private Integer rate = 0;
     private Float average_price = 0.0F;

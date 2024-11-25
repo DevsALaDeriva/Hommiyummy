@@ -2,7 +2,10 @@ package com.example.homiyummy.service;
 
 import com.example.homiyummy.model.menu.MenuEntity;
 import com.example.homiyummy.model.menu.MenuReadResponse;
+import com.example.homiyummy.model.menu.MenuResponse;
 import com.example.homiyummy.model.restaurant.*;
+import com.example.homiyummy.model.reviews.ReviewsEntity;
+import com.example.homiyummy.model.reviews.ReviewsResponse;
 import com.example.homiyummy.repository.RestaurantRepository;
 import com.google.firebase.database.FirebaseDatabase;
 import org.springframework.stereotype.Service;
@@ -158,24 +161,26 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    public CompletableFuture<Map<String,Set<String>>> getFoodTypes() {
-        CompletableFuture<Map<String,Set<String>>> futureTypes = new CompletableFuture<>();
-        Map<String, Set<String>> object = new HashMap<>();
-        restaurantRepository.getAllFoodTypes(new RestaurantRepository.OnTypesGot() {
-            @Override
-            public void onTypesSuccess(Set<String> types) {
-                object.put("food_type", types);
-                futureTypes.complete(object);
-            }
+    // NO LO NECESITAMOS YA -- ESPERAR ANTES DE ELIMINAR
 
-            @Override
-            public void onTypesFailure(Exception exception) {
-                //futureTypes.complete(exception);
-                // TODO -------> PREGUNTAR QUÉ QUIERE EL FRONTEND SI DA ERROR
-            }
-        });
-        return futureTypes;
-    }
+//    public CompletableFuture<Map<String,Set<String>>> getFoodTypes() {
+//        CompletableFuture<Map<String,Set<String>>> futureTypes = new CompletableFuture<>();
+//        Map<String, Set<String>> object = new HashMap<>();
+//        restaurantRepository.getAllFoodTypes(new RestaurantRepository.OnTypesGot() {
+//            @Override
+//            public void onTypesSuccess(Set<String> types) {
+//                object.put("food_type", types);
+//                futureTypes.complete(object);
+//            }
+//
+//            @Override
+//            public void onTypesFailure(Exception exception) {
+//                //futureTypes.complete(exception);
+//                // TODO -------> PREGUNTAR QUÉ QUIERE EL FRONTEND SI DA ERROR
+//            }
+//        });
+//        return futureTypes;
+//    }
 
     // ----------------------------------------------------------------------------------------------------------------
 
@@ -397,9 +402,11 @@ public class RestaurantService {
                         restToBeAddedResponse.setDescription_mini(re.getDescription_mini());
                         restToBeAddedResponse.setUrl(re.getUrl());
                         restToBeAddedResponse.setAddress(re.getAddress());
+                        restToBeAddedResponse.setCity(re.getCity());
                         restToBeAddedResponse.setPhone(re.getPhone());
                         restToBeAddedResponse.setSchedule(re.getSchedule());
                         restToBeAddedResponse.setFood_type(re.getFood_type());
+                        restToBeAddedResponse.setDescription(re.getDescription());
                         restToBeAddedResponse.setImage(re.getImage());
                         restToBeAddedResponse.setRate(re.getRate());
                         restToBeAddedResponse.setAverage_price(re.getAverage_price());
@@ -443,15 +450,64 @@ public class RestaurantService {
         return futureList;
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
 
-//    public CompletableFuture<RestaurantGetByUrlResponse> getRestaurantByUrl(String url){
-//
-//        CompletableFuture<RestaurantGetByUrlResponse> restResponse = new CompletableFuture<>();
-//
-//
-//
-//
-//    }
+    public CompletableFuture<RestaurantGetByUrlResponse> getRestaurantByUrl(String url){
+        System.out.println("La URL en el service: " + url);
+
+        CompletableFuture<RestaurantGetByUrlResponse> futureResponse = new CompletableFuture<>();
+
+        restaurantRepository.getByUrl(url, new RestaurantRepository.OnRestByUrlGot() {
+            @Override
+            public void onSearchingSuccess(RestaurantGetByUrlEntity restaurantGetByUrlEntity) {
+
+                String uid = restaurantGetByUrlEntity.getUid();
+                String name = restaurantGetByUrlEntity.getName();
+                String food_type = restaurantGetByUrlEntity.getFood_type();
+                String address = restaurantGetByUrlEntity.getAddress();
+                String image = restaurantGetByUrlEntity.getImage();
+                String phone = restaurantGetByUrlEntity.getPhone();
+                String schedule = restaurantGetByUrlEntity.getSchedule();
+                Integer rate = restaurantGetByUrlEntity.getRate();
+
+                ArrayList<ReviewsResponse> reviews = new ArrayList<>();
+                for(ReviewsEntity reviewsEntity : restaurantGetByUrlEntity.getReviews()){
+                    ReviewsResponse revResponse = new ReviewsResponse();
+                    revResponse.setName(reviewsEntity.getName());
+                    revResponse.setReview(reviewsEntity.getReview());
+                    revResponse.setRate(reviewsEntity.getRate());
+                    reviews.add(revResponse);
+                }
+
+                ArrayList<MenuReadResponse> menus = new ArrayList<>();
+                for(MenuEntity menuEntity : restaurantGetByUrlEntity.getMenus()){
+                    MenuReadResponse menu = new MenuReadResponse();
+                    menu.setId(menuEntity.getId());
+                    menu.setDate(menuEntity.getDate());
+                    menu.setFirst_course(menuEntity.getFirst_course());
+                    menu.setSecond_course(menuEntity.getSecond_course());
+                    menu.setDessert(menuEntity.getDessert());
+                    menu.setPriceWithDessert(menuEntity.getPriceWithDessert());
+                    menu.setPriceNoDessert(menuEntity.getPriceNoDessert());
+                    menus.add(menu);
+                }
+                RestaurantGetByUrlResponse restaurantGetByUrlResponse = new RestaurantGetByUrlResponse(uid, name, food_type,
+                        address, image, phone, schedule, rate, reviews, menus);
+
+                futureResponse.complete(restaurantGetByUrlResponse);
+            }
+
+            @Override
+            public void onSearchingFailure(Exception exception) {
+                futureResponse.completeExceptionally(exception);
+            }
+        });
+
+        return futureResponse;
+
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 
 }

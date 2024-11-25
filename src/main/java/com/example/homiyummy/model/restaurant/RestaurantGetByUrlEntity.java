@@ -1,8 +1,7 @@
 package com.example.homiyummy.model.restaurant;
 
 import com.example.homiyummy.model.menu.MenuEntity;
-import com.example.homiyummy.model.menu.MenuReadResponse;
-import com.example.homiyummy.model.menu.MenuResponse;
+import com.example.homiyummy.model.reviews.ReviewsEntity;
 import com.example.homiyummy.model.reviews.ReviewsResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,12 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class RestaurantGetByUrlResponse {
+
+public class RestaurantGetByUrlEntity {
     private String uid = "";
     private String name = "";
     private String food_type = "";
@@ -24,6 +23,9 @@ public class RestaurantGetByUrlResponse {
     private String phone = "";
     private String schedule = "";
     private Integer rate = 0;
-    private ArrayList<ReviewsResponse> reviews = new ArrayList<>();
-    private ArrayList<MenuReadResponse> menus = new ArrayList<>();
+    private ArrayList<ReviewsEntity> reviews = new ArrayList<>();
+    private ArrayList<MenuEntity> menus = new ArrayList<>();
+
+
 }
+
