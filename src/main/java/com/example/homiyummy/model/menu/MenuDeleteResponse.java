@@ -10,5 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuDeleteResponse {
-    private  boolean done;
+    private  boolean delete;
 }
