@@ -386,7 +386,6 @@ public class RestaurantService {
                 }
 
                 if(restaurantsWithMenus.isEmpty()){
-                    System.out.println("-----X-----");
                     futureList.complete(new ArrayList<RestaurantWithMenusResponse>());                                      // MANDO UN OBJETO VACÍO
                 }
                 else {
@@ -453,7 +452,7 @@ public class RestaurantService {
     // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<RestaurantGetByUrlResponse> getRestaurantByUrl(String url){
-        System.out.println("La URL en el service: " + url);
+        //System.out.println("La URL en el service: " + url);
 
         CompletableFuture<RestaurantGetByUrlResponse> futureResponse = new CompletableFuture<>();
 
@@ -469,6 +468,8 @@ public class RestaurantService {
                 String phone = restaurantGetByUrlEntity.getPhone();
                 String schedule = restaurantGetByUrlEntity.getSchedule();
                 Integer rate = restaurantGetByUrlEntity.getRate();
+                String description = restaurantGetByUrlEntity.getDescription();
+                String city = restaurantGetByUrlEntity.getCity();
 
                 ArrayList<ReviewsResponse> reviews = new ArrayList<>();
                 for(ReviewsEntity reviewsEntity : restaurantGetByUrlEntity.getReviews()){
@@ -492,7 +493,7 @@ public class RestaurantService {
                     menus.add(menu);
                 }
                 RestaurantGetByUrlResponse restaurantGetByUrlResponse = new RestaurantGetByUrlResponse(uid, name, food_type,
-                        address, image, phone, schedule, rate, reviews, menus);
+                        address, image, phone, schedule, rate, description, city, reviews, menus);
 
                 futureResponse.complete(restaurantGetByUrlResponse);
             }

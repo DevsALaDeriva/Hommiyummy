@@ -24,6 +24,8 @@ public class RestaurantGetByUrlResponse {
     private String phone = "";
     private String schedule = "";
     private Integer rate = 0;
+    private String description = "";
+    private String city = "";
     private ArrayList<ReviewsResponse> reviews = new ArrayList<>();
     private ArrayList<MenuReadResponse> menus = new ArrayList<>();
 }

@@ -188,8 +188,6 @@ public class RestaurantController {
 
     @PostMapping("/getByURL")
     public CompletableFuture<RestaurantGetByUrlResponse> getByUrl(@RequestBody RestaurantGetByUrlRequest request) {
-        System.out.println("La URL en controller es: " + request.getUrl());
-
         return restaurantService.getRestaurantByUrl(request.getUrl())
                 .exceptionally(ex -> {
                     ex.printStackTrace();
@@ -197,6 +195,10 @@ public class RestaurantController {
                     // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+
 
 }
 

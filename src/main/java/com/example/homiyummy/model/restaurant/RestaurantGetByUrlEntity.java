@@ -23,8 +23,11 @@ public class RestaurantGetByUrlEntity {
     private String phone = "";
     private String schedule = "";
     private Integer rate = 0;
+    private String description = "";
+    private String city = "";
     private ArrayList<ReviewsEntity> reviews = new ArrayList<>();
     private ArrayList<MenuEntity> menus = new ArrayList<>();
+
 
 
 }

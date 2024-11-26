@@ -415,8 +415,7 @@ public class RestaurantRepository {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-
-    // NO LO NECESITAMOS YA -- ESPERAR ANTES DE ELIMINAR
+    // NO LO NECESITAMOS YA -- ESPERAR ANTES DE ELIMINAR --------------------------------------------------------------
 
 //    public void getAllFoodTypes (OnTypesGot callback){
 //
@@ -459,7 +458,7 @@ public class RestaurantRepository {
 
     public void getByUrl(String url, OnRestByUrlGot callback ){
         DatabaseReference restaurantsRef = databaseReference.child("restaurants");
-        System.out.println("La URL en el repo es: " + url);
+        //System.out.println("La URL en el repo es: " + url);
 
         restaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -471,7 +470,7 @@ public class RestaurantRepository {
                         String urlSnapshot = singleRestaurantSnapshot.child("url").getValue(String.class);
 
                         if(urlSnapshot.equals(url)){
-                            System.out.println("La URL que llega es igual a una existente en bbdd: " + url);
+                            //System.out.println("La URL que llega es igual a una existente en bbdd: " + url);
                             // 1º OBTENEMOS CAMPOS EN FORMATO STRING E INT DEL RESTAURANTE
                             String uid = singleRestaurantSnapshot.getKey();
                             String name = singleRestaurantSnapshot.child("name").getValue(String.class);
@@ -482,6 +481,8 @@ public class RestaurantRepository {
                             String schedule = singleRestaurantSnapshot.child("schedule").getValue(String.class);
                             Integer rate = singleRestaurantSnapshot.child("rate").getValue(Integer.class);
                             rate = rate != null ? rate : 0;
+                            String description = singleRestaurantSnapshot.child("description").getValue(String.class);
+                            String city = singleRestaurantSnapshot.child("city").getValue(String.class);
 
                             // 2º OBTENEMOS EL CAMPO REVIEWS QUE ES DEL TIPO ARRAYLIST
                             ArrayList<ReviewsEntity> reviewsEntityList = new ArrayList<>();
@@ -529,7 +530,7 @@ public class RestaurantRepository {
                             }
 
                             RestaurantGetByUrlEntity entity = new RestaurantGetByUrlEntity(uid, name, foodType,
-                                    address, image, phone, schedule, rate, reviewsEntityList, menuEntityList);
+                                    address, image, phone, schedule, rate, description, city, reviewsEntityList, menuEntityList);
 
                             callback.onSearchingSuccess(entity);
                         }

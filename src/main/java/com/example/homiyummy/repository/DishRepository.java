@@ -62,9 +62,9 @@ public class DishRepository {
 
         String uid = dishEntity.getUid();                                                                       // UID DEL RESTAURANTE QUE GUARDA EL PLATO
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
-        DatabaseReference dishesRef = restaurantRef.child("dishes");                                   // NODO DONDE SE GUARDAN LOS PLATOS DEL RESTAURANTE
-        DatabaseReference counterRef = dishesRef.child("counter");                                     // NODO DONDE ESTÁ EL CONTADOR DE PLATOS DEL RESTAURANTE
-        DatabaseReference itemsRef = dishesRef.child("items");
+        DatabaseReference allDishesRef = restaurantRef.child("dishes");                                   // NODO DONDE SE GUARDAN LOS PLATOS DEL RESTAURANTE
+        DatabaseReference counterRef = allDishesRef.child("counter");                                     // NODO DONDE ESTÁ EL CONTADOR DE PLATOS DEL RESTAURANTE
+        DatabaseReference itemsRef = allDishesRef.child("items");
 
         DatabaseReference dishRef = itemsRef.child(String.valueOf(dishEntity.getId()));                        // CREAMOS EL NODO DEL NUEVO PLATO CON SU PROPIO ID
 
