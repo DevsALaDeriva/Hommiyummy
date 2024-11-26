@@ -122,7 +122,7 @@ public class MenuController {
         }
         else {
             MenuDeleteResponse menuDeleteResponse = new MenuDeleteResponse();
-            menuDeleteResponse.setDone(false);
+            menuDeleteResponse.setDelete(false);
             return CompletableFuture.completedFuture(
                     new ResponseEntity<>(menuDeleteResponse, HttpStatus.NOT_FOUND));
         }
