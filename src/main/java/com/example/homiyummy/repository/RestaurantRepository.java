@@ -80,82 +80,68 @@ public class RestaurantRepository {
 
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(restaurantEntity.getUid());
 
-        RestaurantResponse restaurantResponse = new RestaurantResponse();
-
         restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 if(dataSnapshot.exists()){
-                    // GUARDAMOS LOS DATOS ACTUALES GUARDADOS EN BASE DE DATOS
-                    String currentEmail = dataSnapshot.child("email").getValue(String.class);
-                    String currentName = dataSnapshot.child("name").getValue(String.class);
-                    String currentDescriptionMini = dataSnapshot.child("description_mini").getValue(String.class);
-                    String currentDescription = dataSnapshot.child("description").getValue(String.class);
-                    String currentUrl = dataSnapshot.child("url").getValue(String.class);
-                    String currentAddress = dataSnapshot.child("address").getValue(String.class);
-                    String currentCity = dataSnapshot.child("city").getValue(String.class);
-                    String currentPhone = dataSnapshot.child("phone").getValue(String.class);
-                    String currentSchedule = dataSnapshot.child("schedule").getValue(String.class);
-                    String currentImage = dataSnapshot.child("image").getValue(String.class);
-                    String currentFoodType = dataSnapshot.child("food_type").getValue(String.class);
-                    RestaurantLocation currentLocation = dataSnapshot.child("location").getValue(RestaurantLocation.class);
 
+                    Map<String, Object> updates = new HashMap<>();
+                    // USAMOS UN MAPA PQ QUEREMOS CONSERVAR PROPIEDADES QUE NO SE INCLUYEN EN EL OBJETO QUE LLEGA
+                    // ESTO CONSERVA EL VALOR DE LOS NODOS COMPLEJOS. 1º COGEMOS SU VALOR 2º LO GUARDAMOS EN EL MAPA
+                    if (dataSnapshot.child("dishes").exists()) {
+                        updates.put("dishes", dataSnapshot.child("dishes").getValue());
+                    }
+                    if (dataSnapshot.child("menus").exists()) {
+                        updates.put("menus", dataSnapshot.child("menus").getValue());
+                    }
+                    if (dataSnapshot.child("orders").exists()) {
+                        updates.put("orders", dataSnapshot.child("orders").getValue());
+                    }
 
-                    RestaurantEntity restaurantEntityToBeSaved = new RestaurantEntity();
+                    // SOLO METEMOS EN EL MAPA LAS PROPIEDADES QUE CONTIENEN ALGO EN EL OBJETO restaurantEntity QUE LLEGA
+                    if(restaurantEntity.getEmail() != null && !restaurantEntity.getEmail().isEmpty())
+                        updates.put("email", restaurantEntity.getEmail());
+                    if (restaurantEntity.getName() != null && !restaurantEntity.getName().isEmpty())
+                        updates.put("name", restaurantEntity.getName());
+                    if (restaurantEntity.getDescription_mini() != null && !restaurantEntity.getDescription_mini().isEmpty())
+                        updates.put("description_mini", restaurantEntity.getDescription_mini());
+                    if (restaurantEntity.getDescription() != null && !restaurantEntity.getDescription().isEmpty())
+                        updates.put("description", restaurantEntity.getDescription());
+                    if (restaurantEntity.getUrl() != null && !restaurantEntity.getUrl().isEmpty())
+                        updates.put("url", restaurantEntity.getUrl());
+                    if (restaurantEntity.getAddress() != null && !restaurantEntity.getAddress().isEmpty())
+                        updates.put("address", restaurantEntity.getAddress());
+                    if (restaurantEntity.getCity() != null && !restaurantEntity.getCity().isEmpty())
+                        updates.put("city", restaurantEntity.getCity());
+                    if (restaurantEntity.getPhone() != null && !restaurantEntity.getPhone().isEmpty())
+                        updates.put("phone", restaurantEntity.getPhone());
+                    if (restaurantEntity.getSchedule() != null && !restaurantEntity.getSchedule().isEmpty())
+                        updates.put("schedule", restaurantEntity.getSchedule());
+                    if (restaurantEntity.getImage() != null && !restaurantEntity.getImage().isEmpty())
+                        updates.put("image", restaurantEntity.getImage());
+                    if (restaurantEntity.getFood_type() != null && !restaurantEntity.getFood_type().isEmpty())
+                        updates.put("food_type", restaurantEntity.getFood_type());
+                    if (restaurantEntity.getLocation() != null)
+                        updates.put("location", restaurantEntity.getLocation());
 
-                    restaurantEntityToBeSaved.setName(restaurantEntity.getName() != null && !restaurantEntity.getName().isEmpty() ? restaurantEntity.getName() : currentName);
-                    restaurantEntityToBeSaved.setDescription_mini(restaurantEntity.getDescription_mini() != null && !restaurantEntity.getDescription_mini().isEmpty() ? restaurantEntity.getDescription_mini() : currentDescriptionMini);
-                    restaurantEntityToBeSaved.setDescription(restaurantEntity.getDescription() != null && !restaurantEntity.getDescription().isEmpty() ? restaurantEntity.getDescription() : currentDescription);
-                    restaurantEntityToBeSaved.setUrl(restaurantEntity.getUrl() != null && !restaurantEntity.getUrl().isEmpty() ? restaurantEntity.getUrl() : currentUrl);
-                    restaurantEntityToBeSaved.setAddress(restaurantEntity.getAddress() != null && !restaurantEntity.getAddress().isEmpty() ? restaurantEntity.getAddress() : currentAddress);
-                    restaurantEntityToBeSaved.setCity(restaurantEntity.getCity() != null && !restaurantEntity.getCity().isEmpty() ? restaurantEntity.getCity() : currentCity);
-                    restaurantEntityToBeSaved.setPhone(restaurantEntity.getPhone() != null && !restaurantEntity.getPhone().isEmpty() ? restaurantEntity.getPhone() : currentPhone);
-                    restaurantEntityToBeSaved.setSchedule(restaurantEntity.getSchedule() != null && !restaurantEntity.getSchedule().isEmpty() ? restaurantEntity.getSchedule() : currentSchedule);
-                    restaurantEntityToBeSaved.setImage(restaurantEntity.getImage() != null && !restaurantEntity.getImage().isEmpty() ? restaurantEntity.getImage() : currentImage);
-                    restaurantEntityToBeSaved.setFood_type(restaurantEntity.getFood_type() != null && !restaurantEntity.getFood_type().isEmpty() ? restaurantEntity.getFood_type() : currentFoodType);
-                    restaurantEntityToBeSaved.setLocation(restaurantEntity.getLocation() != null ? restaurantEntity.getLocation() : currentLocation);
-
-                    // EL VALOR PARA EMAIL SE MANTIENE EL QUE HABÍA GUARDADO
-                    restaurantEntityToBeSaved.setEmail(currentEmail);
-
-                    restaurantRef.setValue(restaurantEntityToBeSaved, ((databaseError, databaseReference) -> {
-                        if(databaseError == null) {
-                            restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                    RestaurantResponse rr = dataSnapshot.getValue(RestaurantResponse.class);
-
-                                    if(!rr.getName().isEmpty() || !rr.getAddress().isEmpty() || !rr.getCity().isEmpty()
-                                            || !rr.getPhone().isEmpty() || !rr.getSchedule().isEmpty()
-                                            || !rr.getImage().isEmpty() || !rr.getFood_type().isEmpty()){
-                                        //System.out.println("Restaurante actualizado.");
-                                        callback.onSuccess(true);
-                                    }
-                                    else{
-                                        callback.onSuccess(false);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    //System.out.println("No ha sido posible confirmar la actualización de los datos del restaurante.");
-                                    callback.onFailure(databaseError.toException());
-                                }
-                            });
-                        }
-                        else{
-                            //System.out.println("No ha sido posible la actualización del restaurante.");
+                    // Solo actualizamos las propiedades específicas
+                    restaurantRef.updateChildren(updates, (databaseError, databaseReference) -> {
+                        if (databaseError == null) {
+                            callback.onSuccess(true);
+                        } else {
                             callback.onFailure(databaseError.toException());
                         }
-                    }));
+                    });
+                } else {
+                    callback.onFailure(new Exception("Restaurante no encontrado."));
                 }
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                    // TODO -----------------XXXXXXXX-------------
+                callback.onFailure(databaseError.toException());
             }
         });
     }

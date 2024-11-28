@@ -110,20 +110,6 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
- // YA NO LO NECESITAMOS - ESPERAR PARA ELMINARLO
-
-//    @PostMapping("/getTypeFood")
-//    public CompletableFuture<ResponseEntity<Map<String, Set<String>>>> getAllTypes() {
-//        return restaurantService.getFoodTypes()
-//                .thenApply(types -> new ResponseEntity<>(types, HttpStatus.OK))
-//                .exceptionally(ex -> {
-//                    ex.printStackTrace();
-//                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
-//                });
-//    }
-
-    // ----------------------------------------------------------------------------------------------------------------
 
     // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN MENÚS
     @PostMapping("/getAll")
@@ -158,31 +144,17 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-// YA NO LO NECESITAMOS - ESPERAR PARA ELMINARLO
-    // OBTINE EL RESTAURANTE DESTACADO ENTRE LOS QUE TIENEN MENÚS
-//    @PostMapping("/featured")
-//    public CompletableFuture<ResponseEntity<FeaturedRestaurantResponse>> getOneFeaturedRestaurant() {
-//        return restaurantService.getTheOneFeaturedRestaurant()
-//                .thenApply(chosenRestaurant -> new ResponseEntity<>(chosenRestaurant, HttpStatus.OK))
+    // OBTIENE TODOS LOS RESTAURANTES ------->                SIN USO ACTUAL
+
+//    @PostMapping("/getAllRestaurants")
+//    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getAllRestaurants() {
+//        return restaurantService.getAll()
 //                .exceptionally(ex -> {
 //                    ex.printStackTrace();
-//                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//                    return new HashMap<>(); // Retorna un mapa vacío en caso de error
 //                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
 //                });
 //    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-    // OBTIENE TODOS LOS RESTAURANTES ------->                SIN USO ACTUAL
-    // ----------------------------------------------------------------------------------------------------------------
-    @PostMapping("/getAllRestaurants")
-    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getAllRestaurants() {
-        return restaurantService.getAll()
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return new HashMap<>(); // Retorna un mapa vacío en caso de error
-                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
-                });
-    }
 
     // ----------------------------------------------------------------------------------------------------------------
 
