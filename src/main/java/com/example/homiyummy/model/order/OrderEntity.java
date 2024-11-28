@@ -13,10 +13,10 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderEntity {
-    String uid = "";
-    String numOrder = "";
-    int date = 0;
-    String customerUid = "";
-    ArrayList<MenuSoldDTO> menus = new ArrayList<>();
-    float total = 0;
+    private String uid = "";
+    private String numOrder = "";
+    private int date = 0;
+    private String customerUid = "";
+    private ArrayList<MenuSoldDTO> menus = new ArrayList<>();
+    private float total = 0;
 }

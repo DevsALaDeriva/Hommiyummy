@@ -13,8 +13,6 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class UserResponse {
     private String uid;
-
-
     private String name;
     private String surname;
     private String email;

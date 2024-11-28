@@ -1,5 +1,7 @@
 package com.example.homiyummy.service;
 
+import com.example.homiyummy.model.order.OrderGotByNumResponse;
+import com.example.homiyummy.model.order.OrderWithRestaurantDataEntity;
 import com.example.homiyummy.model.user.UserDTO;
 import com.example.homiyummy.model.user.UserEntity;
 import com.example.homiyummy.model.user.UserReadResponse;
@@ -32,7 +34,9 @@ public class UserService {
 
     // ------------------------------------------------------------------------------------------------------------
     public UserResponse createUser(UserDTO userDTO) {
-        UserEntity userEntity = new UserEntity(); // USAMOS EL CONSTRUCTOR SIN PASSWORD DE UserEntity. LA CONTRASEÑA NO LA GUARDAMOS EN REALTIME
+
+        UserEntity userEntity = new UserEntity();
+
         userEntity.setUid(userDTO.getUid());
         userEntity.setName(userDTO.getName());
         userEntity.setAddress(userDTO.getAddress());
@@ -42,9 +46,8 @@ public class UserService {
         userEntity.setPhone(userDTO.getPhone());
         userEntity.setAllergens(userDTO.getAllergens());
 
-        //System.out.println("Allergens: " + userDTO.getAllergens());
-
         /**
+         *
          * COMO EL saveUser DEL REPOSITORIO DEVUELVE EL UserResponse QUE QUEREMOS RECIBIR (PARA LUEGO MANDÁRSELO DESDE AQUÍ AL CONTROLLER)
          * USANDO UN CALLBACK,
          * 1º CREAMOS UN "Futuro" DONDE LO ALMACENAREMOS Y
@@ -114,7 +117,8 @@ public class UserService {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-    public UserReadResponse findUserByUid(String uid){
+    // MÉTOD O CON UN PARÁMETRO
+    public CompletableFuture<UserReadResponse> findUserByUid(String uid){
 
         CompletableFuture<UserReadResponse> futureUser = new CompletableFuture<>();
 
@@ -124,17 +128,37 @@ public class UserService {
                 futureUser.complete(userReadResponse);
             }
             @Override
-            public void onFailure(UserReadResponse userReadResponse) {
-                futureUser.complete(userReadResponse);
+            public void onFailure(Exception exception) {
+                futureUser.completeExceptionally(exception);
             }
         });
-        try {
-            return futureUser.get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return futureUser;
+    }
+
+
+    // MÉTOD O CON DOS PARÁMETROS: ACEPTA UN UID Y UN OBJETO RESTAURANTE
+    public CompletableFuture<OrderGotByNumResponse> findUserByUid(String uid, OrderWithRestaurantDataEntity orderWithRestaurantDataEntity){
+
+        CompletableFuture<OrderGotByNumResponse> futureUser = new CompletableFuture<>();
+
+        userRepository.find(uid, new UserRepository.FindUserCallback() {
+            @Override
+            public void onSuccess(UserReadResponse userReadResponse) {
+                OrderGotByNumResponse orderGotByNumResponse = new OrderGotByNumResponse();
+                orderGotByNumResponse.setName_restaurant(orderWithRestaurantDataEntity.getName_restaurant());
+                orderGotByNumResponse.setNum_order(orderWithRestaurantDataEntity.getNum_order());
+                orderGotByNumResponse.setDate(orderWithRestaurantDataEntity.getDate());
+                orderGotByNumResponse.setCustomer(userReadResponse);
+                orderGotByNumResponse.setMenus(orderWithRestaurantDataEntity.getMenus());
+                orderGotByNumResponse.setTotal(orderWithRestaurantDataEntity.getTotal());
+                futureUser.complete(orderGotByNumResponse);
+            }
+            @Override
+            public void onFailure(Exception exception) {
+                futureUser.completeExceptionally(exception);
+            }
+        });
+        return futureUser;
     }
 
 // ----------------------------------------------------------------------------------------------------------------

@@ -22,8 +22,6 @@ public class UserEntity {
     private String password;
     private ArrayList<String> allergens;
 
-
-
     public UserEntity(String uid, String name, String surname, String email, String address, String city, String phone, ArrayList<String> allergens){ // USO ESTE CONSTRUCTOR PARA COMUNCARME CON BBDD AL CREAR UN USUARIO
         this.uid = uid;
         this.name = name;

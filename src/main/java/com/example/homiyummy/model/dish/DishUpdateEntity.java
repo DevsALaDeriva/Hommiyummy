@@ -13,7 +13,7 @@ import java.util.ArrayList;
     @AllArgsConstructor
 
     public class DishUpdateEntity {
-        private int id = 0;
+        private Integer id = 0;
         private String name = "";
         private String ingredients = "";
         private ArrayList<String> allergens = new ArrayList<>();

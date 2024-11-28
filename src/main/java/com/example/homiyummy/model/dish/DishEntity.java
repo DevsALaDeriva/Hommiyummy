@@ -15,14 +15,14 @@ import java.util.ArrayList;
 
 public class DishEntity {
     private String uid = "";
-    private int id = 0;
+    private Integer id = 0;
     private String name = "";
     private String ingredients = "";
     private ArrayList<String> allergens = new ArrayList<>();;
     private String image = "";
     private String type = "";
 
-    public DishEntity(int id, String name, String ingredients, ArrayList<String> allergens, String image, String type){
+    public DishEntity(Integer id, String name, String ingredients, ArrayList<String> allergens, String image, String type){
         this.id = id;
         this.name = name;
         this.ingredients = ingredients;
@@ -30,4 +30,11 @@ public class DishEntity {
         this.image = image;
         this.type = type;
     }
+
+//    public DishEntity(String name, String ingredients, ArrayList<String> allergens, String image){
+//        this.name = name;
+//        this.ingredients = ingredients;
+//        this.allergens = allergens;
+//        this.image = image;
+//    }
 }

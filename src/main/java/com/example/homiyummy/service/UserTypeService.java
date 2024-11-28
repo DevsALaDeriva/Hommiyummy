@@ -25,7 +25,7 @@ public class UserTypeService {
 
         userService.existsByUid(uid).thenAccept(userExists -> {
             if (userExists) {
-                userTypeFuture.complete("client");
+                userTypeFuture.complete("customer");
             } else {
                 restaurantService.existsByUid(uid).thenAccept(restaurantExists -> {
                     if (restaurantExists) {

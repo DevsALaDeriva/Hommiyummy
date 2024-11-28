@@ -1,8 +1,7 @@
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.order.OrderCreatedResponse;
-import com.example.homiyummy.model.order.OrderDTO;
-import com.example.homiyummy.model.order.OrderEntity;
+import com.example.homiyummy.model.order.*;
+import com.example.homiyummy.model.restaurant.RestaurantGetByOrderNumberEntity;
 import com.example.homiyummy.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +26,7 @@ public class OrderService {
 
         orderRepository.findId(uid, new OrderRepository.OnOrderIdGot() {
             @Override
-            public void onFindingSuccess(int actualId) {
-                System.out.println("Id actual desde findLastId en service: " + actualId);
-                futureId.complete(actualId);
-            }
+            public void onFindingSuccess(int actualId) {futureId.complete(actualId);}
 
             @Override
             public void onFindingFailure(Exception exception) {
@@ -41,8 +37,9 @@ public class OrderService {
         return futureId;
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
+
     public CompletableFuture<OrderCreatedResponse> createOrder(OrderDTO orderDTO, int lastOrderId){
-        System.out.println("-------------------------------> 1");
 
         int newOrderId = lastOrderId + 1;
         CompletableFuture<OrderCreatedResponse> futureOrder = new CompletableFuture<>();
@@ -58,7 +55,6 @@ public class OrderService {
         orderRepository.save(orderEntity, newOrderId, new OrderRepository.OnSavingOrderCallback() {
             @Override
             public void onSavingOrderSuccess(OrderCreatedResponse orderCreatedResponse) {
-                System.out.println("-------------------------------> 2");
                 futureOrder.complete(orderCreatedResponse);
             }
 
@@ -67,7 +63,31 @@ public class OrderService {
                 futureOrder.completeExceptionally(exception);
             }
         });
-        System.out.println("-------------------------------> 3");
         return futureOrder;
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<OrderWithRestaurantDataEntity> getRestaurantData (String uid){
+
+        CompletableFuture<OrderWithRestaurantDataEntity> futureRestData = new CompletableFuture<>();
+
+        orderRepository.getOrderDataInRestaurantSide(uid, new OrderRepository.OnOrderGotCallback() {
+            @Override
+            public void onFindingSuccess(OrderWithRestaurantDataEntity orderWithRestaurantDataEntity) {
+                futureRestData.complete(orderWithRestaurantDataEntity);
+            }
+
+            @Override
+            public void onFindingFailure(Exception exception) {
+                futureRestData.completeExceptionally(exception);
+            }
+        });
+        return futureRestData;
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+
+
 }

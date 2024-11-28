@@ -26,15 +26,12 @@ public class UserController {
 
     private final UserService userService;
     private final AuthService authService;
-    //private final DatabaseReference databaseReference;
 
     public UserController(UserService userService,
                           AuthService authService
-                          //,DatabaseReference databaseReference
     ) {
         this.authService = authService;
         this.userService = userService;
-        //this.databaseReference = databaseReference;
     }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -53,7 +50,6 @@ public class UserController {
 
         try {
             if(userDTO.getEmail() == null || userDTO.getEmail().isEmpty()){
-                //System.out.println("----------");
                 return ResponseEntity.badRequest().body("{\"uid\": \"\"}");
             }
 
@@ -62,6 +58,7 @@ public class UserController {
             UserResponse userResponse = userService.createUser(userDTO);                              // COMO createUser EN EL SERVICIO DEVUELVE UN UserResponse ENTREGADO POR UN FUTURO, LA OPERACIÓN ES ASÍNCRONA Y NO DA ERROR AQUÍ
 
             return ResponseEntity.ok("{\"uid\": \"" + userResponse.getUid() + "\"}");
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": \"\"}");
         }
@@ -73,17 +70,15 @@ public class UserController {
     public CompletableFuture<ResponseEntity<Map<String, Boolean>>> updateUser( @RequestBody UserDTO userDTO) {
 
         Map<String, Boolean> response = new HashMap<>();
-        //System.out.println("--------------------1");
         String uid = userDTO.getUid();
 
         if (uid == null || uid.isEmpty()) {
-            //System.out.println("--------------------2");
             response.put("change", false);
             return CompletableFuture.completedFuture(ResponseEntity.badRequest().body(response)); // SI NO HAY UID DEVUELE UN  404
         }
 
         return userService.existsByUid(uid)
-                .thenCompose(exists -> { // THENCOMPOSE PERMITE ENCADENAR UN FUTURO A OTRO
+                .thenCompose(exists -> {
             if(!exists) {
                 response.put("change", false);
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)); // Devuelve 404 si no existe
@@ -110,15 +105,13 @@ public class UserController {
 
 // ------------------------------------------------------------------------------------------------------------
 
-@PostMapping("/getByUID")
-public UserReadResponse getClient(@RequestBody UserReadRequest userReadRequest){
+    @PostMapping("/getByUID")
+    public CompletableFuture<UserReadResponse> getClient(@RequestBody UserReadRequest userReadRequest){
         String uid = userReadRequest.getUid();
-        return userService.findUserByUid(uid);
-}
+        return userService.findUserByUid(uid).exceptionally(ex -> new UserReadResponse()); // SI HAY ALGUN ERROR ENVÍA AL FRONT UN OBJETO VACÍO
+    }
 
 // ------------------------------------------------------------------------------------------------------------
-
-
 
 
 

@@ -138,17 +138,20 @@ public class DishRepository {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
 
+                    Integer currentId = dataSnapshot.child("id").getValue(Integer.class);
+                    String currentName = dataSnapshot.child("name").getValue(String.class);
+                    String currentIngredients = dataSnapshot.child("ingredients").getValue(String.class);
+                    String currentImage = dataSnapshot.child("image").getValue(String.class);
+                    String currentType = dataSnapshot.child("type").getValue(String.class);
                     ArrayList<String> currentAllergens =  (ArrayList<String>) dataSnapshot.child("allergens").getValue();
 
                     DishUpdateEntity dishEntityToBeSaved = new DishUpdateEntity(); // PLATO A GUARDAR
 
-                    dishEntityToBeSaved.setId(dishEntity.getId());
-                    dishEntityToBeSaved.setName(dishEntity.getName());
-                    dishEntityToBeSaved.setIngredients(dishEntity.getIngredients());
-                    dishEntityToBeSaved.setAllergens(dishEntity.getAllergens());
-                    dishEntityToBeSaved.setImage(dishEntity.getImage());
-                    dishEntityToBeSaved.setType(dishEntity.getType());
-
+                    dishEntityToBeSaved.setId(dishEntity.getId() != null && dishEntity.getId() != 0 ? dishEntity.getId() : currentId);
+                    dishEntityToBeSaved.setName(dishEntity.getName() != null && !dishEntity.getName().isEmpty() ? dishEntity.getName() : currentName);
+                    dishEntityToBeSaved.setIngredients(dishEntity.getIngredients() != null && !dishEntity.getIngredients().isEmpty() ? dishEntity.getIngredients() : currentIngredients);
+                    dishEntityToBeSaved.setImage(dishEntity.getImage() != null && !dishEntity.getImage().isEmpty() ? dishEntity.getImage() : currentImage);
+                    dishEntityToBeSaved.setType(dishEntity.getType() != null && !dishEntity.getType().isEmpty() ? dishEntity.getType() : currentType);
                     dishEntityToBeSaved.setAllergens(dishEntity.getAllergens() != null  ? dishEntity.getAllergens() : currentAllergens);
 
                     dishRef.setValue(dishEntityToBeSaved, (databaseError, databaseReference1) -> {

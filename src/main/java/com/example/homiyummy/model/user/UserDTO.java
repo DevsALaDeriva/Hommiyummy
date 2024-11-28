@@ -23,10 +23,6 @@ public class UserDTO implements Serializable {
     private String password = "";
     private ArrayList<String> allergens = new ArrayList<>();
 
-
-
-
-
     // CONSTRUCTOR SIN PASSWORD QUE USO PARA DEVOLVER USUARIO EN ALGÚN MÉTODO
     public UserDTO(String uid, String name,String surName, String phone, ArrayList<String> allergens ) { // USADO PARA UPDATE USERS
         this.uid = uid;
@@ -35,10 +31,6 @@ public class UserDTO implements Serializable {
         this.phone = phone;
         this.allergens = allergens;
     }
-
-
-
-
 
     public UserDTO(String uid){  // LO USO EN AuthService     getUserDtoFromToken
         this.uid = uid;

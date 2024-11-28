@@ -42,11 +42,7 @@ public class RestaurantRepository {
         restaurantEntityToSave.put("schedule", restaurantEntity.getSchedule());
         restaurantEntityToSave.put("location", restaurantEntity.getLocation());
 
-
-
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(restaurantEntity.getUid());
-
-       // System.out.println("UID RestauranteEntity: " + restaurantEntity.getUid());
 
         restaurantRef.setValue(restaurantEntityToSave, ((databaseError, databaseReference) -> {
             if(databaseError == null) {
@@ -103,8 +99,6 @@ public class RestaurantRepository {
                     String currentSchedule = dataSnapshot.child("schedule").getValue(String.class);
                     String currentImage = dataSnapshot.child("image").getValue(String.class);
                     String currentFoodType = dataSnapshot.child("food_type").getValue(String.class);
-                    //Integer currentRate = dataSnapshot.child("rate").getValue(Integer.class);
-                    //Float currentAveragePrice = dataSnapshot.child("average_price").getValue(Float.class);
                     RestaurantLocation currentLocation = dataSnapshot.child("location").getValue(RestaurantLocation.class);
 
 
@@ -120,8 +114,6 @@ public class RestaurantRepository {
                     restaurantEntityToBeSaved.setSchedule(restaurantEntity.getSchedule() != null && !restaurantEntity.getSchedule().isEmpty() ? restaurantEntity.getSchedule() : currentSchedule);
                     restaurantEntityToBeSaved.setImage(restaurantEntity.getImage() != null && !restaurantEntity.getImage().isEmpty() ? restaurantEntity.getImage() : currentImage);
                     restaurantEntityToBeSaved.setFood_type(restaurantEntity.getFood_type() != null && !restaurantEntity.getFood_type().isEmpty() ? restaurantEntity.getFood_type() : currentFoodType);
-                    //restaurantEntityToBeSaved.setRate(restaurantEntity.getRate() != null ? restaurantEntity.getRate() : currentRate);
-                    //restaurantEntityToBeSaved.setAverage_price((restaurantEntity.getAverage_price() != null && restaurantEntity.getAverage_price() != 0) ? restaurantEntity.getAverage_price() : currentAveragePrice);
                     restaurantEntityToBeSaved.setLocation(restaurantEntity.getLocation() != null ? restaurantEntity.getLocation() : currentLocation);
 
                     // EL VALOR PARA EMAIL SE MANTIENE EL QUE HABÍA GUARDADO
@@ -415,50 +407,10 @@ public class RestaurantRepository {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-    // NO LO NECESITAMOS YA -- ESPERAR ANTES DE ELIMINAR --------------------------------------------------------------
-
-//    public void getAllFoodTypes (OnTypesGot callback){
-//
-//        DatabaseReference restaurantsRef = databaseReference.child("restaurants");
-//
-//        restaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                Set<String> types = new HashSet<>();
-//
-//                if(dataSnapshot.exists()){
-//                    for(DataSnapshot individualRestaurantSnapshott : dataSnapshot.getChildren()){
-//                        if(individualRestaurantSnapshott.child("food_type").exists()){
-//                            String foodType = individualRestaurantSnapshott.child("food_type").getValue(String.class);
-//                            types.add(foodType);
-//                        }
-//                    }
-//                    callback.onTypesSuccess(types);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                // TODO ------------------------XXXXXXXX
-//            }
-//        });
-//
-//    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-    // NO LO NECESITAMOS YA -- ESPERAR ANTES DE ELIMINAR
-
-//    public interface OnTypesGot{
-//        void onTypesSuccess(Set<String> types);
-//        void onTypesFailure(Exception exception);
-//    }
-
-    // ----------------------------------------------------------------------------------------------------------------
 
     public void getByUrl(String url, OnRestByUrlGot callback ){
+
         DatabaseReference restaurantsRef = databaseReference.child("restaurants");
-        //System.out.println("La URL en el repo es: " + url);
 
         restaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -470,7 +422,6 @@ public class RestaurantRepository {
                         String urlSnapshot = singleRestaurantSnapshot.child("url").getValue(String.class);
 
                         if(urlSnapshot.equals(url)){
-                            //System.out.println("La URL que llega es igual a una existente en bbdd: " + url);
                             // 1º OBTENEMOS CAMPOS EN FORMATO STRING E INT DEL RESTAURANTE
                             String uid = singleRestaurantSnapshot.getKey();
                             String name = singleRestaurantSnapshot.child("name").getValue(String.class);

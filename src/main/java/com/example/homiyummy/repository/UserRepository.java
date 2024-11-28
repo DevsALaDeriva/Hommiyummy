@@ -27,44 +27,25 @@ public class UserRepository {
         this.databaseReference = databaseReference;
     }
 
-
     // ------------------------------------------------------------------------------------------------------------
 
-    // QUIEN LLAME A ESTE MÉTO DO ESPERARÁ RECIBIR LA RESPUESTA (el UserResponse) VÍA CALLBACK
     public void saveUser(UserEntity userEntity, SaveUserCallback callback)  {
 
-        // GUARDO EN BASE DE DATOS AL USUARIO
-        // USAMOS EL ID QUE TRAE UserEntity PARA CREAR EL NODO DEL USUARIO;
         DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
 
-        // CREO MAPA PARA GUARDAR EL UserEntity SIN INCLUIR ID
-        Map<String, Object> userEntityToSave = new HashMap<>();
-
-        userEntityToSave.put("name", userEntity.getName());
-        userEntityToSave.put("surname", userEntity.getSurname());
-        userEntityToSave.put("email", userEntity.getEmail());
-        userEntityToSave.put("phone", userEntity.getPhone());
-        userEntityToSave.put("allergens", userEntity.getAllergens());
-        userEntityToSave.put("city", userEntity.getCity());
-        userEntityToSave.put("address", userEntity.getAddress());
-
-        // 1º userRef.setValue GRABA LOS DATOS DE userEntityToSave EN REALTIME
-        // 2º SE EJECUTA EL PRIMER CALLBACK  (PREDEFINIDO POR FIREBASE PARA MANEJAR UN RESULTADO EN OPERACIONES ASÍNCRONAS)
-        userRef.setValue(userEntityToSave, (databaseError, databaseReference) -> {
+        userRef.setValue(userEntity, (databaseError, databaseReference) -> {
             if (databaseError == null) {
-                // CONFIRMADO QUE NO HAY ERROR, LEEMOS LOS DATOS RECIÉN GUARDADOS
-                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {               // CONFIRMADO QUE NO HAY ERROR, LEEMOS LOS DATOS RECIÉN GUARDADOS
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        // CREAMOS UN OBJETO UserResponse CON ELLOS
-                        UserResponse userResponse = dataSnapshot.getValue(UserResponse.class);
-                        userResponse.setUid(userRef.getKey());   // LE AÑADO EL ID DE SU NODO
-                        callback.onSuccess(userResponse);       // 3º Y DEVOLVEMOS ESE OBJETO COMO PARÁMETRO DEL SEGUNDO CALLBACK (DE NUESTRA INTERFACE) SI ES EXITOSO
+                        UserResponse userResponse = dataSnapshot.getValue(UserResponse.class);  // CREAMOS UN OBJETO UserResponse CON ELLOS
+                        userResponse.setUid(userRef.getKey());                                  // LE AÑADO EL ID DE SU NODO
+                        callback.onSuccess(userResponse);                                       // DEVOLVEMOS ESE OBJETO COMO PARÁMETRO DEL SEGUNDO CALLBACK (DE NUESTRA INTERFACE) SI ES EXITOSO
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        callback.onFailure(databaseError.toException()); // 3º EJECUTAMOS EL CALLBACK DE NUESTRA INTERFACE SI DA ERROR
+                        callback.onFailure(databaseError.toException());                        // EJECUTAMOS EL CALLBACK DE NUESTRA INTERFACE SI DA ERROR
                     }
                 });
             } else {
@@ -82,10 +63,7 @@ public class UserRepository {
 // ------------------------------------------------------------------------------------------------------------
 
     public void updateUserData(UserEntity userEntity, GetUpdateConfirmationCallback callback) { // IMPLEMENTA LA INTERFAZ QUE LE SERVIRÁ AL SERVICIO PARA OBTENER LA CONFIRMACIÓN DEL ÉXITO O FALLO DE LA ACTUALIZACIÓN
-       //System.out.println("uid: " + userEntity.getUid());
        DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
-
-       //UserResponse userResponse = new UserResponse();
 
        //EL uid NO SE INCLUYE ENTRE LOS DATOS DEL USUARIO, VA A PARTE (EN EL NODO)
 
@@ -189,19 +167,16 @@ public class UserRepository {
                             callback.onSuccess(user);
                         }
                         else{
-                            UserReadResponse emptyUser = new UserReadResponse();
-                            callback.onFailure(emptyUser);
+                            callback.onFailure(new Exception("El usuario tiene los campos vacíos en base de datos"));
                         }
                     }
                     else{
-                        UserReadResponse emptyUser = new UserReadResponse();
-                        callback.onFailure(emptyUser);
+                        callback.onFailure(new Exception("El usuario no se ha encontrado"));
                     }
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) { // FALTA MANEJAR EL ERROR
-                    UserReadResponse emptyUser = new UserReadResponse();
-                    callback.onFailure(emptyUser);
+                    callback.onFailure(new Exception("Error de conexión a base de datos"));
                 }
             });
     }
@@ -210,7 +185,7 @@ public class UserRepository {
 
     public interface FindUserCallback{
         void onSuccess(UserReadResponse userReadResponse);
-        void onFailure(UserReadResponse userReadResponse);
+        void onFailure(Exception exception);
     }
     // ----------------------------------------------------------------------------------------------------------------
 
