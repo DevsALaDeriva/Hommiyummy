@@ -1,5 +1,6 @@
 package com.example.homiyummy.controller;
 
+import com.example.homiyummy.database.DeleteAllUsers;
 import com.example.homiyummy.model.auth.ChangePassRequest;
 import com.example.homiyummy.model.auth.EmailRequest;
 import com.example.homiyummy.model.auth.LoginRequestDTO;
@@ -93,6 +94,11 @@ public class AuthController {
 
 // ------------------------------------------------------------------------------------------------------------
 
+    @PostMapping("/deleteAllFuckingUsers19JuJu")
+    public void changePassword() {
+        System.out.println("borrando");
+        //DeleteAllUsers.deleteAllUsers();
+    }
 
 
 

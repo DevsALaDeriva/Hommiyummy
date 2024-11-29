@@ -199,6 +199,8 @@ public class RestaurantService {
                     RestaurantGetAllFormatResponse restaurantGetAllFormatResponse = new RestaurantGetAllFormatResponse();
 
                     //restaurantGetAllFormatResponse.setUid(restaurant.getUid());
+
+
                     restaurantGetAllFormatResponse.setName(restaurant.getName());
                     restaurantGetAllFormatResponse.setDescription_mini(restaurant.getDescription_mini());
                     restaurantGetAllFormatResponse.setUrl(restaurant.getUrl());
@@ -212,6 +214,7 @@ public class RestaurantService {
                     restaurantGetAllFormatResponse.setLocation(restaurant.getLocation());
 
                     restListResponse.add(restaurantGetAllFormatResponse);
+
                 }
 
                 Map<String, ArrayList<RestaurantGetAllFormatResponse>> dataResponse = new HashMap<>();
@@ -377,7 +380,7 @@ public class RestaurantService {
 
                 ArrayList<RestaurantEntity> restaurantsWithMenus = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
 
-                //System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
+                System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
 
                 for(RestaurantEntity restaurant : allRestaurantsInApp){
                     if(!restaurant.getMenus().isEmpty()) {
@@ -396,6 +399,8 @@ public class RestaurantService {
                     for(RestaurantEntity re : restaurantsWithMenus){
 
                         RestaurantWithMenusResponse restToBeAddedResponse = new RestaurantWithMenusResponse();
+
+
 
                         restToBeAddedResponse.setName(re.getName());
                         restToBeAddedResponse.setDescription_mini(re.getDescription_mini());

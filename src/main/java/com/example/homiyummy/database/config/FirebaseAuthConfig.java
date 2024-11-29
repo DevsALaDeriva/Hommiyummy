@@ -29,4 +29,5 @@ public class FirebaseAuthConfig {
         FirebaseInitializer.initializeFirebase(); // NOS ASEGURAMOS DE Q FIREBASE ESTÁ INICIALIZADO
         return FirebaseAuth.getInstance();        // OBTENGO INSTANCIA DE FirebaseAuth QUE USAREMOS PARA CREAR Y VERIFICAR USUARIOS
     }
+
 }

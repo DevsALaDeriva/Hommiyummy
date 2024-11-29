@@ -4,10 +4,7 @@ import com.example.homiyummy.model.dish.DishEntity;
 import com.example.homiyummy.model.dish.DishInOrderEntity;
 import com.example.homiyummy.model.menu.MenuEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
-import com.example.homiyummy.model.order.OrderCreatedResponse;
-import com.example.homiyummy.model.order.OrderEntity;
-import com.example.homiyummy.model.order.OrderUIDsEntity;
-import com.example.homiyummy.model.order.OrderWithRestaurantDataEntity;
+import com.example.homiyummy.model.order.*;
 import com.example.homiyummy.model.restaurant.RestaurantGetByOrderNumberEntity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -15,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +64,7 @@ public class OrderRepository {
                     }
                 }
                 else{
-                    System.out.println("Ha dado false pq, al ser la 1ª vez, el nodo se acaba de crear y no tiene datos");
+                    //System.out.println("Ha dado false pq, al ser la 1ª vez, el nodo se acaba de crear y no tiene datos");
                     callback.onFindingSuccess(0);                              //----> LA 1ª VEZ, SALTA AQUÍ Y LE ASIGNAMOS UN 0
                 }
             }
@@ -247,6 +245,198 @@ public class OrderRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    public void getClientOrders(String clientUID, OnClientOrdersGotCallback callback){
 
+        DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
+        allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //System.out.println("DataSnapshot: " + dataSnapshot.getValue());
+                if(dataSnapshot.exists()){
+
+                    ArrayList<OrderGetClientOrdersEntity> allOrdersEntity = new ArrayList<>(); // GUARDA TODOS LOS PEDIDOS DEL CLIENTE
+
+                    for(DataSnapshot restNode : dataSnapshot.getChildren()){
+
+                        DataSnapshot ordersRef = restNode.child("orders/items");
+
+                        if(ordersRef.exists()){
+                            for(DataSnapshot ord : ordersRef.getChildren()){
+                                //System.out.println("orden: " + ord.getKey());
+                                //System.out.println("orden: " + restNode.child("name").getValue(String.class));
+                                String clientSavedUid = ord.child("customerUid").getValue(String.class);
+                                //System.out.println("clienteUID en la orden: " + clientSavedUid);
+                                //System.out.println("clienteUID q llega: " + clientUID);
+                                if(clientSavedUid.equals(clientUID)){
+                                    //System.out.println("es igual");
+                                    DataSnapshot menusRef = ord.child("menus");
+
+                                    if (menusRef.exists()){
+
+                                        for(DataSnapshot menu : menusRef.getChildren()){
+
+                                            OrderGetClientOrdersEntity orderEntity = new OrderGetClientOrdersEntity();
+
+                                            String restName = restNode.child("name").getValue(String.class);
+                                            String restImage = restNode.child("image").getValue(String.class);
+                                            Integer date = ord.child("date").getValue(Integer.class);
+                                            String numOrder = ord.child("numOrder").getValue(String.class);
+                                            Float total = ord.child("total").getValue(Float.class);
+                                            String status = menu.child("status").getValue(String.class);
+
+                                            orderEntity.setName_restaurant(restName);
+                                            orderEntity.setImage_restaurant(restImage);
+                                            orderEntity.setDate(date);
+                                            orderEntity.setNum_order(numOrder);
+                                            orderEntity.setTotal(total);
+                                            orderEntity.setStatus(status);
+
+                                            allOrdersEntity.add(orderEntity);
+                                        }
+                                        callback.onFindingSuccess(allOrdersEntity);
+                                    }
+                                    callback.onFindingFailure(new Exception("No hay menús a nombre del cliente"));
+                                }
+                            }
+                        }
+                    }
+                    callback.onFindingFailure(new Exception("No hay pedidos en ningún restaurante"));
+                }
+                else{
+                    //System.err.println("No tiene hijos.");
+                    callback.onFindingFailure(new Exception("No existen restaurantes registrados."));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                    callback.onFindingFailure(new Exception("Error de conexión."));
+            }
+        });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public interface OnClientOrdersGotCallback{
+        void onFindingSuccess(ArrayList<OrderGetClientOrdersEntity> ordersEntity);
+        void onFindingFailure(Exception exception);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public void getAllOrdersInARestaurant(String uid, OnRestaurantOrdersGotCallback callback){
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+                    DataSnapshot restaurantRef = dataSnapshot.child("restaurants").child(uid);
+
+                    if (restaurantRef.exists()) {
+                        DataSnapshot ordersRef = restaurantRef.child("orders/items");
+
+                        ArrayList<OrderGetRestaurantOrdersEntity> orders = new ArrayList<>();
+
+                        final int[] rounds = {0};
+                        int totalOrders = (int)ordersRef.getChildrenCount();
+
+                        if (totalOrders == 0) {
+                            callback.onFindingSuccess(orders);
+                            return;
+                        }
+
+                        for (DataSnapshot order : ordersRef.getChildren()) {
+
+                            String clientUid = order.child("customerUid").getValue(String.class);
+
+                            if(clientUid != null){
+                                DatabaseReference clientRef = databaseReference.child("users").child(clientUid);
+
+                                clientRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot clientSnapshot) {
+                                        if(clientSnapshot.exists()){
+
+                                            OrderGetRestaurantOrdersEntity orderEntity = new OrderGetRestaurantOrdersEntity();
+
+                                            String clientName = clientSnapshot.child("name").getValue(String.class);
+                                            Integer date = order.child("date").getValue(Integer.class);
+                                            String numOrder = order.child("numOrder").getValue(String.class);
+                                            Float total = order.child("total").getValue(Float.class);
+                                            int numMenus = (int)order.child("menus").getChildrenCount();
+                                            String status = "complete";
+
+                                            DataSnapshot menusSnapshot = order.child("menus");
+                                            //System.out.println(menusSnapshot.exists());
+
+                                            if(menusSnapshot.exists()){
+
+                                                for(DataSnapshot menu : menusSnapshot.getChildren()){
+                                                    if(!menu.child("status").getValue(String.class).equals("complete")){
+                                                        status = "in_progress";
+
+
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            orderEntity.setName_client(clientName);
+                                            orderEntity.setDate(date);
+                                            orderEntity.setNum_order(numOrder);
+                                            orderEntity.setTotal(total);
+                                            orderEntity.setNum_menus(numMenus);
+                                            orderEntity.setStatus(status);
+
+ //                                           System.out.println(orderEntity.getName_client());
+//                                            System.out.println(orderEntity.getDate());
+//                                            System.out.println(orderEntity.getNum_order());
+//                                            System.out.println(orderEntity.getTotal());
+//                                            System.out.println(orderEntity.getNum_menus());
+//                                            System.out.println(orderEntity.getStatus());
+
+                                            orders.add(orderEntity);
+                                        }
+
+                                        rounds[0]++;
+
+                                        if(rounds[0] == totalOrders){
+                                            callback.onFindingSuccess(orders); // LLAMAMOS CUANDO HEMOS RECIBIDO TODO
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        callback.onFindingFailure(databaseError.toException());
+                                    }
+                                });
+                            } else {
+                                rounds[0]++;
+                                if(rounds[0] == totalOrders){ // AUNQUE SEA NULO AUMENTAMOS EN 1
+                                    callback.onFindingSuccess(orders);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    callback.onFindingSuccess(new ArrayList<>()); // PQ NO EXISTEN DATOS
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onFindingFailure(databaseError.toException());
+            }
+        });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public interface OnRestaurantOrdersGotCallback{
+        void onFindingSuccess(ArrayList<OrderGetRestaurantOrdersEntity> ordersEntity);
+        void onFindingFailure(Exception exception);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 }
