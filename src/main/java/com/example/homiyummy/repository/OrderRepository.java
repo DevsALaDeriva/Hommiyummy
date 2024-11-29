@@ -215,6 +215,7 @@ public class OrderRepository {
 
                                         OrderWithRestaurantDataEntity dataEntity =
                                                 new OrderWithRestaurantDataEntity(restName, orderNumber, date, menusInOrder, totalOrder, customerUID);
+
                                         callback.onFindingSuccess(dataEntity);
                                     }
                                 }
