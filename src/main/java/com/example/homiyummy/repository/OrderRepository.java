@@ -82,9 +82,9 @@ public class OrderRepository {
 
         OrderEntity orderEntity = new OrderEntity();
 
-        orderEntity.setNumOrder(orderDTO.getNumOrder());
+        orderEntity.setNum_order(orderDTO.getNumOrder());
         orderEntity.setDate(orderDTO.getDate());
-        orderEntity.setCustomerUid(orderDTO.getCustomerUid());
+        orderEntity.setUidCustomer(orderDTO.getCustomerUid());
         orderEntity.setMenus(orderDTO.getMenus());
         orderEntity.setTotal(orderDTO.getTotal());
 
@@ -157,9 +157,9 @@ public class OrderRepository {
 
                             for(DataSnapshot order : ordersRef.getChildren()){
                                 System.out.println("Child key: " + order.getKey() + ", value: " + order.getValue());
-                                if(order.child("numOrder").getValue(String.class).equals(orderNumber)){
+                                if(order.child("num_order").getValue(String.class).equals(orderNumber)){
                                     //String restUID = restNode.getKey();                             // GUARDAMOS EL UID DEL RESTAURANTE QUE TIENE EL PEDIDO
-                                    String customerUID = order.child("customerUid").getValue(String.class); // GUARDAMOS EL UID DEL CLIENTE
+                                    String customerUID = order.child("uidCustomer").getValue(String.class); // GUARDAMOS EL UID DEL CLIENTE
                                     //System.out.println("UID del usuario ------------: " + customerUID);
                                     String restName = restNode.child("name").getValue(String.class); // GUARDAMOS NOMBRE DEL RESTAURANTE
                                     int date = order.child("date").getValue(Integer.class); // GUARDAMOS FECHA DEL PEDIDO
