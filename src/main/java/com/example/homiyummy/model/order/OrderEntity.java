@@ -13,7 +13,6 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderEntity {
-    private String uid = "";
     private String numOrder = "";
     private int date = 0;
     private String customerUid = "";

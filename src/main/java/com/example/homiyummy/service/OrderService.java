@@ -43,16 +43,8 @@ public class OrderService {
 
         int newOrderId = lastOrderId + 1;
         CompletableFuture<OrderCreatedResponse> futureOrder = new CompletableFuture<>();
-        OrderEntity orderEntity = new OrderEntity();
 
-        orderEntity.setUid(orderDTO.getUid());
-        orderEntity.setNumOrder(orderDTO.getNumOrder());
-        orderEntity.setDate(orderDTO.getDate());
-        orderEntity.setCustomerUid(orderDTO.getCustomerUid());
-        orderEntity.setMenus(orderDTO.getMenus());
-        orderEntity.setTotal(orderDTO.getTotal());
-
-        orderRepository.save(orderEntity, newOrderId, new OrderRepository.OnSavingOrderCallback() {
+        orderRepository.save(orderDTO, newOrderId, new OrderRepository.OnSavingOrderCallback() {
             @Override
             public void onSavingOrderSuccess(OrderCreatedResponse orderCreatedResponse) {
                 futureOrder.complete(orderCreatedResponse);

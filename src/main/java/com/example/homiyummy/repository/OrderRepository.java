@@ -4,10 +4,7 @@ import com.example.homiyummy.model.dish.DishEntity;
 import com.example.homiyummy.model.dish.DishInOrderEntity;
 import com.example.homiyummy.model.menu.MenuEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
-import com.example.homiyummy.model.order.OrderCreatedResponse;
-import com.example.homiyummy.model.order.OrderEntity;
-import com.example.homiyummy.model.order.OrderUIDsEntity;
-import com.example.homiyummy.model.order.OrderWithRestaurantDataEntity;
+import com.example.homiyummy.model.order.*;
 import com.example.homiyummy.model.restaurant.RestaurantGetByOrderNumberEntity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -81,9 +78,17 @@ public class OrderRepository {
     // ----------------------------------------------------------------------------------------------------------------
     // -> OK REVISITÓN DE CALLBACKS Y EXCEPCIONES
 
-    public void save(OrderEntity orderEntity, int newId, OnSavingOrderCallback callback){
+    public void save(OrderDTO orderDTO, int newId, OnSavingOrderCallback callback){
 
-        DatabaseReference restaurantRef = databaseReference.child("restaurants").child(orderEntity.getUid());
+        OrderEntity orderEntity = new OrderEntity();
+
+        orderEntity.setNumOrder(orderDTO.getNumOrder());
+        orderEntity.setDate(orderDTO.getDate());
+        orderEntity.setCustomerUid(orderDTO.getCustomerUid());
+        orderEntity.setMenus(orderDTO.getMenus());
+        orderEntity.setTotal(orderDTO.getTotal());
+
+        DatabaseReference restaurantRef = databaseReference.child("restaurants").child(orderDTO.getUid());
         DatabaseReference allOrdersRef = restaurantRef.child("orders");
         DatabaseReference counterRef = allOrdersRef.child("counter");
         DatabaseReference itemsRef = allOrdersRef.child("items");
@@ -151,11 +156,15 @@ public class OrderRepository {
                         if(ordersRef.exists()){
 
                             for(DataSnapshot order : ordersRef.getChildren()){
+                                System.out.println("Child key: " + order.getKey() + ", value: " + order.getValue());
                                 if(order.child("numOrder").getValue(String.class).equals(orderNumber)){
-                                    String restUID = restNode.getKey();                             // GUARDAMOS EL UID DEL RESTAURANTE QUE TIENE EL PEDIDO
+                                    //String restUID = restNode.getKey();                             // GUARDAMOS EL UID DEL RESTAURANTE QUE TIENE EL PEDIDO
                                     String customerUID = order.child("customerUid").getValue(String.class); // GUARDAMOS EL UID DEL CLIENTE
+                                    //System.out.println("UID del usuario ------------: " + customerUID);
                                     String restName = restNode.child("name").getValue(String.class); // GUARDAMOS NOMBRE DEL RESTAURANTE
                                     int date = order.child("date").getValue(Integer.class); // GUARDAMOS FECHA DEL PEDIDO
+                                    //System.out.println("date ------------: " + date);
+
                                     float totalOrder = order.child("total").getValue(Float.class); // GUARDAMOS TOTAL DEL PEDIDO
 
                                     DataSnapshot menusSnapshot = order.child("menus");
@@ -217,6 +226,14 @@ public class OrderRepository {
 
                                         OrderWithRestaurantDataEntity dataEntity =
                                                 new OrderWithRestaurantDataEntity(restName, orderNumber, date, menusInOrder, totalOrder, customerUID);
+
+                                        //System.out.println("Nombre restaurante: " + dataEntity.getName_restaurant());
+                                       // System.out.println("Número de pedido: " + dataEntity.getNum_order());
+                                        //System.out.println("Fecha: " + dataEntity.getDate());
+                                       // System.out.println("Cantidad de menús: " + dataEntity.getMenus());
+                                        //System.out.println("Total: " +dataEntity.getTotal());
+                                        //System.out.println("UID del usuario: " + dataEntity.getCustomerUID());
+
                                         callback.onFindingSuccess(dataEntity);
                                     }
                                 }
