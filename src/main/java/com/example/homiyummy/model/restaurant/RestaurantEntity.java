@@ -29,6 +29,7 @@ public class RestaurantEntity {
     private String schedule;
     private String image;
     private String food_type;
+
     private ArrayList<DishEntity> dishes;
     private Integer rate = 0;
     private Float average_price = 0.0F;
