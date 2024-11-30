@@ -13,11 +13,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderWithRestaurantDataEntity {
-    private String name_restaurant = "";
-    private String num_order = "";
+//    private String name = "";
+//    private String num_order = "";
+//    private int date = 0;
+//    private ArrayList<MenuGetByNumEntity> menus = new ArrayList<>();
+//    private float total = 0;
+//    private String uidCustomer = "";
+    private String uid = "";
     private int date = 0;
+    private String uidCustomer = "";
     private ArrayList<MenuGetByNumEntity> menus = new ArrayList<>();
     private float total = 0;
-    private String customerUID = "";
+
 
 }

@@ -14,10 +14,16 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderGotByNumResponse {
-    private String name_restaurant = "";
-    private String num_order = "";
+//    private String name = "";
+//    private String num_order = "";
+//    private int date = 0;
+//    private UserReadResponse customer = new UserReadResponse();
+//    private ArrayList<MenuGetByNumEntity> menus = new ArrayList<>();
+//    private float total = 0;
+
+    private String uid = "";
     private int date = 0;
-    private UserReadResponse customer = new UserReadResponse();
+    private String uidCustomer = "";
     private ArrayList<MenuGetByNumEntity> menus = new ArrayList<>();
     private float total = 0;
 }

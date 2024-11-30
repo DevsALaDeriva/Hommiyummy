@@ -61,14 +61,23 @@ public class OrderService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    public CompletableFuture<OrderWithRestaurantDataEntity> getRestaurantData (String uid){
+    public CompletableFuture<OrderGotByNumResponse> getRestaurantData (String orderNumber){
 
-        CompletableFuture<OrderWithRestaurantDataEntity> futureRestData = new CompletableFuture<>();
+        CompletableFuture<OrderGotByNumResponse> futureRestData = new CompletableFuture<>();
 
-        orderRepository.getOrderDataInRestaurantSide(uid, new OrderRepository.OnOrderGotCallback() {
+        orderRepository.getOrderDataInRestaurantSide(orderNumber, new OrderRepository.OnOrderGotCallback() {
             @Override
-            public void onFindingSuccess(OrderWithRestaurantDataEntity orderWithRestaurantDataEntity) {
-                futureRestData.complete(orderWithRestaurantDataEntity);
+            public void onFindingSuccess(OrderGotByNumEntity orderGotByNumEntity) {
+
+                OrderGotByNumResponse orderResponse = new OrderGotByNumResponse();
+
+                orderResponse.setUid(orderGotByNumEntity.getUid());
+                orderResponse.setDate(orderGotByNumEntity.getDate());
+                orderResponse.setUidCustomer(orderGotByNumEntity.getUidCustomer());
+                orderResponse.setMenus(orderGotByNumEntity.getMenus());
+                orderResponse.setTotal(orderGotByNumEntity.getTotal());
+
+                futureRestData.complete(orderResponse);
             }
 
             @Override
@@ -84,14 +93,20 @@ public class OrderService {
     public CompletableFuture< ArrayList<OrderGetClientOrdersResponse>> getClientOrders(String clientUID){
 
         CompletableFuture< ArrayList<OrderGetClientOrdersResponse>> futureResponse = new CompletableFuture<>();
+
         orderRepository.getClientOrders(clientUID, new OrderRepository.OnClientOrdersGotCallback() {
             @Override
             public void onFindingSuccess(ArrayList<OrderGetClientOrdersEntity> ordersEntity) {
 
-                OrderGetClientOrdersResponse orderResponse = new OrderGetClientOrdersResponse();
+
                 ArrayList<OrderGetClientOrdersResponse> allOrders = new ArrayList<>();
 
                 for(OrderGetClientOrdersEntity order: ordersEntity ){
+
+                    OrderGetClientOrdersResponse orderResponse = new OrderGetClientOrdersResponse();
+
+                    System.out.println("NumOrder: " + order.getNum_order() +" - Status Entity: "  + order.getStatus());
+
                     orderResponse.setName_restaurant(order.getName_restaurant());
                     orderResponse.setImage_restaurant(order.getImage_restaurant());
                     orderResponse.setDate(order.getDate());
@@ -99,6 +114,10 @@ public class OrderService {
                     orderResponse.setTotal(order.getTotal());
                     orderResponse.setStatus(order.getStatus());
                     allOrders.add(orderResponse);
+                }
+
+                for(OrderGetClientOrdersResponse order: allOrders ){
+                    System.out.println("NumOrder: " + order.getNum_order() + " - Status Response: "  + order.getStatus());
                 }
 
                 futureResponse.complete(allOrders);
@@ -116,12 +135,12 @@ public class OrderService {
     // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<ArrayList<OrderGetRestaurantOrdersResponse>> getRestOrders(String restUID) {
+
         CompletableFuture<ArrayList<OrderGetRestaurantOrdersResponse>> futureResponse = new CompletableFuture<>();
 
         orderRepository.getAllOrdersInARestaurant(restUID, new OrderRepository.OnRestaurantOrdersGotCallback() {
             @Override
             public void onFindingSuccess(ArrayList<OrderGetRestaurantOrdersEntity> ordersArrayEntity) {
-                //System.out.println("Cantidad de entidades recibidas del repositorio: " + ordersArrayEntity.size());
 
                 ArrayList<OrderGetRestaurantOrdersResponse> response = new ArrayList<>();
 
@@ -138,7 +157,6 @@ public class OrderService {
                     response.add(ordersResponse);
                 }
 
-                //System.out.println("Servicio - Tamaño del array antes de completar futureResponse: " + response.size());
                 futureResponse.complete(response);
             }
 

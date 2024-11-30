@@ -10,5 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderGetByNumRequest {
-    private String numOrder = "";
+    private String num_order = "";
 }

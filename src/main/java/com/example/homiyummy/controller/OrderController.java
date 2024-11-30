@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -63,21 +65,13 @@ public class OrderController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    /**
-     *  Este métod.o hace 2 peticiones a Realtime.
-     *  La 1ª orderService.getRestaurantData(orderNum) -> obtiene los datos del restaurante y el UID dl cliente que hay que mandar al front (en un objeto creado solo para ello)
-     *  La 2ª userService.findUserByUid ->                obtiene los datos del cliente (usando su UID recién recibido) y los une a los del restaurante  (en un objeto creado ad hoc)
-     * @param orderGetByNumRequest: el Json que envía el frontend lo convertimos en un objeto de este tipo para manipularlo en el back.
-     * @return Devolvemos un objeto OrderGotByNumResponse (creado ad hoc) con las propiedades del pedido que quiere el front.
-     */
     @PostMapping("/getByNumOrder")
     public CompletableFuture<ResponseEntity<OrderGotByNumResponse>> getByNumOrder(@RequestBody OrderGetByNumRequest orderGetByNumRequest){
-        String orderNum = orderGetByNumRequest.getNumOrder();
+        String orderNum = orderGetByNumRequest.getNum_order();
+        System.out.println("Num Order en el controller: " + orderNum);
         return orderService.getRestaurantData(orderNum)
-                .thenCompose(orderWithRestaurantData ->
-                        userService.findUserByUid(orderWithRestaurantData.getCustomerUID(), orderWithRestaurantData))
-                .thenApply(orderGotByNumResponse ->
-                        new ResponseEntity<>(orderGotByNumResponse, HttpStatus.OK))
+                .thenApply(orderWithData ->
+                        new ResponseEntity<>(orderWithData, HttpStatus.OK))
                 .exceptionally(ex -> {
                     System.err.println("Error during request processing: " + ex.getMessage());
                     ex.printStackTrace();
@@ -89,14 +83,20 @@ public class OrderController {
     // ----------------------------------------------------------------------------------------------------------------
 
     @PostMapping("getClientOrders")
-    public CompletableFuture<ResponseEntity<ArrayList<OrderGetClientOrdersResponse>>> getClientOrders(@RequestBody UserReadRequest userRequest){
+    public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetClientOrdersResponse>>>> getClientOrders(@RequestBody UserReadRequest userRequest){
         return orderService.getClientOrders(userRequest.getUid())
-                .thenApply(ordersResponse ->new ResponseEntity<>(ordersResponse, HttpStatus.OK))
+                .thenApply(ordersResponse -> {
+                    Map<String, ArrayList<OrderGetClientOrdersResponse>> data = new HashMap<>();
+                    data.put("orders", ordersResponse);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                })
                 .exceptionally(ex -> {
                     System.err.println("Error during request processing: " + ex.getMessage());
                     ex.printStackTrace();
                     ArrayList<OrderGetClientOrdersResponse> errorResponse = new ArrayList<>();
-                    return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+                    Map<String, ArrayList<OrderGetClientOrdersResponse>> emptyResponse = new HashMap<>();
+                    emptyResponse.put("orders", errorResponse);
+                    return new ResponseEntity<>(emptyResponse, HttpStatus.OK);
                 });
     }
 

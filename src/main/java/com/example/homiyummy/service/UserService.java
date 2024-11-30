@@ -137,29 +137,38 @@ public class UserService {
 
 
     // MÉTOD O CON DOS PARÁMETROS: ACEPTA UN UID Y UN OBJETO RESTAURANTE
-    public CompletableFuture<OrderGotByNumResponse> findUserByUid(String uid, OrderWithRestaurantDataEntity orderWithRestaurantDataEntity){
-
-        CompletableFuture<OrderGotByNumResponse> futureUser = new CompletableFuture<>();
-
-        userRepository.find(uid, new UserRepository.FindUserCallback() {
-            @Override
-            public void onSuccess(UserReadResponse userReadResponse) {
-                OrderGotByNumResponse orderGotByNumResponse = new OrderGotByNumResponse();
-                orderGotByNumResponse.setName_restaurant(orderWithRestaurantDataEntity.getName_restaurant());
-                orderGotByNumResponse.setNum_order(orderWithRestaurantDataEntity.getNum_order());
-                orderGotByNumResponse.setDate(orderWithRestaurantDataEntity.getDate());
-                orderGotByNumResponse.setCustomer(userReadResponse);
-                orderGotByNumResponse.setMenus(orderWithRestaurantDataEntity.getMenus());
-                orderGotByNumResponse.setTotal(orderWithRestaurantDataEntity.getTotal());
-                futureUser.complete(orderGotByNumResponse);
-            }
-            @Override
-            public void onFailure(Exception exception) {
-                futureUser.completeExceptionally(exception);
-            }
-        });
-        return futureUser;
-    }
+//    public CompletableFuture<OrderGotByNumResponse> findUserByUid(String uid, OrderWithRestaurantDataEntity orderWithRestaurantDataEntity){
+//
+//        CompletableFuture<OrderGotByNumResponse> futureUser = new CompletableFuture<>();
+//
+//        userRepository.find(uid, new UserRepository.FindUserCallback() {
+//            @Override
+//            public void onSuccess(UserReadResponse userReadResponse) {
+////                OrderGotByNumResponse orderGotByNumResponse = new OrderGotByNumResponse();
+////                orderGotByNumResponse.setName(orderWithRestaurantDataEntity.getName());
+////                orderGotByNumResponse.setNum_order(orderWithRestaurantDataEntity.getNum_order());
+////                orderGotByNumResponse.setDate(orderWithRestaurantDataEntity.getDate());
+////                orderGotByNumResponse.setCustomer(userReadResponse);
+////                orderGotByNumResponse.setMenus(orderWithRestaurantDataEntity.getMenus());
+////                orderGotByNumResponse.setTotal(orderWithRestaurantDataEntity.getTotal());
+//
+//                OrderGotByNumResponse orderGotByNumResponse = new OrderGotByNumResponse();
+//                orderGotByNumResponse.setName(orderWithRestaurantDataEntity.getName());
+//                orderGotByNumResponse.setNum_order(orderWithRestaurantDataEntity.getNum_order());
+//                orderGotByNumResponse.setDate(orderWithRestaurantDataEntity.getDate());
+//                orderGotByNumResponse.setCustomer(userReadResponse);
+//                orderGotByNumResponse.setMenus(orderWithRestaurantDataEntity.getMenus());
+//                orderGotByNumResponse.setTotal(orderWithRestaurantDataEntity.getTotal());
+//
+//                futureUser.complete(orderGotByNumResponse);
+//            }
+//            @Override
+//            public void onFailure(Exception exception) {
+//                futureUser.completeExceptionally(exception);
+//            }
+//        });
+//        return futureUser;
+//    }
 
 // ----------------------------------------------------------------------------------------------------------------
 

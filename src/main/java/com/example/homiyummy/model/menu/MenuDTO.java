@@ -14,7 +14,6 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuDTO {
-    
 
     private String uid;
     private int id;
