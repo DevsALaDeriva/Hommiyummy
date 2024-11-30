@@ -157,15 +157,11 @@ public class OrderRepository {
                         if(ordersRef.exists()){
 
                             for(DataSnapshot order : ordersRef.getChildren()){
-                                System.out.println("Child key: " + order.getKey() + ", value: " + order.getValue());
-                                if(order.child("num_order").getValue(String.class).equals(orderNumber)){
-                                    //String restUID = restNode.getKey();                             // GUARDAMOS EL UID DEL RESTAURANTE QUE TIENE EL PEDIDO
-                                    String customerUID = order.child("uidCustomer").getValue(String.class); // GUARDAMOS EL UID DEL CLIENTE
-                                    //System.out.println("UID del usuario ------------: " + customerUID);
+                                if(order.child("numOrder").getValue(String.class).equals(orderNumber)){
+                                    String restUID = restNode.getKey();                             // GUARDAMOS EL UID DEL RESTAURANTE QUE TIENE EL PEDIDO
+                                    String customerUID = order.child("customerUid").getValue(String.class); // GUARDAMOS EL UID DEL CLIENTE
                                     String restName = restNode.child("name").getValue(String.class); // GUARDAMOS NOMBRE DEL RESTAURANTE
                                     int date = order.child("date").getValue(Integer.class); // GUARDAMOS FECHA DEL PEDIDO
-                                    //System.out.println("date ------------: " + date);
-
                                     float totalOrder = order.child("total").getValue(Float.class); // GUARDAMOS TOTAL DEL PEDIDO
 
                                     DataSnapshot menusSnapshot = order.child("menus");
@@ -227,14 +223,6 @@ public class OrderRepository {
 
                                         OrderWithRestaurantDataEntity dataEntity =
                                                 new OrderWithRestaurantDataEntity(restName, orderNumber, date, menusInOrder, totalOrder, customerUID);
-
-                                        //System.out.println("Nombre restaurante: " + dataEntity.getName_restaurant());
-                                       // System.out.println("Número de pedido: " + dataEntity.getNum_order());
-                                        //System.out.println("Fecha: " + dataEntity.getDate());
-                                       // System.out.println("Cantidad de menús: " + dataEntity.getMenus());
-                                        //System.out.println("Total: " +dataEntity.getTotal());
-                                        //System.out.println("UID del usuario: " + dataEntity.getCustomerUID());
-
                                         callback.onFindingSuccess(dataEntity);
                                     }
                                 }
