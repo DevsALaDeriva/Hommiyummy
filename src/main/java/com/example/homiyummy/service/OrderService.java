@@ -1,7 +1,10 @@
 package com.example.homiyummy.service;
 
+import com.example.homiyummy.model.course.CourseResponse;
+import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
 import com.example.homiyummy.model.order.*;
 import com.example.homiyummy.model.restaurant.RestaurantGetByOrderNumberEntity;
+import com.example.homiyummy.model.user.UserInGetTasksResponse;
 import com.example.homiyummy.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -171,4 +174,74 @@ public class OrderService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    public CompletableFuture<ArrayList<OrderGetTasksResponse>> getTasks(OrderGetTasksRequest request){
+        //System.out.println(request.getUid() + " - " + request.getStart_date() + " - " + request.getEnd_date());
+
+        CompletableFuture<ArrayList<OrderGetTasksResponse>> future = new CompletableFuture<>();
+
+        ArrayList<OrderGetTasksResponse> tasksResponse = new ArrayList<>();
+
+        orderRepository.getDaylyTask(request, new OrderRepository.OnDaylyTaskFindingCallback() {
+            @Override
+            public void onFindingSuccess(ArrayList<OrderGetTasksEntity> tasksEntity) {
+
+                System.out.println(tasksEntity.size());
+
+                for(OrderGetTasksEntity task : tasksEntity){
+
+                    // CREAMOS EL ID
+                    String menuIdResponse = task.getNum_order();
+
+                    // CREAMOS EL MENÚ
+                    MenuInGetTasksResponse menuResponse = new MenuInGetTasksResponse();
+                    menuResponse.setId(task.getMenu().getId());
+                    menuResponse.setDate(task.getMenu().getDate());
+
+                    CourseResponse firstResponse = new CourseResponse();
+                    firstResponse.setName(task.getMenu().getFirst_course().getName());
+                    firstResponse.setIngredients(task.getMenu().getFirst_course().getIngredients());
+                    firstResponse.setAllergerns(task.getMenu().getFirst_course().getAllergens());
+                    firstResponse.setImage(task.getMenu().getFirst_course().getImage());
+
+                    CourseResponse secondResponse = new CourseResponse();
+                    secondResponse.setName(task.getMenu().getSecond_course().getName());
+                    secondResponse.setIngredients(task.getMenu().getSecond_course().getIngredients());
+                    secondResponse.setAllergerns(task.getMenu().getSecond_course().getAllergens());
+                    secondResponse.setImage(task.getMenu().getSecond_course().getImage());
+
+                    CourseResponse dessertResponse = new CourseResponse();
+                    dessertResponse.setName(task.getMenu().getDessert().getName());
+                    dessertResponse.setIngredients(task.getMenu().getDessert().getIngredients());
+                    dessertResponse.setAllergerns(task.getMenu().getDessert().getAllergens());
+                    dessertResponse.setImage(task.getMenu().getDessert().getImage());
+
+                    menuResponse.setFirst_course(firstResponse);
+                    menuResponse.setSecond_course(secondResponse);
+                    menuResponse.setDessert(dessertResponse);
+
+
+                    // CREAMOS USUARIO
+                    UserInGetTasksResponse userResponse = new UserInGetTasksResponse();
+                    userResponse.setName(task.getCustomer().getName());
+                    userResponse.setSurname(task.getCustomer().getSurname());
+                    userResponse.setPhone(task.getCustomer().getPhone());
+                    userResponse.setEmail(task.getCustomer().getEmail());
+                    userResponse.setAllergens(task.getCustomer().getAllergens());
+
+
+                    OrderGetTasksResponse orderResponse = new OrderGetTasksResponse(menuIdResponse, menuResponse, userResponse);
+
+                    tasksResponse.add(orderResponse);
+                }
+            future.complete(tasksResponse);
+            }
+
+            @Override
+            public void onFindingFailure(Exception exception) {
+                future.completeExceptionally(exception);
+            }
+        });
+
+        return future;
+    }
 }

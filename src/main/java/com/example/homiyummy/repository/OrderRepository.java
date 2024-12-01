@@ -1,23 +1,17 @@
 package com.example.homiyummy.repository;
 
-import com.example.homiyummy.model.dish.DishEntity;
-import com.example.homiyummy.model.dish.DishInOrderEntity;
-import com.example.homiyummy.model.menu.MenuEntity;
+import com.example.homiyummy.model.course.CourseEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
+import com.example.homiyummy.model.menu.MenuInGetTaskEntity;
 import com.example.homiyummy.model.order.*;
-import com.example.homiyummy.model.restaurant.RestaurantGetByOrderNumberEntity;
+import com.example.homiyummy.model.user.UserInGetTaskEntity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class OrderRepository {
@@ -214,7 +208,6 @@ public class OrderRepository {
                     callback.onFindingFailure(databaseError.toException());
             }
         });
-
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -309,7 +302,6 @@ public class OrderRepository {
         allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //System.out.println("DataSnapshot: " + dataSnapshot.getValue());
                 if(dataSnapshot.exists()){
 
                     ArrayList<OrderGetClientOrdersEntity> allOrdersEntity = new ArrayList<>(); // GUARDA TODOS LOS PEDIDOS DEL CLIENTE
@@ -494,6 +486,129 @@ public class OrderRepository {
 
     public interface OnRestaurantOrdersGotCallback{
         void onFindingSuccess(ArrayList<OrderGetRestaurantOrdersEntity> ordersEntity);
+        void onFindingFailure(Exception exception);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public void getDaylyTask (OrderGetTasksRequest request, OnDaylyTaskFindingCallback callback){
+
+        int start_date = request.getStart_date();
+        int end_date = request.getEnd_date();
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try{
+                    DataSnapshot restSnap = dataSnapshot.child("restaurants").child(request.getUid());
+                    DataSnapshot ordersSnap = restSnap.child("orders/items");
+
+                    if(ordersSnap.exists()){
+
+                        ArrayList<OrderGetTasksEntity> allTaskEntity = new ArrayList<>();
+
+                        for(DataSnapshot order : ordersSnap.getChildren()){
+                            DataSnapshot menusInOrderRef = order.child("menus");
+
+                            for(DataSnapshot menu : menusInOrderRef.getChildren()){
+
+                                int menuId = menu.child("id").getValue(Integer.class); // ID DEL MENÚ EN EL PEDIDO
+                                int menuDate = restSnap.child("menus/items").child(String.valueOf(menuId)).child("date").getValue(Integer.class);
+                                if( menuDate >= start_date && menuDate <= end_date){
+
+                                    // 1º --- OBTENEMOS EL NÚMERO DE PEDIDO
+                                    String num_order = order.child("num_order").getValue(String.class);
+
+                                    // 2º --- CREAMOS EL OBJETO MENÚ
+                                    int firstNum = menu.child("first_course").getValue(Integer.class);
+                                    String firstName = restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("name").getValue(String.class);
+                                    String ingsFirst = restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("ingredients").getValue(String.class);
+                                    String imgFirst = restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("image").getValue(String.class);
+                                    String allAllergensFirst = "";
+                                    for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("allergens").getChildren()){
+                                        allAllergensFirst += allergen.getValue(String.class) + ", ";
+                                    }
+                                    if(allAllergensFirst.length() > 4){
+                                        allAllergensFirst = allAllergensFirst.substring(0, allAllergensFirst.length() - 2);
+                                    }
+                                    CourseEntity first_course = new CourseEntity(firstName, ingsFirst, allAllergensFirst, imgFirst);
+
+
+                                    int secondNum = menu.child("second_course").getValue(Integer.class);
+                                    String secondName = restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("name").getValue(String.class);
+                                    String ingsSecond = restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("ingredients").getValue(String.class);
+                                    String imgSecond = restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("image").getValue(String.class);
+                                    String allergensSecond = "";
+                                    for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("allergens").getChildren()){
+                                        allergensSecond += allergen.getValue(String.class) + ", ";
+                                    }
+                                    if(allergensSecond.length() > 4) {
+                                        allergensSecond = allergensSecond.substring(0, allergensSecond.length() - 2);
+                                    }
+                                    CourseEntity second_course = new CourseEntity(secondName, ingsSecond, allergensSecond, imgSecond);
+
+
+                                    int dessertNum = menu.child("dessert").getValue(Integer.class);
+                                    String dessertName = restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("name").getValue(String.class);
+                                    String ingsDessert = restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("ingredients").getValue(String.class);
+                                    String imgDessert = restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("image").getValue(String.class);
+                                    String allergensDessert = "";
+                                    for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("allergens").getChildren()){
+                                        allergensDessert += allergen.getValue(String.class) + ", ";
+                                    }
+                                    if(allergensDessert.length() > 4){
+                                        allergensDessert = allergensDessert.substring(0, allergensDessert.length() - 2);
+                                    }
+                                    CourseEntity dessert = new CourseEntity(dessertName, ingsDessert, allergensDessert, imgDessert);
+
+
+                                    MenuInGetTaskEntity menuEntity = new MenuInGetTaskEntity(menuId, menuDate, first_course, second_course, dessert);
+
+
+                                    // 3º --- OBTENEMOS EL CLIENTE
+                                    String uidCustomer = order.child("uidCustomer").getValue(String.class);
+                                    DataSnapshot userSnap = dataSnapshot.child("users").child(uidCustomer);
+
+                                    String clientName = userSnap.child("name").getValue(String.class);
+                                    String clientSurname = userSnap.child("surname").getValue(String.class);
+                                    String clientPhone = userSnap.child("phone").getValue(String.class);
+                                    String clientEmail = userSnap.child("email").getValue(String.class);
+                                    ArrayList<String> clientAllergens = new ArrayList<>();
+                                    for(DataSnapshot al : userSnap.child("allergens").getChildren()){
+                                        clientAllergens.add(al.getValue(String.class));
+                                    }
+
+                                    UserInGetTaskEntity userEntity = new UserInGetTaskEntity(clientName, clientSurname, clientPhone, clientEmail, clientAllergens);
+
+                                    // 4º --- CREAMOS EL OBJETO COMPUESTO POR LOS TRES
+                                    OrderGetTasksEntity taskEntity = new OrderGetTasksEntity(num_order, menuEntity, userEntity);
+                                    allTaskEntity.add(taskEntity);
+                                }
+                            }
+                        }
+                        callback.onFindingSuccess(allTaskEntity);
+                    }
+                    else{
+                        callback.onFindingFailure(new Exception("No existen tareas para este restaurante "));
+                    }
+                }
+                catch (Exception e) {
+                    //System.out.println("Se ha producido una excepción: " + e.getMessage());
+                    e.printStackTrace();
+                    callback.onFindingFailure(e);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                    callback.onFindingFailure(databaseError.toException());
+            }
+        });
+    }
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public interface OnDaylyTaskFindingCallback{
+        void onFindingSuccess(ArrayList<OrderGetTasksEntity> tasksEntity);
         void onFindingFailure(Exception exception);
     }
 

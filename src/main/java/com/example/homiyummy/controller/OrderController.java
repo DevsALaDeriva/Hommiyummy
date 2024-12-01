@@ -1,5 +1,6 @@
 package com.example.homiyummy.controller;
 
+import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
 import com.example.homiyummy.model.order.*;
 import com.example.homiyummy.model.restaurant.RestaurantReadRequest;
 import com.example.homiyummy.model.user.UserReadRequest;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,10 +106,8 @@ public class OrderController {
     public CompletableFuture<ResponseEntity<ArrayList<OrderGetRestaurantOrdersResponse>>> getRestaurantOrders(@RequestBody RestaurantReadRequest request){
         return orderService.getRestOrders(request.getUid())
                 .thenApply(response ->{
-                    //System.out.println("Cantidad de órdenes q llegan: " + response.size());
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }).exceptionally(ex -> {
-                    //System.err.println("Error en el proceso en generallll-------------------------------: " + ex.getMessage());
                     ex.printStackTrace();
                     ArrayList<OrderGetRestaurantOrdersResponse> errorResponse = new ArrayList<>();
                     return new ResponseEntity<>(errorResponse, HttpStatus.OK);
@@ -119,6 +117,23 @@ public class OrderController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    @PostMapping("getRestaurantDayWork")
+    public CompletableFuture<ResponseEntity<Map<String,ArrayList<OrderGetTasksResponse>>>> getTasks(@RequestBody OrderGetTasksRequest request){
+        //System.out.println(request.getUid() + " - " + request.getStart_date() + " - " + request.getEnd_date());
+        return orderService.getTasks(request)
+                .thenApply(tasks -> {
+                    Map<String,ArrayList<OrderGetTasksResponse>> mapResponse = new HashMap<>();
+                    mapResponse.put("menus", tasks);
+                    return new ResponseEntity<>(mapResponse, HttpStatus.OK);
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    ArrayList<OrderGetTasksResponse> emptyArray = new ArrayList<>();
+                    Map<String, ArrayList<OrderGetTasksResponse>> mapEmpty = new HashMap<>();
+                    mapEmpty.put("menus", emptyArray);
+                    return new ResponseEntity<>(mapEmpty, HttpStatus.OK);
+                });
+    }
 
+    // ----------------------------------------------------------------------------------------------------------------
 
 }
