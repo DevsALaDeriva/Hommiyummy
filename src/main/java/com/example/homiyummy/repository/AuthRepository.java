@@ -17,21 +17,29 @@ public class AuthRepository {
         this.firebaseAuth = firebaseAuth;
     }
 
+    // BORRAR LO COMENTADO SI FUNCIONA EL MÉTO DO DE ABAJO
 
-
+//    public CompletableFuture<String> getUidFromEmail(String email) {
+//        CompletableFuture<String> futureId = new CompletableFuture<>();
+//        try {
+//            UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmail(email);
+//            //System.out.println("UID: " + userRecord.getUid());
+//            futureId.complete(userRecord.getUid()); // COMPLETA EL FUTURO CON EL UID DEL USUARIO SI LO ENCUENTRA
+//        } catch (FirebaseAuthException e) {
+//            futureId.complete("");      // SI NO LO ENCUENTRA LANZA UNA EXCEPCION
+//            //futureId.completeExceptionally(e);      // SI NO LO ENCUENTRA LANZA UNA EXCEPCION
+//        }
+//        return futureId;
+//    }
 
     public CompletableFuture<String> getUidFromEmail(String email) {
         CompletableFuture<String> futureId = new CompletableFuture<>();
         try {
             UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmail(email);
-            //System.out.println("UID: " + userRecord.getUid());
             futureId.complete(userRecord.getUid()); // COMPLETA EL FUTURO CON EL UID DEL USUARIO SI LO ENCUENTRA
         } catch (FirebaseAuthException e) {
-            futureId.complete("");      // SI NO LO ENCUENTRA LANZA UNA EXCEPCION
-            //futureId.completeExceptionally(e);      // SI NO LO ENCUENTRA LANZA UNA EXCEPCION
+            futureId.completeExceptionally(e);      // SI NO LO ENCUENTRA LANZA UNA EXCEPCION
         }
         return futureId;
     }
-
-
 }

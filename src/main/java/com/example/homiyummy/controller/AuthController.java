@@ -1,6 +1,5 @@
 package com.example.homiyummy.controller;
 
-import com.example.homiyummy.database.DeleteAllUsers;
 import com.example.homiyummy.model.auth.ChangePassRequest;
 import com.example.homiyummy.model.auth.EmailRequest;
 import com.example.homiyummy.model.auth.LoginRequestDTO;
@@ -56,7 +55,6 @@ public class AuthController {
             LoginResponseDTO errorResponse = new LoginResponseDTO("", "");
             CompletableFuture<ResponseEntity<LoginResponseDTO>> failedFuture = new CompletableFuture<>();
             failedFuture.complete(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse));
-            //System.out.println("---------- ENTRA ------- ");
             return failedFuture;
         }
     }
@@ -68,7 +66,9 @@ public class AuthController {
         return authService.getUidFromEmail(emailRequest.getEmail())
                 .thenApply(uid -> ResponseEntity.ok("{\"uid\": \"" + uid + "\"}"))
                 .exceptionally(e -> {
-                    throw new RuntimeException(e);
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                    return new ResponseEntity<>("{\"uid\": }", HttpStatus.NOT_FOUND);
                 });
     }
 
@@ -95,9 +95,9 @@ public class AuthController {
 // ------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/deleteAllFuckingUsers19JuJu")
-    public void changePassword() {
+    public void deleteAllUsers() {
         System.out.println("borrando");
-        //DeleteAllUsers.deleteAllUsers();
+        //DeleteAllUsers.deleteAllUsers();  // ---------------> COMENTADO POR SEGURIDAD (DESCOMENTAR SI SE QUIERE USAR)
     }
 
 

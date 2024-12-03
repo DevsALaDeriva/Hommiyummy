@@ -27,22 +27,21 @@ public class AuthService {
     private final DatabaseReference bbddRef;
     private final FirebaseAuth firebaseAuth;
     private final AuthRepository authRepository;
-    private final Environment environment; // Es una interfaz de Spring que proporciona acceso a variables de entorno y propiedades configuradas en la aplicación, como las de application.properties o application.yml. Puedes usarla para obtener valores de configuración, como URLs, claves de API, configuraciones de bases de datos, etc.
-                                           // Permite acceder a valores de configuración en cualquier método de la clase, generalmente a través de environment.getProperty("clave.de.propiedad").
-                                           // Es útil cuando quieres acceder a diferentes propiedades en varios lugares del código, o cuando prefieres no inyectar cada propiedad individualmente con @Value.
-
+    //private final Environment environment; // Es una interfaz de Spring que proporciona acceso a variables de entorno y propiedades configuradas en la aplicación, como las de application.properties o application.yml. Puedes usarla para obtener valores de configuración, como URLs, claves de API, configuraciones de bases de datos, etc.
+                                             // Permite acceder a valores de configuración en cualquier métod o de la clase, generalmente a través de environment.getProperty("clave.de.propiedad").
+                                             // Es útil cuando quieres acceder a diferentes propiedades en varios lugares del código, o cuando prefieres no inyectar cada propiedad individualmente con @Value.
+                                             // FINALMENTE USAMOS System.getenv EN LUGAR DE ENVIROMENT PARA NO TENER LAS VARIABLES DEFINIDAS EN application.properties AL NO DEJARNOS EL CLOUD SUBIR LA API.
     // CONSTRUCTOR PARA INYECTAR FIREBASEAPP
     public AuthService(FirebaseApp firebaseApp,
                        UserRepository userRepository,
                        FirebaseAuth firebaseAuth,
-                       Environment environment,
+                       //Environment environment,
                        AuthRepository authRepository){
         bbddRef = FirebaseDatabase.getInstance().getReference(); // INYECTA LA REFERENCIA DE LA BBDD
         this.firebaseAuth = firebaseAuth;
-        this.environment = environment;
+        //this.environment = environment;
         this.authRepository = authRepository;
         this.userRepository = userRepository;
-
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -101,19 +100,7 @@ public class AuthService {
         return authRepository.getUidFromEmail(email);
     }
 
-//    public Boolean changeUserPassword(String uid, String newPass) {
-//
-//        try {
-//            UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid).setPassword(newPass);
-//            UserRecord userRecord = FirebaseAuth.getInstance().updateUser(request);
-//            System.out.println("Contraseña actualizada para el usuario: " + userRecord.getUid());
-//            return true;
-//        } catch (FirebaseAuthException e) {
-//            System.err.println("Error al actualizar la contraseña: " + e.getMessage());
-//            return false;
-//        }
-//
-//    }
+    // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<Map<String, Boolean>> changeUserPassword(String uid, String newPass) {
 
@@ -122,7 +109,6 @@ public class AuthService {
         try {
             UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid).setPassword(newPass);  // CREAMOS UNA PETICIÓN PARA CAMBIAR LA CONTRASEÑA
             UserRecord userRecord = FirebaseAuth.getInstance().updateUser(request);                     // ACTUALIZAMOS EL USUARIO CON LA NUEVA CONTRASEÑA
-            //System.out.println("Contraseña actualizada para el usuario: " + userRecord.getUid());
 
             Map<String, Boolean> result = new HashMap<>();  // MAP EN EL QUE METEREMOS EL RESULTADO QUE ESPERA EL FRONTEND
             result.put("change", true);                     // FORMATO Q ESPERA RECIBIR EL FRONTEND
@@ -132,8 +118,6 @@ public class AuthService {
             Map<String, Boolean> errorResult = new HashMap<>();
             errorResult.put("change", false); // RESPUESTA AL FRONTEND SI LA CONTRASEÑA NO CUMPLE
             data.complete(errorResult);
-
-            //System.err.println("Error al actualizar la contraseña: " + e.getMessage());
         }
 
         return data;
