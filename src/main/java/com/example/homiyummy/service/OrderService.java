@@ -78,6 +78,7 @@ public class OrderService {
                 orderResponse.setDate(orderGotByNumEntity.getDate());
                 orderResponse.setUidCustomer(orderGotByNumEntity.getUidCustomer());
                 orderResponse.setMenus(orderGotByNumEntity.getMenus());
+                orderResponse.setStatus(orderGotByNumEntity.getStatus());
                 orderResponse.setTotal(orderGotByNumEntity.getTotal());
 
                 futureRestData.complete(orderResponse);
@@ -101,14 +102,11 @@ public class OrderService {
             @Override
             public void onFindingSuccess(ArrayList<OrderGetClientOrdersEntity> ordersEntity) {
 
-
                 ArrayList<OrderGetClientOrdersResponse> allOrders = new ArrayList<>();
 
                 for(OrderGetClientOrdersEntity order: ordersEntity ){
 
                     OrderGetClientOrdersResponse orderResponse = new OrderGetClientOrdersResponse();
-
-                    System.out.println("NumOrder: " + order.getNum_order() +" - Status Entity: "  + order.getStatus());
 
                     orderResponse.setName_restaurant(order.getName_restaurant());
                     orderResponse.setImage_restaurant(order.getImage_restaurant());
@@ -117,10 +115,6 @@ public class OrderService {
                     orderResponse.setTotal(order.getTotal());
                     orderResponse.setStatus(order.getStatus());
                     allOrders.add(orderResponse);
-                }
-
-                for(OrderGetClientOrdersResponse order: allOrders ){
-                    System.out.println("NumOrder: " + order.getNum_order() + " - Status Response: "  + order.getStatus());
                 }
 
                 futureResponse.complete(allOrders);
@@ -185,8 +179,6 @@ public class OrderService {
             @Override
             public void onFindingSuccess(ArrayList<OrderGetTasksEntity> tasksEntity) {
 
-                System.out.println(tasksEntity.size());
-
                 for(OrderGetTasksEntity task : tasksEntity){
 
                     // CREAMOS EL ID
@@ -219,7 +211,6 @@ public class OrderService {
                     menuResponse.setSecond_course(secondResponse);
                     menuResponse.setDessert(dessertResponse);
 
-
                     // CREAMOS USUARIO
                     UserInGetTasksResponse userResponse = new UserInGetTasksResponse();
                     userResponse.setName(task.getCustomer().getName());
@@ -227,7 +218,6 @@ public class OrderService {
                     userResponse.setPhone(task.getCustomer().getPhone());
                     userResponse.setEmail(task.getCustomer().getEmail());
                     userResponse.setAllergens(task.getCustomer().getAllergens());
-
 
                     OrderGetTasksResponse orderResponse = new OrderGetTasksResponse(menuIdResponse, menuResponse, userResponse);
 
@@ -244,4 +234,27 @@ public class OrderService {
 
         return future;
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    public CompletableFuture<OrderUpdateStatusResponse> updateMenu (OrderUpdateStatusRequest request){
+        CompletableFuture<OrderUpdateStatusResponse> future = new CompletableFuture<>();
+        orderRepository.updateMenu(request, new OrderRepository.OnStatusFindingCallback() {
+            @Override
+            public void onFindingSuccess(Boolean result) {
+                OrderUpdateStatusResponse response = new OrderUpdateStatusResponse();
+                response.setChange(result);
+                future.complete(response);
+            }
+
+            @Override
+            public void onFindingFailure(Exception exception) {
+                future.completeExceptionally(exception);
+            }
+        });
+        return future;
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
 }

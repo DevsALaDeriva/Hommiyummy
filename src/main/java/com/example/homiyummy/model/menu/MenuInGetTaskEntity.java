@@ -1,10 +1,9 @@
 package com.example.homiyummy.model.menu;
 
 import com.example.homiyummy.model.course.CourseEntity;
-import com.example.homiyummy.model.course.CourseResponse;
 import lombok.*;
 
-@AllArgsConstructor // CONSTRUCTOR PRINCIPAL USADO PARA CREAR UN USUARIO
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Getter

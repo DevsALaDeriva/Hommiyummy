@@ -16,5 +16,6 @@ public class OrderGotByNumEntity {
     private int date = 0;
     private String uidCustomer = "";
     private ArrayList<MenuGetByNumEntity> menus = new ArrayList<>();
+    private String status = "";
     private float total = 0;
 }

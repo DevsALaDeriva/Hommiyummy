@@ -4,6 +4,7 @@ import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
 import com.example.homiyummy.model.order.*;
 import com.example.homiyummy.model.restaurant.RestaurantReadRequest;
 import com.example.homiyummy.model.user.UserReadRequest;
+import com.example.homiyummy.repository.OrderRepository;
 import com.example.homiyummy.service.OrderService;
 import com.example.homiyummy.service.RestaurantService;
 import com.example.homiyummy.service.UserService;
@@ -26,11 +27,13 @@ public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
     private final RestaurantService restaurantService;
+    private final OrderRepository orderRepository;
 
-    public OrderController(OrderService orderService, UserService userService, RestaurantService restaurantService){
+    public OrderController(OrderService orderService, UserService userService, RestaurantService restaurantService, OrderRepository orderRepository){
         this.orderService = orderService;
         this.userService = userService;
         this.restaurantService = restaurantService;
+        this.orderRepository = orderRepository;
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -60,7 +63,6 @@ public class OrderController {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)                          // -----X----X----> REVISAR ---X---X---
                             .body(new OrderCreatedResponse());
                 });
-
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -103,16 +105,19 @@ public class OrderController {
     // ----------------------------------------------------------------------------------------------------------------
 
     @PostMapping("getRestaurantOrders")
-    public CompletableFuture<ResponseEntity<ArrayList<OrderGetRestaurantOrdersResponse>>> getRestaurantOrders(@RequestBody RestaurantReadRequest request){
+    public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetRestaurantOrdersResponse>>>> getRestaurantOrders(@RequestBody RestaurantReadRequest request){
         return orderService.getRestOrders(request.getUid())
-                .thenApply(response ->{
+                .thenApply(ordersResponse ->{
+                    Map<String, ArrayList<OrderGetRestaurantOrdersResponse>> response = new HashMap<>();
+                    response.put("orders", ordersResponse);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }).exceptionally(ex -> {
                     ex.printStackTrace();
+                    Map<String, ArrayList<OrderGetRestaurantOrdersResponse>> emptyResponse = new HashMap<>();
                     ArrayList<OrderGetRestaurantOrdersResponse> errorResponse = new ArrayList<>();
-                    return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+                    emptyResponse.put("orders", errorResponse);
+                    return new ResponseEntity<>(emptyResponse, HttpStatus.OK);
                 });
-
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -132,6 +137,20 @@ public class OrderController {
                     mapEmpty.put("menus", emptyArray);
                     return new ResponseEntity<>(mapEmpty, HttpStatus.OK);
                 });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    @PostMapping("updateMenuStatus")
+    public CompletableFuture<ResponseEntity<OrderUpdateStatusResponse>> updateMenuStatus(@RequestBody OrderUpdateStatusRequest request){
+            return orderService.updateMenu(request)
+                    .thenApply(response -> new ResponseEntity<>(response, HttpStatus.OK))
+                    .exceptionally(ex -> {
+                        ex.printStackTrace();
+                        OrderUpdateStatusResponse res = new OrderUpdateStatusResponse();
+                        res.setChange(false);
+                        return new ResponseEntity<>(res, HttpStatus.OK);
+                    });
     }
 
     // ----------------------------------------------------------------------------------------------------------------
