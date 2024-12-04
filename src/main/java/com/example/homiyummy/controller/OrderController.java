@@ -84,63 +84,6 @@ public class OrderController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    @PostMapping("getClientOrders")
-    public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetClientOrdersResponse>>>> getClientOrders(@RequestBody UserReadRequest userRequest){
-        return orderService.getClientOrders(userRequest.getUid())
-                .thenApply(ordersResponse -> {
-                    Map<String, ArrayList<OrderGetClientOrdersResponse>> data = new HashMap<>();
-                    data.put("orders", ordersResponse);
-                    return new ResponseEntity<>(data, HttpStatus.OK);
-                })
-                .exceptionally(ex -> {
-                    System.err.println("Error during request processing: " + ex.getMessage());
-                    ex.printStackTrace();
-                    ArrayList<OrderGetClientOrdersResponse> errorResponse = new ArrayList<>();
-                    Map<String, ArrayList<OrderGetClientOrdersResponse>> emptyResponse = new HashMap<>();
-                    emptyResponse.put("orders", errorResponse);
-                    return new ResponseEntity<>(emptyResponse, HttpStatus.OK);
-                });
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    @PostMapping("getRestaurantOrders")
-    public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetRestaurantOrdersResponse>>>> getRestaurantOrders(@RequestBody RestaurantReadRequest request){
-        return orderService.getRestOrders(request.getUid())
-                .thenApply(ordersResponse ->{
-                    Map<String, ArrayList<OrderGetRestaurantOrdersResponse>> response = new HashMap<>();
-                    response.put("orders", ordersResponse);
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                }).exceptionally(ex -> {
-                    ex.printStackTrace();
-                    Map<String, ArrayList<OrderGetRestaurantOrdersResponse>> emptyResponse = new HashMap<>();
-                    ArrayList<OrderGetRestaurantOrdersResponse> errorResponse = new ArrayList<>();
-                    emptyResponse.put("orders", errorResponse);
-                    return new ResponseEntity<>(emptyResponse, HttpStatus.OK);
-                });
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    @PostMapping("getRestaurantDayWork")
-    public CompletableFuture<ResponseEntity<Map<String,ArrayList<OrderGetTasksResponse>>>> getTasks(@RequestBody OrderGetTasksRequest request){
-        //System.out.println(request.getUid() + " - " + request.getStart_date() + " - " + request.getEnd_date());
-        return orderService.getTasks(request)
-                .thenApply(tasks -> {
-                    Map<String,ArrayList<OrderGetTasksResponse>> mapResponse = new HashMap<>();
-                    mapResponse.put("menus", tasks);
-                    return new ResponseEntity<>(mapResponse, HttpStatus.OK);
-                }).exceptionally(ex -> {
-                    ex.printStackTrace();
-                    ArrayList<OrderGetTasksResponse> emptyArray = new ArrayList<>();
-                    Map<String, ArrayList<OrderGetTasksResponse>> mapEmpty = new HashMap<>();
-                    mapEmpty.put("menus", emptyArray);
-                    return new ResponseEntity<>(mapEmpty, HttpStatus.OK);
-                });
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-
     @PostMapping("updateMenuStatus")
     public CompletableFuture<ResponseEntity<OrderUpdateStatusResponse>> updateMenuStatus(@RequestBody OrderUpdateStatusRequest request){
             return orderService.updateMenu(request)

@@ -3,12 +3,12 @@ package com.example.homiyummy.controller;
 import com.example.homiyummy.model.dish.DishAllResponse;
 import com.example.homiyummy.model.menu.MenuByPeriodRequest;
 import com.example.homiyummy.model.menu.MenuResponseByPeriod;
+import com.example.homiyummy.model.order.OrderGetRestaurantOrdersResponse;
+import com.example.homiyummy.model.order.OrderGetTasksRequest;
+import com.example.homiyummy.model.order.OrderGetTasksResponse;
 import com.example.homiyummy.model.restaurant.*;
 import com.example.homiyummy.model.user.UserReadRequest;
-import com.example.homiyummy.service.AuthService;
-import com.example.homiyummy.service.DishService;
-import com.example.homiyummy.service.MenuService;
-import com.example.homiyummy.service.RestaurantService;
+import com.example.homiyummy.service.*;
 import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,16 +28,20 @@ public class RestaurantController {
     private final AuthService authService;
     private final DishService dishService;
     private final MenuService menuService;
+    private final OrderService orderService;
 
     private final RestaurantService restaurantService;
     public RestaurantController(
             AuthService authService,
             DishService dishService,
-            MenuService menuService, RestaurantService restaurantService) {
+            MenuService menuService,
+            RestaurantService restaurantService,
+            OrderService orderService) {
         this.authService = authService;
         this.dishService = dishService;
         this.menuService = menuService;
         this.restaurantService = restaurantService;
+        this.orderService = orderService;
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -170,7 +174,40 @@ public class RestaurantController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    @PostMapping("getOrders")
+    public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetRestaurantOrdersResponse>>>> getRestaurantOrders(@RequestBody RestaurantReadRequest request){
+        return orderService.getRestOrders(request.getUid())
+                .thenApply(ordersResponse ->{
+                    Map<String, ArrayList<OrderGetRestaurantOrdersResponse>> response = new HashMap<>();
+                    response.put("orders", ordersResponse);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    Map<String, ArrayList<OrderGetRestaurantOrdersResponse>> emptyResponse = new HashMap<>();
+                    ArrayList<OrderGetRestaurantOrdersResponse> errorResponse = new ArrayList<>();
+                    emptyResponse.put("orders", errorResponse);
+                    return new ResponseEntity<>(emptyResponse, HttpStatus.OK);
+                });
+    }
 
+    // ----------------------------------------------------------------------------------------------------------------
+
+    @PostMapping("getDayWork")
+    public CompletableFuture<ResponseEntity<Map<String,ArrayList<OrderGetTasksResponse>>>> getTasks(@RequestBody OrderGetTasksRequest request){
+        //System.out.println(request.getUid() + " - " + request.getStart_date() + " - " + request.getEnd_date());
+        return orderService.getTasks(request)
+                .thenApply(tasks -> {
+                    Map<String,ArrayList<OrderGetTasksResponse>> mapResponse = new HashMap<>();
+                    mapResponse.put("menus", tasks);
+                    return new ResponseEntity<>(mapResponse, HttpStatus.OK);
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    ArrayList<OrderGetTasksResponse> emptyArray = new ArrayList<>();
+                    Map<String, ArrayList<OrderGetTasksResponse>> mapEmpty = new HashMap<>();
+                    mapEmpty.put("menus", emptyArray);
+                    return new ResponseEntity<>(mapEmpty, HttpStatus.OK);
+                });
+    }
 
 }
 

@@ -1,10 +1,12 @@
 package com.example.homiyummy.controller;
 
+import com.example.homiyummy.model.order.OrderGetClientOrdersResponse;
 import com.example.homiyummy.model.user.UserDTO;
 import com.example.homiyummy.model.user.UserReadRequest;
 import com.example.homiyummy.model.user.UserReadResponse;
 import com.example.homiyummy.model.user.UserResponse;
 import com.example.homiyummy.service.AuthService;
+import com.example.homiyummy.service.OrderService;
 import com.example.homiyummy.service.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.http.HttpStatus;
@@ -26,12 +28,15 @@ public class UserController {
 
     private final UserService userService;
     private final AuthService authService;
+    private final OrderService orderService;
 
     public UserController(UserService userService,
-                          AuthService authService
+                          AuthService authService,
+                          OrderService orderService
     ) {
         this.authService = authService;
         this.userService = userService;
+        this.orderService = orderService;
     }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -113,6 +118,23 @@ public class UserController {
 
 // ------------------------------------------------------------------------------------------------------------
 
+    @PostMapping("getOrders")
+    public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetClientOrdersResponse>>>> getClientOrders(@RequestBody UserReadRequest userRequest){
+        return orderService.getClientOrders(userRequest.getUid())
+                .thenApply(ordersResponse -> {
+                    Map<String, ArrayList<OrderGetClientOrdersResponse>> data = new HashMap<>();
+                    data.put("orders", ordersResponse);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                })
+                .exceptionally(ex -> {
+                    System.err.println("Error during request processing: " + ex.getMessage());
+                    ex.printStackTrace();
+                    ArrayList<OrderGetClientOrdersResponse> errorResponse = new ArrayList<>();
+                    Map<String, ArrayList<OrderGetClientOrdersResponse>> emptyResponse = new HashMap<>();
+                    emptyResponse.put("orders", errorResponse);
+                    return new ResponseEntity<>(emptyResponse, HttpStatus.OK);
+                });
+    }
 
 
 
