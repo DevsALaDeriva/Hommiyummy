@@ -1,6 +1,7 @@
 package com.example.homiyummy.model.restaurant;
 
 import com.example.homiyummy.model.menu.MenuEntity;
+import com.example.homiyummy.model.menu.MenuGetByUrlEntity;
 import com.example.homiyummy.model.reviews.ReviewsEntity;
 import com.example.homiyummy.model.reviews.ReviewsResponse;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class RestaurantGetByUrlEntity {
     private String description = "";
     private String city = "";
     private ArrayList<ReviewsEntity> reviews = new ArrayList<>();
-    private ArrayList<MenuEntity> menus = new ArrayList<>();
+    private ArrayList<MenuGetByUrlEntity> menus = new ArrayList<>();
 
 
 

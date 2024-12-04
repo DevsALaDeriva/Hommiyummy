@@ -1,8 +1,6 @@
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.menu.MenuEntity;
-import com.example.homiyummy.model.menu.MenuReadResponse;
-import com.example.homiyummy.model.menu.MenuResponse;
+import com.example.homiyummy.model.menu.*;
 import com.example.homiyummy.model.restaurant.*;
 import com.example.homiyummy.model.reviews.ReviewsEntity;
 import com.example.homiyummy.model.reviews.ReviewsResponse;
@@ -380,7 +378,7 @@ public class RestaurantService {
 
                 ArrayList<RestaurantEntity> restaurantsWithMenus = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
 
-                System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
+                //System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
 
                 for(RestaurantEntity restaurant : allRestaurantsInApp){
                     if(!restaurant.getMenus().isEmpty()) {
@@ -400,8 +398,6 @@ public class RestaurantService {
 
                         RestaurantWithMenusResponse restToBeAddedResponse = new RestaurantWithMenusResponse();
 
-
-
                         restToBeAddedResponse.setName(re.getName());
                         restToBeAddedResponse.setDescription_mini(re.getDescription_mini());
                         restToBeAddedResponse.setUrl(re.getUrl());
@@ -413,7 +409,7 @@ public class RestaurantService {
                         restToBeAddedResponse.setDescription(re.getDescription());
                         restToBeAddedResponse.setImage(re.getImage());
                         restToBeAddedResponse.setRate(re.getRate());
-                        restToBeAddedResponse.setAverage_price(re.getAverage_price());
+                        //restToBeAddedResponse.setAverage_price(re.getAverage_price());
                         restToBeAddedResponse.setLocation(re.getLocation());
 
                         ArrayList<MenuReadResponse> menus = new ArrayList<>();
@@ -457,14 +453,13 @@ public class RestaurantService {
     // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<RestaurantGetByUrlResponse> getRestaurantByUrl(String url){
-        //System.out.println("La URL en el service: " + url);
 
         CompletableFuture<RestaurantGetByUrlResponse> futureResponse = new CompletableFuture<>();
 
         restaurantRepository.getByUrl(url, new RestaurantRepository.OnRestByUrlGot() {
             @Override
             public void onSearchingSuccess(RestaurantGetByUrlEntity restaurantGetByUrlEntity) {
-
+                System.out.println("-------ENTRA EN EL SERVICIO ----------");
                 String uid = restaurantGetByUrlEntity.getUid();
                 String name = restaurantGetByUrlEntity.getName();
                 String food_type = restaurantGetByUrlEntity.getFood_type();
@@ -485,9 +480,10 @@ public class RestaurantService {
                     reviews.add(revResponse);
                 }
 
-                ArrayList<MenuReadResponse> menus = new ArrayList<>();
-                for(MenuEntity menuEntity : restaurantGetByUrlEntity.getMenus()){
-                    MenuReadResponse menu = new MenuReadResponse();
+                ArrayList<MenuGetByUrlResponse> menus = new ArrayList<>();
+                for(MenuGetByUrlEntity menuEntity : restaurantGetByUrlEntity.getMenus()){
+
+                    MenuGetByUrlResponse menu = new MenuGetByUrlResponse();
                     menu.setId(menuEntity.getId());
                     menu.setDate(menuEntity.getDate());
                     menu.setFirst_course(menuEntity.getFirst_course());

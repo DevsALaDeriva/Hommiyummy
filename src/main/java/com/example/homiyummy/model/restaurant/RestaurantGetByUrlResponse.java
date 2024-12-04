@@ -1,6 +1,7 @@
 package com.example.homiyummy.model.restaurant;
 
 import com.example.homiyummy.model.menu.MenuEntity;
+import com.example.homiyummy.model.menu.MenuGetByUrlResponse;
 import com.example.homiyummy.model.menu.MenuReadResponse;
 import com.example.homiyummy.model.menu.MenuResponse;
 import com.example.homiyummy.model.reviews.ReviewsResponse;
@@ -27,5 +28,5 @@ public class RestaurantGetByUrlResponse {
     private String description = "";
     private String city = "";
     private ArrayList<ReviewsResponse> reviews = new ArrayList<>();
-    private ArrayList<MenuReadResponse> menus = new ArrayList<>();
+    private ArrayList<MenuGetByUrlResponse> menus = new ArrayList<>();
 }
