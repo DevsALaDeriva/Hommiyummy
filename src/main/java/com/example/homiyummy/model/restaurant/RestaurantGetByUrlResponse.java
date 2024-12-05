@@ -1,9 +1,6 @@
 package com.example.homiyummy.model.restaurant;
 
-import com.example.homiyummy.model.menu.MenuEntity;
 import com.example.homiyummy.model.menu.MenuGetByUrlResponse;
-import com.example.homiyummy.model.menu.MenuReadResponse;
-import com.example.homiyummy.model.menu.MenuResponse;
 import com.example.homiyummy.model.reviews.ReviewsResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

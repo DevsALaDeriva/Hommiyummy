@@ -1,6 +1,10 @@
 package com.example.homiyummy.service;
 
 import com.example.homiyummy.model.course.CourseResponse;
+import com.example.homiyummy.model.dish.DishGetByEntity;
+import com.example.homiyummy.model.dish.DishGetByResponse;
+import com.example.homiyummy.model.menu.MenuGetByNumEntity;
+import com.example.homiyummy.model.menu.MenuGetByNumResponse;
 import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
 import com.example.homiyummy.model.order.*;
 import com.example.homiyummy.model.restaurant.RestaurantGetByOrderNumberEntity;
@@ -77,7 +81,44 @@ public class OrderService {
                 orderResponse.setUid(orderGotByNumEntity.getUid());
                 orderResponse.setDate(orderGotByNumEntity.getDate());
                 orderResponse.setUidCustomer(orderGotByNumEntity.getUidCustomer());
-                orderResponse.setMenus(orderGotByNumEntity.getMenus());
+
+                ArrayList<MenuGetByNumResponse> allMenusResponse = new ArrayList<>();
+
+                for(MenuGetByNumEntity menuEntity : orderGotByNumEntity.getMenus()){
+
+                    int menuId = menuEntity.getId();
+                    int menuDate = menuEntity.getDate();
+
+                    DishGetByResponse firstCourseResponse = new DishGetByResponse(
+                            menuEntity.getFirst_course().getName(),
+                            menuEntity.getFirst_course().getIngredients(),
+                            menuEntity.getFirst_course().getAllergens(),
+                            menuEntity.getFirst_course().getImage());
+
+
+                    DishGetByResponse secondCourseResponse = new DishGetByResponse(
+                            menuEntity.getSecond_course().getName(),
+                            menuEntity.getSecond_course().getIngredients(),
+                            menuEntity.getSecond_course().getAllergens(),
+                            menuEntity.getSecond_course().getImage());
+
+
+                    DishGetByResponse dessertResponse = new DishGetByResponse(
+                            menuEntity.getDessert().getName(),
+                            menuEntity.getDessert().getIngredients(),
+                            menuEntity.getDessert().getAllergens(),
+                            menuEntity.getDessert().getImage());
+
+                    float menuPrice = menuEntity.getPrice();
+                    String menuStatus = menuEntity.getStatus();
+
+                    MenuGetByNumResponse menuResponse = new MenuGetByNumResponse(
+                            menuId, menuDate, firstCourseResponse, secondCourseResponse, dessertResponse, menuPrice, menuStatus
+                    );
+
+                    allMenusResponse.add(menuResponse);
+                }
+                orderResponse.setMenus(allMenusResponse);
                 orderResponse.setStatus(orderGotByNumEntity.getStatus());
                 orderResponse.setTotal(orderGotByNumEntity.getTotal());
 

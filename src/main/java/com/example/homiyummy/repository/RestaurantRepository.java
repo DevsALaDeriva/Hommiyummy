@@ -1,8 +1,7 @@
 package com.example.homiyummy.repository;
 
-import com.example.homiyummy.database.DeleteAllUsers;
 import com.example.homiyummy.model.dish.DishEntity;
-import com.example.homiyummy.model.dish.DishGetByUrlEntity;
+import com.example.homiyummy.model.dish.DishGetByEntity;
 import com.example.homiyummy.model.dish.DishInOrderEntity;
 import com.example.homiyummy.model.menu.MenuEntity;
 import com.example.homiyummy.model.menu.MenuGetByUrlEntity;
@@ -11,9 +10,7 @@ import com.example.homiyummy.model.reviews.ReviewsEntity;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.crypto.Data;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Repository
@@ -558,13 +555,14 @@ public class RestaurantRepository {
                                 }
                             }
 
-                            // 3º OBTENEMOS EL CAMPO MENUS QUE ES DEL TIPO ARRAYLIST
-                            ArrayList<MenuGetByUrlEntity> menuEntityList = new ArrayList<>();
-
                             DataSnapshot menusSnapshot = singleRestaurantSnapshot.child("menus/items");
 
                             if(menusSnapshot.exists()){
+                                // 3º OBTENEMOS EL CAMPO MENUS QUE ES DEL TIPO ARRAYLIST
+                                ArrayList<MenuGetByUrlEntity> menuEntityList = new ArrayList<>();
+
                                 System.out.println("Nº de menús:  " + menusSnapshot.getChildrenCount());
+
                                 for(DataSnapshot menu : menusSnapshot.getChildren()){
                                     System.out.println("Menú con id: " + menu.child("id").getValue(Integer.class));
                                     int date = menu.child("date").getValue(Integer.class);
@@ -596,7 +594,7 @@ public class RestaurantRepository {
 
 
                                     // OBTENEMOS LOS PRIMEROS
-                                    ArrayList<DishGetByUrlEntity> firstCourses = new ArrayList<>();
+                                    ArrayList<DishGetByEntity> firstCourses = new ArrayList<>();
                                     DataSnapshot firstCoursesSnapshot = menu.child("first_course");
 
                                     if(firstCoursesSnapshot.exists()){
@@ -620,12 +618,12 @@ public class RestaurantRepository {
                                             if(firstAllergens.length() > 4) {
                                                 firstAllergens = firstAllergens.substring(0, firstAllergens.length() - 2);
                                             }
-                                            firstCourses.add(new DishGetByUrlEntity(firstID, firstName, firstIngs,firstAllergens, firstImg));
+                                            firstCourses.add(new DishGetByEntity(firstID, firstName, firstIngs,firstAllergens, firstImg));
                                         }
                                     }
 
                                     // OBTENEMOS LOS SEGUNDOS
-                                    ArrayList<DishGetByUrlEntity> secondCourses = new ArrayList<>();
+                                    ArrayList<DishGetByEntity> secondCourses = new ArrayList<>();
                                     DataSnapshot secondCoursesSnapshot = menu.child("second_course");
                                     if(secondCoursesSnapshot.exists()){
 
@@ -652,7 +650,7 @@ public class RestaurantRepository {
                                                 secondIAllergens = secondIAllergens.substring(0,secondIAllergens.length()-2);
                                             }
 
-                                            secondCourses.add(new DishGetByUrlEntity(secondID, secondIName, secondIngs,secondIAllergens, secondImg));
+                                            secondCourses.add(new DishGetByEntity(secondID, secondIName, secondIngs,secondIAllergens, secondImg));
 
                                         }
                                     }

@@ -1,6 +1,8 @@
 package com.example.homiyummy.repository;
 
 import com.example.homiyummy.model.course.CourseEntity;
+import com.example.homiyummy.model.dish.DishGetByEntity;
+import com.example.homiyummy.model.menu.MenuGetByUrlEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuInGetTaskEntity;
 import com.example.homiyummy.model.order.*;
@@ -141,6 +143,7 @@ public class OrderRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+
     public void getOrderDataInRestaurantSide(String orderNumber, OnOrderGotCallback callback){
 
         DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
@@ -149,6 +152,7 @@ public class OrderRepository {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     for(DataSnapshot restNode : dataSnapshot.getChildren()){            // RECORREMOS TODOS LOS RESTAURANTES
+
                         DataSnapshot ordersRef = restNode.child("orders/items");   // ENTRAMOS EN LOS PEDIDOS DE CADA RESTAURANTE SI LOS TIENE
 
                         if(ordersRef.exists()){
@@ -176,26 +180,75 @@ public class OrderRepository {
                                         for(DataSnapshot menu : menusSnapshot.getChildren()){
 
                                             int menuId = menu.child("id").getValue(Integer.class);
-                                            int firsCourseID = menu.child("first_course").getValue(Integer.class);
+                                            int menuDate = restNode.child("menus/items").child(String.valueOf(menuId)).child("date").getValue(Integer.class);
+
+                                            //-- FIRST COURSE
+                                            int firstCourseID = menu.child("first_course").getValue(Integer.class);
+                                            String firstCourseName = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("name").getValue(String.class);
+                                            String firstCourseIngs = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("ingredients").getValue(String.class);
+                                            String firstAllergens = "";
+                                            DataSnapshot firstCourseAllergens = restNode.child("dishes/items")
+                                                    .child(String.valueOf(firstCourseID)).child("allergens");
+                                            for(DataSnapshot allergen: firstCourseAllergens.getChildren()){
+                                                firstAllergens += allergen.getValue(String.class) + ", ";
+                                            }
+                                            if(firstAllergens.length() > 4) {
+                                                firstAllergens = firstAllergens.substring(0, firstAllergens.length() - 2);
+                                            }
+                                            String firstCourseImg = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("image").getValue(String.class);
+
+                                            DishGetByEntity firstCourseEntity = new DishGetByEntity(firstCourseID, firstCourseName, firstCourseIngs, firstAllergens, firstCourseImg);
+
+
+                                            //-- SECOND COURSE
                                             int secondCourseID = menu.child("second_course").getValue(Integer.class);
+                                            String secondCourseName = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("name").getValue(String.class);
+                                            String secondCourseIngs = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("ingredients").getValue(String.class);
+                                            String secondAllergens = "";
+                                            DataSnapshot secondCourseAllergens = restNode.child("dishes/items")
+                                                    .child(String.valueOf(secondCourseID)).child("allergens");
+                                            for(DataSnapshot allergen : secondCourseAllergens.getChildren()){
+                                                secondAllergens += allergen.getValue(String.class) +", ";
+                                            }
+                                            if(secondAllergens.length() > 4) {
+                                                secondAllergens = secondAllergens.substring(0, secondAllergens.length() - 2);
+                                            }
+                                            String secondCourseImg = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("image").getValue(String.class);
+                                            DishGetByEntity secondCourseEntity = new DishGetByEntity(secondCourseID, secondCourseName, secondCourseIngs, secondAllergens, secondCourseImg);
+
+
+                                            //-- DESSERT COURSE
                                             int dessertID = menu.child("dessert").getValue(Integer.class);
+                                            String dessertName = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("name").getValue(String.class);
+                                            String dessertIngs = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("ingredients").getValue(String.class);
+                                            String dessertAllergens = "";
+                                            DataSnapshot dessertCourseAllergens = restNode.child("dishes/items")
+                                                    .child(String.valueOf(dessertID)).child("allergens");
+                                            for(DataSnapshot allergen : dessertCourseAllergens.getChildren()){
+                                                dessertAllergens += allergen.getValue(String.class) +", ";
+                                            }
+                                            if(dessertAllergens.length() > 4) {
+                                                dessertAllergens = dessertAllergens.substring(0, dessertAllergens.length() - 2);
+                                            }
+                                            String dessertImg = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("image").getValue(String.class);
+                                            DishGetByEntity dessertEntity = new DishGetByEntity(dessertID, dessertName, dessertIngs, dessertAllergens, dessertImg);
+
+
+                                            float totalMenu = menu.child("price").getValue(Float.class);
+                                            String status = menu.child("status").getValue(String.class);
+
 
                                             if(menu.child("status").getValue(String.class).equals("complete")){
-                                                    contador++;
+                                                contador++;
                                             }
-
                                             if(menusQuantity == contador){
                                                 orderStatus = "complete";
                                             } else {
                                                 orderStatus = "in_progress";
                                             }
 
-                                            float totalMenu = menu.child("price").getValue(Float.class);
-                                            String status = menu.child("status").getValue(String.class);
-                                            int menuDate = restNode.child("menus/items").child(String.valueOf(menuId)).child("date").getValue(Integer.class);
 
-                                            MenuGetByNumEntity singleMenu = new MenuGetByNumEntity(menuId, menuDate, firsCourseID, secondCourseID, dessertID, totalMenu, status); // CREAMOS CADA MENU
-
+                                            MenuGetByNumEntity singleMenu = new MenuGetByNumEntity(menuId, menuDate, firstCourseEntity, secondCourseEntity, dessertEntity, totalMenu, status); // CREAMOS CADA MENU
                                             menusInOrder.add(singleMenu); // Y LO METEMOS DENTRO DEL ARRAY DE MENÚS DEL PEDIDO
                                         }
 
@@ -216,7 +269,7 @@ public class OrderRepository {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                    callback.onFindingFailure(databaseError.toException());
+                callback.onFindingFailure(databaseError.toException());
             }
         });
     }

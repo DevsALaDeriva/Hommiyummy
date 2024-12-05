@@ -5,16 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class DishGetByUrlEntity {
+public class DishGetByEntity {
     private int id = 0;
     private String name = "";
     private String ingredients = "";
     private String allergens = "";
     private String image = "";
 }
+

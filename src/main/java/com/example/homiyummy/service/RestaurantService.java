@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -506,7 +505,6 @@ public class RestaurantService {
         });
 
         return futureResponse;
-
     }
 
     // ----------------------------------------------------------------------------------------------------------------

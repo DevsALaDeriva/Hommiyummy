@@ -70,7 +70,6 @@ public class OrderController {
     @PostMapping("/getByNumOrder")
     public CompletableFuture<ResponseEntity<OrderGotByNumResponse>> getByNumOrder(@RequestBody OrderGetByNumRequest orderGetByNumRequest){
         String orderNum = orderGetByNumRequest.getNum_order();
-        System.out.println("Num Order en el controller: " + orderNum);
         return orderService.getRestaurantData(orderNum)
                 .thenApply(orderWithData ->
                         new ResponseEntity<>(orderWithData, HttpStatus.OK))
