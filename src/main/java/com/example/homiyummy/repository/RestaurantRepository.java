@@ -194,13 +194,11 @@ public class RestaurantRepository {
                         callback.onSuccess(restaurantReadResponse);
                     }
                     else{
-                        //System.out.println("-----------1-----------");
                         RestaurantReadResponse emptyResponse = new RestaurantReadResponse();
                         callback.onFailure(emptyResponse);
                     }
                 }
                 else{
-                    //System.out.println("-----------2-----------");
                     RestaurantReadResponse emptyResponse = new RestaurantReadResponse();
                     callback.onFailure(emptyResponse);
                 }
@@ -235,15 +233,11 @@ public class RestaurantRepository {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    System.out.println("-----2-------");
                     ArrayList<RestaurantEntity> restaurantList = new ArrayList<>();                                     // ARRAY DONDE GUARDAREMOS TODOS LOS RESTAURANTES
                     int totalRestaurants = (int)dataSnapshot.getChildrenCount();
-                    //System.out.println("Nºde restaurantes: " + totalRestaurants);
                     int[] contados = {0};
-                    //AtomicInteger contadorAtomic = new AtomicInteger(0);                                              //USAMOS AtomicInteger PARA MANEJAR EL CONTADOR DE FORMA SEGURA EN UN ENTORNO ASÍNCRONO
                     for(DataSnapshot restaurantSnapshot: dataSnapshot.getChildren()){                                   // RECORRO EL SNAPSHOT DEL NODO "RESTAURANTS"
                         String uid = restaurantSnapshot.getKey();                                                       // OBTENEMOS EL UID DEL RESTAURANTE ( QUE ES SU KEY)
-                            //System.out.println(restaurantSnapshot.getKey());
                         DatabaseReference eachRestaurantRef = allRestaurantsRef.child(uid);                             // OBTENEMOS LA REFERENCIA DE CADA RESTAURANTE.
                         eachRestaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {                     // APUNTAMOS A LA REF DEL RESTAURANTE
                             @Override
@@ -333,7 +327,6 @@ public class RestaurantRepository {
                                             ArrayList<Integer> firstCourses = new ArrayList<>();
                                             DataSnapshot firstCoursesSnapshot = singleMenuSnapshot.child("first_course");
                                             if(firstCoursesSnapshot.exists()){
-                                                //System.out.println("Los primeros existen");
                                                 for(DataSnapshot first : firstCoursesSnapshot.getChildren()){
                                                     firstCourses.add(Integer.parseInt(first.getValue().toString()));
                                                 }
@@ -341,7 +334,6 @@ public class RestaurantRepository {
                                             ArrayList<Integer> secondCourses = new ArrayList<>();
                                             DataSnapshot secondCoursesSnapshot = singleMenuSnapshot.child("second_course");
                                             if(secondCoursesSnapshot.exists()){
-                                                //System.out.println("Los segundos existen");
                                                 for(DataSnapshot second : secondCoursesSnapshot.getChildren()){
                                                     secondCourses.add(Integer.parseInt(second.getValue().toString()));
                                                 }
@@ -359,15 +351,9 @@ public class RestaurantRepository {
                                 }
 
                                 contados[0]++;
-//                                System.out.println("-----3-------");
-//
-//
-//                                System.out.println("contados: " + contados[0]);
-//                                System.out.println("totalRestaurantes: " + totalRestaurants);
+
                                 if (contados[0] == totalRestaurants) {                                                // SOLO SEGUIMOS CUANDO HEMOS AÑADIDO TODOS
-//                                    System.out.println("-----4-------");
-//                                    System.out.println(contados);
-//                                    System.out.println(restaurantList.size());
+
 
                                     callback.onSearchingSuccess(restaurantList);
                                 }
@@ -376,20 +362,17 @@ public class RestaurantRepository {
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
                                 // TODO --------> FALTA
-                                //System.out.println("-----------5-----------");
                             }
                         });
                     }
                 }
                 else{
-                    //System.out.println("-----------3-----------");
                     callback.onSearchingSuccess(new ArrayList<>());
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                //System.out.println("-----------4-----------");
                 callback.onSearchingFailure(new Exception());
             }
         });
@@ -561,10 +544,7 @@ public class RestaurantRepository {
                                 // 3º OBTENEMOS EL CAMPO MENUS QUE ES DEL TIPO ARRAYLIST
                                 ArrayList<MenuGetByUrlEntity> menuEntityList = new ArrayList<>();
 
-                                System.out.println("Nº de menús:  " + menusSnapshot.getChildrenCount());
-
                                 for(DataSnapshot menu : menusSnapshot.getChildren()){
-                                    System.out.println("Menú con id: " + menu.child("id").getValue(Integer.class));
                                     int date = menu.child("date").getValue(Integer.class);
                                     int id = menu.child("id").getValue(Integer.class);
                                     float priceWithDessert = menu.child("priceWithDessert").getValue(Float.class);
@@ -661,7 +641,6 @@ public class RestaurantRepository {
 
                                 RestaurantGetByUrlEntity entity = new RestaurantGetByUrlEntity(uid, name, foodType,
                                         address, image, phone, schedule, rate, description, city, reviewsEntityList, menuEntityList);
-                                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
                                 callback.onSearchingSuccess(entity);
                             }
 

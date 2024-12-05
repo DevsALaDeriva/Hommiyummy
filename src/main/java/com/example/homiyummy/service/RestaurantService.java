@@ -377,8 +377,6 @@ public class RestaurantService {
 
                 ArrayList<RestaurantEntity> restaurantsWithMenus = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
 
-                //System.out.println("Nº de restaurantes: " + allRestaurantsInApp.size());
-
                 for(RestaurantEntity restaurant : allRestaurantsInApp){
                     if(!restaurant.getMenus().isEmpty()) {
                         restaurantsWithMenus.add(restaurant);
@@ -458,7 +456,6 @@ public class RestaurantService {
         restaurantRepository.getByUrl(url, new RestaurantRepository.OnRestByUrlGot() {
             @Override
             public void onSearchingSuccess(RestaurantGetByUrlEntity restaurantGetByUrlEntity) {
-                System.out.println("-------ENTRA EN EL SERVICIO ----------");
                 String uid = restaurantGetByUrlEntity.getUid();
                 String name = restaurantGetByUrlEntity.getName();
                 String food_type = restaurantGetByUrlEntity.getFood_type();

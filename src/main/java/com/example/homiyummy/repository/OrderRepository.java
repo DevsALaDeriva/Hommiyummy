@@ -1,7 +1,8 @@
 package com.example.homiyummy.repository;
 
-import com.example.homiyummy.model.course.CourseEntity;
+//import com.example.homiyummy.model.course.CourseEntity;
 import com.example.homiyummy.model.dish.DishGetByEntity;
+import com.example.homiyummy.model.dish.DishGetDayTaskEntity;
 import com.example.homiyummy.model.menu.MenuGetByUrlEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuInGetTaskEntity;
@@ -575,6 +576,7 @@ public class OrderRepository {
 
                                 int menuId = menu.child("id").getValue(Integer.class); // ID DEL MENÚ EN EL PEDIDO
                                 int menuDate = restSnap.child("menus/items").child(String.valueOf(menuId)).child("date").getValue(Integer.class);
+
                                 if( menuDate >= start_date && menuDate <= end_date){
 
                                     // 1º --- OBTENEMOS EL NÚMERO DE PEDIDO
@@ -592,7 +594,7 @@ public class OrderRepository {
                                     if(allAllergensFirst.length() > 4){
                                         allAllergensFirst = allAllergensFirst.substring(0, allAllergensFirst.length() - 2);
                                     }
-                                    CourseEntity first_course = new CourseEntity(firstName, ingsFirst, allAllergensFirst, imgFirst);
+                                    DishGetDayTaskEntity first_course = new DishGetDayTaskEntity(firstNum, firstName, ingsFirst, allAllergensFirst, imgFirst);
 
 
                                     int secondNum = menu.child("second_course").getValue(Integer.class);
@@ -606,7 +608,7 @@ public class OrderRepository {
                                     if(allergensSecond.length() > 4) {
                                         allergensSecond = allergensSecond.substring(0, allergensSecond.length() - 2);
                                     }
-                                    CourseEntity second_course = new CourseEntity(secondName, ingsSecond, allergensSecond, imgSecond);
+                                    DishGetDayTaskEntity second_course = new DishGetDayTaskEntity(secondNum, secondName, ingsSecond, allergensSecond, imgSecond);
 
 
                                     int dessertNum = menu.child("dessert").getValue(Integer.class);
@@ -620,7 +622,7 @@ public class OrderRepository {
                                     if(allergensDessert.length() > 4){
                                         allergensDessert = allergensDessert.substring(0, allergensDessert.length() - 2);
                                     }
-                                    CourseEntity dessert = new CourseEntity(dessertName, ingsDessert, allergensDessert, imgDessert);
+                                    DishGetDayTaskEntity dessert = new DishGetDayTaskEntity(dessertNum, dessertName, ingsDessert, allergensDessert, imgDessert);
 
 
                                     MenuInGetTaskEntity menuEntity = new MenuInGetTaskEntity(menuId, menuDate, first_course, second_course, dessert);

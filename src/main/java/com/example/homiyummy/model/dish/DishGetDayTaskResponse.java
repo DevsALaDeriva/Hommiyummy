@@ -1,4 +1,4 @@
-package com.example.homiyummy.model.course;
+package com.example.homiyummy.model.dish;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseEntity {
+public class DishGetDayTaskResponse {
+    private int id = 0;
     private String name = "";
     private String ingredients = "";
-    private String allergens = "";
+    private String allergerns = "";
     private String image = "";
 }

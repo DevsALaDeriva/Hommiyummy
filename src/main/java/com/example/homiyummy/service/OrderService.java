@@ -1,8 +1,7 @@
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.course.CourseResponse;
-import com.example.homiyummy.model.dish.DishGetByEntity;
-import com.example.homiyummy.model.dish.DishGetByResponse;
+//import com.example.homiyummy.model.course.CourseResponse;
+import com.example.homiyummy.model.dish.*;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumResponse;
 import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
@@ -13,6 +12,8 @@ import com.example.homiyummy.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -88,8 +89,11 @@ public class OrderService {
 
                     int menuId = menuEntity.getId();
                     int menuDate = menuEntity.getDate();
+                    float menuPrice = menuEntity.getPrice();
+                    String menuStatus = menuEntity.getStatus();
 
                     DishGetByResponse firstCourseResponse = new DishGetByResponse(
+                            menuEntity.getFirst_course().getId(),
                             menuEntity.getFirst_course().getName(),
                             menuEntity.getFirst_course().getIngredients(),
                             menuEntity.getFirst_course().getAllergens(),
@@ -97,26 +101,29 @@ public class OrderService {
 
 
                     DishGetByResponse secondCourseResponse = new DishGetByResponse(
+                            menuEntity.getSecond_course().getId(),
                             menuEntity.getSecond_course().getName(),
                             menuEntity.getSecond_course().getIngredients(),
                             menuEntity.getSecond_course().getAllergens(),
                             menuEntity.getSecond_course().getImage());
 
 
-                    DishGetByResponse dessertResponse = new DishGetByResponse(
-                            menuEntity.getDessert().getName(),
-                            menuEntity.getDessert().getIngredients(),
-                            menuEntity.getDessert().getAllergens(),
-                            menuEntity.getDessert().getImage());
+                    if(menuEntity.getDessert().getName() != null){
+                        DishGetByResponse dessertResponse = new DishGetByResponse(menuEntity.getDessert().getId(), menuEntity.getDessert().getName(), menuEntity.getDessert().getIngredients(),menuEntity.getDessert().getAllergens(),menuEntity.getDessert().getImage());
+                        MenuGetByNumResponse menuResponse = new MenuGetByNumResponse(
+                                menuId, menuDate, firstCourseResponse, secondCourseResponse, dessertResponse, menuPrice, menuStatus
+                        );
+                        allMenusResponse.add(menuResponse);
+                    }
+                    else {
+                        Map<String, Object> emptyDessert = new HashMap<>(); // Objeto vacío
 
-                    float menuPrice = menuEntity.getPrice();
-                    String menuStatus = menuEntity.getStatus();
+                        MenuGetByNumResponse menuResponse = new MenuGetByNumResponse(
+                                menuId, menuDate, firstCourseResponse, secondCourseResponse, emptyDessert, menuPrice, menuStatus
+                        );
+                        allMenusResponse.add(menuResponse);
+                    }
 
-                    MenuGetByNumResponse menuResponse = new MenuGetByNumResponse(
-                            menuId, menuDate, firstCourseResponse, secondCourseResponse, dessertResponse, menuPrice, menuStatus
-                    );
-
-                    allMenusResponse.add(menuResponse);
                 }
                 orderResponse.setMenus(allMenusResponse);
                 orderResponse.setStatus(orderGotByNumEntity.getStatus());
@@ -210,7 +217,6 @@ public class OrderService {
     // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<ArrayList<OrderGetTasksResponse>> getTasks(OrderGetTasksRequest request){
-        //System.out.println(request.getUid() + " - " + request.getStart_date() + " - " + request.getEnd_date());
 
         CompletableFuture<ArrayList<OrderGetTasksResponse>> future = new CompletableFuture<>();
 
@@ -230,19 +236,22 @@ public class OrderService {
                     menuResponse.setId(task.getMenu().getId());
                     menuResponse.setDate(task.getMenu().getDate());
 
-                    CourseResponse firstResponse = new CourseResponse();
+                    DishGetDayTaskResponse firstResponse = new DishGetDayTaskResponse();
+                    firstResponse.setId(task.getMenu().getFirst_course().getId());
                     firstResponse.setName(task.getMenu().getFirst_course().getName());
                     firstResponse.setIngredients(task.getMenu().getFirst_course().getIngredients());
                     firstResponse.setAllergerns(task.getMenu().getFirst_course().getAllergens());
                     firstResponse.setImage(task.getMenu().getFirst_course().getImage());
 
-                    CourseResponse secondResponse = new CourseResponse();
+                    DishGetDayTaskResponse secondResponse = new DishGetDayTaskResponse();
+                    secondResponse.setId(task.getMenu().getSecond_course().getId());
                     secondResponse.setName(task.getMenu().getSecond_course().getName());
                     secondResponse.setIngredients(task.getMenu().getSecond_course().getIngredients());
                     secondResponse.setAllergerns(task.getMenu().getSecond_course().getAllergens());
                     secondResponse.setImage(task.getMenu().getSecond_course().getImage());
 
-                    CourseResponse dessertResponse = new CourseResponse();
+                    DishGetDayTaskResponse dessertResponse = new DishGetDayTaskResponse();
+                    dessertResponse.setId(task.getMenu().getDessert().getId());
                     dessertResponse.setName(task.getMenu().getDessert().getName());
                     dessertResponse.setIngredients(task.getMenu().getDessert().getIngredients());
                     dessertResponse.setAllergerns(task.getMenu().getDessert().getAllergens());
