@@ -1,35 +1,40 @@
 package com.example.homiyummy.repository;
 
 import com.example.homiyummy.model.dish.DishEntity;
-import com.example.homiyummy.model.dish.DishResponse;
-import com.example.homiyummy.model.dish.DishUpdateEntity;
+import com.example.homiyummy.model.dish.DishSimpleResponse;
+import com.example.homiyummy.model.dish.MenuSimpleResponse;
 import com.example.homiyummy.model.menu.*;
 import com.example.homiyummy.service.RestaurantService;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.apache.el.util.MessageFactory.get;
 
 @Repository
 public class MenuRepository {
 
-    private final  DatabaseReference databaseReference;
-    
+    private final DatabaseReference databaseReference;
+
     private final RestaurantRepository restaurantRepository;
 
     private final RestaurantService restaurantService;
 
-    public MenuRepository(DatabaseReference databaseReference, RestaurantRepository restaurantRepository, RestaurantService restaurantService) {
+    private final DishRepository dishRepository;
+
+    public MenuRepository(DatabaseReference databaseReference, RestaurantRepository restaurantRepository, RestaurantService restaurantService, DishRepository dishRepository) {
 
         this.databaseReference = databaseReference;
         this.restaurantRepository = restaurantRepository;
         this.restaurantService = restaurantService;
+        this.dishRepository = dishRepository;
     }
-    public void findId(String uid, MenuRepository.FindMenuIdCallback callback){
+
+    public void findId(String uid, MenuRepository.FindMenuIdCallback callback) {
 
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
         DatabaseReference menuRef = restaurantRef.child("/menus");
@@ -38,15 +43,14 @@ public class MenuRepository {
         idRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     Integer id = dataSnapshot.getValue(Integer.class);
                     if (id != null) {
                         callback.onSuccess(id);
                     } else {
                         callback.onSuccess(0); // En caso de datos no válidos
                     }
-                }
-                else{
+                } else {
                     callback.onSuccess(0);
                 }
             }
@@ -58,15 +62,15 @@ public class MenuRepository {
             }
         });
     }
-    
+
     public void save(MenuEntity menuEntity, SaveMenuCallback callback) {
-        
+
         String uid = menuEntity.getUid();
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
         DatabaseReference menusRef = restaurantRef.child("menus");
         DatabaseReference counterRef = menusRef.child("counter");
         DatabaseReference itemRef = menusRef.child("items");
-        
+
         DatabaseReference menuRef = itemRef.child(String.valueOf(menuEntity.getId()));
 
         MenuSaveEntity menuSaveEntity = new MenuSaveEntity(
@@ -79,13 +83,13 @@ public class MenuRepository {
                 menuEntity.getPriceNoDessert());
 
         counterRef.setValue(menuEntity.getId(), (databaseCounterError, databaseCounterReference) -> {
-            if(databaseCounterError != null){
+            if (databaseCounterError != null) {
                 callback.onFailure(new Exception("Error al actualizar el contador: " + databaseCounterError.getMessage()));
                 return;
             }
 
             menuRef.setValue(menuSaveEntity, ((databaseMenuError, databaseMenuReference) -> {
-                if(databaseMenuError != null) {
+                if (databaseMenuError != null) {
                     callback.onFailure(new Exception("Error al guardar el menu: " + databaseMenuError.getMessage()));
                     return;
                 }
@@ -93,9 +97,9 @@ public class MenuRepository {
                 menuRef.addListenerForSingleValueEvent(new ValueEventListener() {                                       // FOTO DE ESE PLATO
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
+                        if (dataSnapshot.exists()) {
                             MenuEntity savedMenuEntity = dataSnapshot.getValue(MenuEntity.class);
-                            if(savedMenuEntity != null) {
+                            if (savedMenuEntity != null) {
                                 MenuResponse menuResponse = new MenuResponse(
                                         savedMenuEntity.getUid(),
                                         savedMenuEntity.getId(),
@@ -105,16 +109,14 @@ public class MenuRepository {
                                         savedMenuEntity.getDessert(),
                                         savedMenuEntity.getPriceWithDessert(),
                                         savedMenuEntity.getPriceNoDessert());
-                                        
+
                                 callback.onSuccess(menuResponse);
-                            }
-                            else {
+                            } else {
                                 MenuResponse menuResponse = new MenuResponse();
                                 menuResponse.setId(0);
                                 callback.onSuccess(menuResponse); // DEVUELVO UN DISRESPONSE VACIO, CON EL ID:0
                             }
-                        }
-                        else {
+                        } else {
                             callback.onFailure(new Exception("No se encontró el menu guardado en la base de datos"));
                         }
                     }
@@ -227,7 +229,7 @@ public class MenuRepository {
     public void findMenusByDateRange(String uid, int startDate, int endDate, FindMenusCallback callback) {
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
         DatabaseReference menuItemsRef = restaurantRef.child("menus/items");
-     
+
         menuItemsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -259,6 +261,7 @@ public class MenuRepository {
             }
         });
     }
+
 
     public void findMenuById(String uid, int menuId, FindMenuByIdCallback callback) {
         DatabaseReference menuRef = databaseReference.child("restaurants")
@@ -298,32 +301,173 @@ public class MenuRepository {
 
     public interface FindMenuByIdCallback {
         void onSuccess(MenuByIdResponse menu);
+
         void onFailure(Exception exception);
     }
 
 
-    public interface FindMenuIdCallback{
+    public interface FindMenuIdCallback {
         void onSuccess(Integer id);
+
         void onFailure(DatabaseError exception, Integer id);
     }
 
     public interface getSaveMenuCallback {
         void onMenuGot(MenuResponse menuResponse);
+
         void onFailure(Exception exception);
     }
 
-    public interface SaveMenuCallback{
+    public interface SaveMenuCallback {
         void onSuccess(MenuResponse menuResponse);
+
         void onFailure(Exception exception);
     }
 
-    public interface UpdateMenuCallback{
+    public interface UpdateMenuCallback {
         void onSuccess(Boolean result);
+
         void onFailure(Exception exception);
     }
 
     public interface FindMenusCallback {
         void onSuccess(List<MenuResponseByPeriod> menus);
+
         void onFailure(DatabaseError exception);
     }
+
+    public interface FindDetailedMenusCallback {
+        void onSuccess(List<MenuDetaliedResponse> detailedMenus);
+
+        void onFailure(DatabaseError exception);
+    }
+
+
+    public void findMenusWithSimpleDetails(String uid, int startDate, int endDate, FindSimpleMenusCallback callback) {
+        DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
+        DatabaseReference menuItemsRef = restaurantRef.child("menus/items");
+
+        menuItemsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    List<MenuSimpleResponse> simpleMenus = new ArrayList<>();
+                    AtomicInteger menusToProcess = new AtomicInteger((int) dataSnapshot.getChildrenCount());
+
+                    for (DataSnapshot menuSnapshot : dataSnapshot.getChildren()) {
+                        MenuSaveEntity menu = menuSnapshot.getValue(MenuSaveEntity.class);
+
+                        if (menu != null && menu.getDate() >= startDate && menu.getDate() <= endDate) {
+                            List<DishSimpleResponse> firstCourse = new ArrayList<>();
+                            List<DishSimpleResponse> secondCourse = new ArrayList<>();
+                            AtomicInteger itemsToProcess = new AtomicInteger(
+                                    menu.getFirst_course().size() + menu.getSecond_course().size() + 1 // +1 para el postre
+                            );
+
+                            // Procesar first_course
+                            for (int dishId : menu.getFirst_course()) {
+                                dishRepository.get(uid, dishId, new DishRepository.OnDishGotCallback() {
+                                    @Override
+                                    public void onSuccess(DishEntity dishEntity) {
+                                        firstCourse.add(transformDish(dishEntity));
+                                        if (itemsToProcess.decrementAndGet() == 0) {
+                                            finalizeSimpleMenu(menu, firstCourse, secondCourse, null, simpleMenus, menusToProcess, callback);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Exception exception) {
+                                        if (itemsToProcess.decrementAndGet() == 0) {
+                                            finalizeSimpleMenu(menu, firstCourse, secondCourse, null, simpleMenus, menusToProcess, callback);
+                                        }
+                                    }
+                                });
+                            }
+
+                            // Procesar second_course
+                            for (int dishId : menu.getSecond_course()) {
+                                dishRepository.get(uid, dishId, new DishRepository.OnDishGotCallback() {
+                                    @Override
+                                    public void onSuccess(DishEntity dishEntity) {
+                                        secondCourse.add(transformDish(dishEntity));
+                                        if (itemsToProcess.decrementAndGet() == 0) {
+                                            finalizeSimpleMenu(menu, firstCourse, secondCourse, null, simpleMenus, menusToProcess, callback);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Exception exception) {
+                                        if (itemsToProcess.decrementAndGet() == 0) {
+                                            finalizeSimpleMenu(menu, firstCourse, secondCourse, null, simpleMenus, menusToProcess, callback);
+                                        }
+                                    }
+                                });
+                            }
+
+                            // Procesar dessert
+                            dishRepository.get(uid, menu.getDessert(), new DishRepository.OnDishGotCallback() {
+                                @Override
+                                public void onSuccess(DishEntity dishEntity) {
+                                    finalizeSimpleMenu(menu, firstCourse, secondCourse, transformDish(dishEntity), simpleMenus, menusToProcess, callback);
+                                }
+
+                                @Override
+                                public void onFailure(Exception exception) {
+                                    finalizeSimpleMenu(menu, firstCourse, secondCourse, null, simpleMenus, menusToProcess, callback);
+                                }
+                            });
+                        } else {
+                            if (menusToProcess.decrementAndGet() == 0) {
+                                callback.onSuccess(simpleMenus);
+                            }
+                        }
+                    }
+                } else {
+                    callback.onSuccess(new ArrayList<>());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onFailure(databaseError);
+            }
+        });
+    }
+
+    // Transformar DishEntity a DishSimpleResponse
+    private DishSimpleResponse transformDish(DishEntity dishEntity) {
+        return new DishSimpleResponse(
+                dishEntity.getId(),
+                dishEntity.getName(),
+                dishEntity.getIngredients(),
+                dishEntity.getAllergens(),
+                dishEntity.getImage()
+        );
+    }
+
+    // Método auxiliar para finalizar el menú simple
+    private void finalizeSimpleMenu(MenuSaveEntity menu, List<DishSimpleResponse> firstCourse, List<DishSimpleResponse> secondCourse,
+                                    DishSimpleResponse dessert, List<MenuSimpleResponse> simpleMenus,
+                                    AtomicInteger menusToProcess, FindSimpleMenusCallback callback) {
+        simpleMenus.add(new MenuSimpleResponse(
+                menu.getId(),
+                menu.getDate(),
+                firstCourse,
+                secondCourse,
+                dessert,
+                menu.getPriceWithDessert(),
+                menu.getPriceNoDessert()
+        ));
+        if (menusToProcess.decrementAndGet() == 0) {
+            callback.onSuccess(simpleMenus);
+        }
+    }
+
+
+    public interface FindSimpleMenusCallback {
+        void onSuccess(List<MenuSimpleResponse> menus);
+
+        void onFailure(DatabaseError exception);
+    }
+
 }
