@@ -187,15 +187,15 @@ public class OrderRepository {
                                             int firstCourseID = menu.child("first_course").getValue(Integer.class);
                                             String firstCourseName = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("name").getValue(String.class);
                                             String firstCourseIngs = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("ingredients").getValue(String.class);
-                                            String firstAllergens = "";
+                                            ArrayList<String> firstAllergens = new ArrayList<>();
                                             DataSnapshot firstCourseAllergens = restNode.child("dishes/items")
                                                     .child(String.valueOf(firstCourseID)).child("allergens");
                                             for(DataSnapshot allergen: firstCourseAllergens.getChildren()){
-                                                firstAllergens += allergen.getValue(String.class) + ", ";
+                                                firstAllergens.add(allergen.getValue(String.class));
                                             }
-                                            if(firstAllergens.length() > 4) {
-                                                firstAllergens = firstAllergens.substring(0, firstAllergens.length() - 2);
-                                            }
+//                                            if(firstAllergens.length() > 4) {
+//                                                firstAllergens = firstAllergens.substring(0, firstAllergens.length() - 2);
+//                                            }
                                             String firstCourseImg = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("image").getValue(String.class);
 
                                             DishGetByEntity firstCourseEntity = new DishGetByEntity(firstCourseID, firstCourseName, firstCourseIngs, firstAllergens, firstCourseImg);
@@ -205,15 +205,15 @@ public class OrderRepository {
                                             int secondCourseID = menu.child("second_course").getValue(Integer.class);
                                             String secondCourseName = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("name").getValue(String.class);
                                             String secondCourseIngs = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("ingredients").getValue(String.class);
-                                            String secondAllergens = "";
+                                            ArrayList<String> secondAllergens = new ArrayList<>();
                                             DataSnapshot secondCourseAllergens = restNode.child("dishes/items")
                                                     .child(String.valueOf(secondCourseID)).child("allergens");
                                             for(DataSnapshot allergen : secondCourseAllergens.getChildren()){
-                                                secondAllergens += allergen.getValue(String.class) +", ";
+                                                secondAllergens.add(allergen.getValue(String.class));
                                             }
-                                            if(secondAllergens.length() > 4) {
-                                                secondAllergens = secondAllergens.substring(0, secondAllergens.length() - 2);
-                                            }
+//                                            if(secondAllergens.length() > 4) {
+//                                                secondAllergens = secondAllergens.substring(0, secondAllergens.length() - 2);
+//                                            }
                                             String secondCourseImg = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("image").getValue(String.class);
                                             DishGetByEntity secondCourseEntity = new DishGetByEntity(secondCourseID, secondCourseName, secondCourseIngs, secondAllergens, secondCourseImg);
 
@@ -222,15 +222,15 @@ public class OrderRepository {
                                             int dessertID = menu.child("dessert").getValue(Integer.class);
                                             String dessertName = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("name").getValue(String.class);
                                             String dessertIngs = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("ingredients").getValue(String.class);
-                                            String dessertAllergens = "";
+                                            ArrayList<String> dessertAllergens = new ArrayList<>();
                                             DataSnapshot dessertCourseAllergens = restNode.child("dishes/items")
                                                     .child(String.valueOf(dessertID)).child("allergens");
                                             for(DataSnapshot allergen : dessertCourseAllergens.getChildren()){
-                                                dessertAllergens += allergen.getValue(String.class) +", ";
+                                                dessertAllergens.add(allergen.getValue(String.class));
                                             }
-                                            if(dessertAllergens.length() > 4) {
-                                                dessertAllergens = dessertAllergens.substring(0, dessertAllergens.length() - 2);
-                                            }
+//                                            if(dessertAllergens.length() > 4) {
+//                                                dessertAllergens = dessertAllergens.substring(0, dessertAllergens.length() - 2);
+//                                            }
                                             String dessertImg = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("image").getValue(String.class);
                                             DishGetByEntity dessertEntity = new DishGetByEntity(dessertID, dessertName, dessertIngs, dessertAllergens, dessertImg);
 
@@ -587,13 +587,13 @@ public class OrderRepository {
                                     String firstName = restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("name").getValue(String.class);
                                     String ingsFirst = restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("ingredients").getValue(String.class);
                                     String imgFirst = restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("image").getValue(String.class);
-                                    String allAllergensFirst = "";
+                                    ArrayList<String> allAllergensFirst = new ArrayList<>();
                                     for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("allergens").getChildren()){
-                                        allAllergensFirst += allergen.getValue(String.class) + ", ";
+                                        allAllergensFirst.add(allergen.getValue(String.class));
                                     }
-                                    if(allAllergensFirst.length() > 4){
-                                        allAllergensFirst = allAllergensFirst.substring(0, allAllergensFirst.length() - 2);
-                                    }
+//                                    if(allAllergensFirst.length() > 4){
+//                                        allAllergensFirst = allAllergensFirst.substring(0, allAllergensFirst.length() - 2);
+//                                    }
                                     DishGetDayTaskEntity first_course = new DishGetDayTaskEntity(firstNum, firstName, ingsFirst, allAllergensFirst, imgFirst);
 
 
@@ -601,13 +601,13 @@ public class OrderRepository {
                                     String secondName = restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("name").getValue(String.class);
                                     String ingsSecond = restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("ingredients").getValue(String.class);
                                     String imgSecond = restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("image").getValue(String.class);
-                                    String allergensSecond = "";
+                                    ArrayList<String> allergensSecond = new ArrayList<>();
                                     for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("allergens").getChildren()){
-                                        allergensSecond += allergen.getValue(String.class) + ", ";
+                                        allergensSecond.add(allergen.getValue(String.class));
                                     }
-                                    if(allergensSecond.length() > 4) {
-                                        allergensSecond = allergensSecond.substring(0, allergensSecond.length() - 2);
-                                    }
+//                                    if(allergensSecond.length() > 4) {
+//                                        allergensSecond = allergensSecond.substring(0, allergensSecond.length() - 2);
+//                                    }
                                     DishGetDayTaskEntity second_course = new DishGetDayTaskEntity(secondNum, secondName, ingsSecond, allergensSecond, imgSecond);
 
 
@@ -615,13 +615,13 @@ public class OrderRepository {
                                     String dessertName = restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("name").getValue(String.class);
                                     String ingsDessert = restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("ingredients").getValue(String.class);
                                     String imgDessert = restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("image").getValue(String.class);
-                                    String allergensDessert = "";
+                                    ArrayList<String> allergensDessert = new ArrayList<>();
                                     for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("allergens").getChildren()){
-                                        allergensDessert += allergen.getValue(String.class) + ", ";
+                                        allergensDessert.add(allergen.getValue(String.class));
                                     }
-                                    if(allergensDessert.length() > 4){
-                                        allergensDessert = allergensDessert.substring(0, allergensDessert.length() - 2);
-                                    }
+//                                    if(allergensDessert.length() > 4){
+//                                        allergensDessert = allergensDessert.substring(0, allergensDessert.length() - 2);
+//                                    }
                                     DishGetDayTaskEntity dessert = new DishGetDayTaskEntity(dessertNum, dessertName, ingsDessert, allergensDessert, imgDessert);
 
 

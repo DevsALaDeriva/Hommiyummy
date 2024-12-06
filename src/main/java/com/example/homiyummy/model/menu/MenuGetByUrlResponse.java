@@ -18,7 +18,7 @@ public class MenuGetByUrlResponse {
     private int date = 0;
     private ArrayList<DishGetByEntity> first_course = new ArrayList<>();
     private ArrayList<DishGetByEntity> second_course = new ArrayList<>();
-    private DishInOrderEntity dessert = new DishInOrderEntity();
+    private DishGetByEntity dessert = new DishGetByEntity();
     private float priceWithDessert = 0;
     private float priceNoDessert = 0;
 
