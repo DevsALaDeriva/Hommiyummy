@@ -560,17 +560,14 @@ public class RestaurantRepository {
                                     String dessertImg = singleRestaurantSnapshot.child("dishes/items")
                                             .child(String.valueOf(dessertID)).child("image").getValue(String.class);
 
-                                    String dessertAllergens = "";
+                                    ArrayList<String> dessertAllergens = new ArrayList<>();
                                     DataSnapshot dAllergens = singleRestaurantSnapshot.child("dishes/items")
                                             .child(String.valueOf(dessertID)).child("allergens");
                                     for(DataSnapshot allergen: dAllergens.getChildren()){
-                                        dessertAllergens += allergen.getValue(String.class) + ", ";
-                                    }
-                                    if(dessertAllergens.length() > 4){
-                                        dessertAllergens = dessertAllergens.substring(0,dessertAllergens.length()-2);
+                                        dessertAllergens.add(allergen.getValue(String.class));
                                     }
 
-                                    DishInOrderEntity dessertEntity = new DishInOrderEntity(dessertName, dessertIngs, dessertAllergens, dessertImg);
+                                    DishGetByEntity dessertEntity = new DishGetByEntity(dessertID, dessertName, dessertIngs, dessertAllergens, dessertImg);
 
 
                                     // OBTENEMOS LOS PRIMEROS
@@ -589,15 +586,13 @@ public class RestaurantRepository {
                                             String firstImg = singleRestaurantSnapshot.child("dishes/items")
                                                     .child(String.valueOf(firstID)).child("image").getValue(String.class);
 
-                                            String firstAllergens = "";
+                                            ArrayList<String> firstAllergens = new ArrayList<>();
                                             DataSnapshot fAllergens = singleRestaurantSnapshot.child("dishes/items")
                                                     .child(String.valueOf(firstID)).child("allergens");
                                             for(DataSnapshot allergen: fAllergens.getChildren()){
-                                                firstAllergens += allergen.getValue(String.class) + ", ";
+                                                firstAllergens.add(allergen.getValue(String.class));
                                             }
-                                            if(firstAllergens.length() > 4) {
-                                                firstAllergens = firstAllergens.substring(0, firstAllergens.length() - 2);
-                                            }
+
                                             firstCourses.add(new DishGetByEntity(firstID, firstName, firstIngs,firstAllergens, firstImg));
                                         }
                                     }
@@ -618,20 +613,16 @@ public class RestaurantRepository {
                                             String secondImg = singleRestaurantSnapshot.child("dishes/items")
                                                     .child(String.valueOf(secondID)).child("image").getValue(String.class);
 
-                                            String secondIAllergens = "";
+                                            ArrayList<String> secondIAllergens = new ArrayList<>();
 
                                             DataSnapshot secAllergens = singleRestaurantSnapshot.child("dishes/items")
                                                     .child(String.valueOf(secondID)).child("allergens");
                                             for(DataSnapshot allergen: secAllergens.getChildren()){
-                                                secondIAllergens += allergen.getValue(String.class) + ", ";
+                                                secondIAllergens.add(allergen.getValue(String.class));
 
-                                            }
-                                            if(secondIAllergens.length() > 4){
-                                                secondIAllergens = secondIAllergens.substring(0,secondIAllergens.length()-2);
                                             }
 
                                             secondCourses.add(new DishGetByEntity(secondID, secondIName, secondIngs,secondIAllergens, secondImg));
-
                                         }
                                     }
 
@@ -641,6 +632,7 @@ public class RestaurantRepository {
 
                                 RestaurantGetByUrlEntity entity = new RestaurantGetByUrlEntity(uid, name, foodType,
                                         address, image, phone, schedule, rate, description, city, reviewsEntityList, menuEntityList);
+
                                 callback.onSearchingSuccess(entity);
                             }
 

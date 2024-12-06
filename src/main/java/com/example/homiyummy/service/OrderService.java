@@ -1,21 +1,17 @@
 package com.example.homiyummy.service;
 
-//import com.example.homiyummy.model.course.CourseResponse;
 import com.example.homiyummy.model.dish.*;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumResponse;
 import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
 import com.example.homiyummy.model.order.*;
-import com.example.homiyummy.model.restaurant.RestaurantGetByOrderNumberEntity;
 import com.example.homiyummy.model.user.UserInGetTasksResponse;
 import com.example.homiyummy.repository.OrderRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class OrderService {
@@ -106,7 +102,6 @@ public class OrderService {
                             menuEntity.getSecond_course().getIngredients(),
                             menuEntity.getSecond_course().getAllergens(),
                             menuEntity.getSecond_course().getImage());
-
 
                     if(menuEntity.getDessert().getName() != null){
                         DishGetByResponse dessertResponse = new DishGetByResponse(menuEntity.getDessert().getId(), menuEntity.getDessert().getName(), menuEntity.getDessert().getIngredients(),menuEntity.getDessert().getAllergens(),menuEntity.getDessert().getImage());

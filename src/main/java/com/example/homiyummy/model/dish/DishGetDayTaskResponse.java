@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,6 +15,6 @@ public class DishGetDayTaskResponse {
     private int id = 0;
     private String name = "";
     private String ingredients = "";
-    private String allergerns = "";
+    private ArrayList<String> allergerns = new ArrayList<>();
     private String image = "";
 }
