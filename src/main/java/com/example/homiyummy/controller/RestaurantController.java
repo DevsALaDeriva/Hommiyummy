@@ -1,7 +1,9 @@
 package com.example.homiyummy.controller;
 
 import com.example.homiyummy.model.dish.DishAllResponse;
+import com.example.homiyummy.model.dish.MenuSimpleResponse;
 import com.example.homiyummy.model.menu.MenuByPeriodRequest;
+import com.example.homiyummy.model.menu.MenuDetaliedResponse;
 import com.example.homiyummy.model.menu.MenuResponseByPeriod;
 import com.example.homiyummy.model.order.OrderGetRestaurantOrdersResponse;
 import com.example.homiyummy.model.order.OrderGetTasksRequest;
@@ -130,7 +132,7 @@ public class RestaurantController {
     // ----------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/getMenuByPeriod")
-    public ResponseEntity<List<MenuResponseByPeriod>> getMenuByPeriod(@RequestBody MenuByPeriodRequest menuByPeriodRequest) {
+    public ResponseEntity<List<MenuSimpleResponse>> getMenuByPeriod(@RequestBody MenuByPeriodRequest menuByPeriodRequest) {
         String uid = menuByPeriodRequest.getUid();
         int startDate = menuByPeriodRequest.getStart_date();
         int endDate = menuByPeriodRequest.getEnd_date();
@@ -140,7 +142,8 @@ public class RestaurantController {
         }
 
         try {
-            List<MenuResponseByPeriod> menus = menuService.getMenusByDateRange(uid, startDate, endDate);
+            System.out.println("PruebaController");
+            List<MenuSimpleResponse> menus = menuService.getSimpleMenusByDateRange(uid, startDate, endDate);
             return new ResponseEntity<>(menus, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

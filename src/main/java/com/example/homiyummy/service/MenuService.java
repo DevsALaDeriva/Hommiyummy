@@ -1,21 +1,13 @@
 
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.dish.DishDTO;
-import com.example.homiyummy.model.dish.DishEntity;
-import com.example.homiyummy.model.dish.DishResponse;
+import com.example.homiyummy.model.dish.MenuSimpleResponse;
 import com.example.homiyummy.model.menu.*;
-import com.example.homiyummy.model.restaurant.RestaurantEntity;
-import com.example.homiyummy.repository.DishRepository;
 import com.example.homiyummy.repository.MenuRepository;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -143,28 +135,30 @@ public class MenuService {
 
     }
 
-    public List<MenuResponseByPeriod> getMenusByDateRange(String uid, int startDate, int endDate) {
-        CompletableFuture<List<MenuResponseByPeriod>> futureMenus = new CompletableFuture<>();
-  
-        menuRepository.findMenusByDateRange(uid, startDate, endDate, new MenuRepository.FindMenusCallback() {
+    public List<MenuSimpleResponse> getSimpleMenusByDateRange(String uid, int startDate, int endDate) {
 
+        CompletableFuture<List<MenuSimpleResponse>> futureMenus = new CompletableFuture<>();
+
+        menuRepository.findMenusWithSimpleDetails(uid, startDate, endDate, new MenuRepository.FindSimpleMenusCallback() {
             @Override
-            public void onSuccess(List<MenuResponseByPeriod> menus) {
-                futureMenus.complete(menus);
+            public void onSuccess(List<MenuSimpleResponse> menus) {
+                futureMenus.complete(menus); // Completar el futuro con la lista de menús
             }
 
             @Override
             public void onFailure(DatabaseError exception) {
-                futureMenus.completeExceptionally(new RuntimeException("Error al obtener los menús: " + exception.getMessage()));
+                futureMenus.completeExceptionally(new RuntimeException("Error al obtener los menús simples: " + exception.getMessage()));
             }
         });
 
         try {
-            return futureMenus.get();
+            return futureMenus.get(); // Bloquea hasta que el futuro se complete
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Error al procesar los menús", e);
+            throw new RuntimeException("Error al procesar los menús simples", e);
         }
     }
+
+
 
 
     public CompletableFuture<Boolean> deleteMenu(String uid, int id){
