@@ -15,6 +15,6 @@ public class DishGetDayTaskResponse {
     private int id = 0;
     private String name = "";
     private String ingredients = "";
-    private ArrayList<String> allergerns = new ArrayList<>();
+    private ArrayList<String> allergens = new ArrayList<>();
     private String image = "";
 }

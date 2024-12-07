@@ -16,5 +16,5 @@ public class MenuInGetTaskEntity {
     private DishGetDayTaskEntity first_course = new DishGetDayTaskEntity();
     private DishGetDayTaskEntity second_course = new DishGetDayTaskEntity();
     private DishGetDayTaskEntity dessert = new DishGetDayTaskEntity();
-
+    private String status = "";
 }

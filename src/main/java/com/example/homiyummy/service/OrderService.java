@@ -235,26 +235,27 @@ public class OrderService {
                     firstResponse.setId(task.getMenu().getFirst_course().getId());
                     firstResponse.setName(task.getMenu().getFirst_course().getName());
                     firstResponse.setIngredients(task.getMenu().getFirst_course().getIngredients());
-                    firstResponse.setAllergerns(task.getMenu().getFirst_course().getAllergens());
+                    firstResponse.setAllergens(task.getMenu().getFirst_course().getAllergens());
                     firstResponse.setImage(task.getMenu().getFirst_course().getImage());
 
                     DishGetDayTaskResponse secondResponse = new DishGetDayTaskResponse();
                     secondResponse.setId(task.getMenu().getSecond_course().getId());
                     secondResponse.setName(task.getMenu().getSecond_course().getName());
                     secondResponse.setIngredients(task.getMenu().getSecond_course().getIngredients());
-                    secondResponse.setAllergerns(task.getMenu().getSecond_course().getAllergens());
+                    secondResponse.setAllergens(task.getMenu().getSecond_course().getAllergens());
                     secondResponse.setImage(task.getMenu().getSecond_course().getImage());
 
                     DishGetDayTaskResponse dessertResponse = new DishGetDayTaskResponse();
                     dessertResponse.setId(task.getMenu().getDessert().getId());
                     dessertResponse.setName(task.getMenu().getDessert().getName());
                     dessertResponse.setIngredients(task.getMenu().getDessert().getIngredients());
-                    dessertResponse.setAllergerns(task.getMenu().getDessert().getAllergens());
+                    dessertResponse.setAllergens(task.getMenu().getDessert().getAllergens());
                     dessertResponse.setImage(task.getMenu().getDessert().getImage());
 
                     menuResponse.setFirst_course(firstResponse);
                     menuResponse.setSecond_course(secondResponse);
                     menuResponse.setDessert(dessertResponse);
+                    menuResponse.setStatus(task.getMenu().getStatus());
 
                     // CREAMOS USUARIO
                     UserInGetTasksResponse userResponse = new UserInGetTasksResponse();

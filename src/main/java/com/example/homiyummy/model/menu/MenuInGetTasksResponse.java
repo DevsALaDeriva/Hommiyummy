@@ -16,5 +16,6 @@ public class MenuInGetTasksResponse {
     private DishGetDayTaskResponse first_course = new DishGetDayTaskResponse();
     private DishGetDayTaskResponse second_course = new DishGetDayTaskResponse();
     private DishGetDayTaskResponse dessert = new DishGetDayTaskResponse();
+    private String status = "";
 
 }

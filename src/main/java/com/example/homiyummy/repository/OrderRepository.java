@@ -624,8 +624,9 @@ public class OrderRepository {
 //                                    }
                                     DishGetDayTaskEntity dessert = new DishGetDayTaskEntity(dessertNum, dessertName, ingsDessert, allergensDessert, imgDessert);
 
+                                    String status = menu.child("status").getValue(String.class);
 
-                                    MenuInGetTaskEntity menuEntity = new MenuInGetTaskEntity(menuId, menuDate, first_course, second_course, dessert);
+                                    MenuInGetTaskEntity menuEntity = new MenuInGetTaskEntity(menuId, menuDate, first_course, second_course, dessert, status);
 
                                     // 3º --- OBTENEMOS EL CLIENTE
                                     String uidCustomer = order.child("uidCustomer").getValue(String.class);
