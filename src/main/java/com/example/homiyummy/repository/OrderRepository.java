@@ -15,6 +15,8 @@ import com.google.firebase.database.ValueEventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class OrderRepository {
@@ -746,5 +748,69 @@ public class OrderRepository {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    public void addReviewToOrder(String numOrder, String review, int rate, OnReviewAddedCallback callback) {
+        DatabaseReference restaurantsRef = databaseReference.child("restaurants");
+
+        // Recorremos todos los restaurantes
+        restaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean orderFound = false;
+
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot restaurantSnapshot : dataSnapshot.getChildren()) { // Nodo de cada restaurante
+                        DataSnapshot ordersSnapshot = restaurantSnapshot.child("orders").child("items");
+
+                        if (ordersSnapshot.exists()) {
+                            for (DataSnapshot orderSnapshot : ordersSnapshot.getChildren()) { // Recorremos los pedidos
+                                String currentNumOrder = orderSnapshot.child("num_order").getValue(String.class);
+
+                                // Verificamos si coincide el num_order
+                                if (currentNumOrder != null && currentNumOrder.equals(numOrder)) {
+                                    orderFound = true;
+
+                                    // Creamos la estructura de reviews
+                                    Map<String, Object> reviewsMap = new HashMap<>();
+                                    reviewsMap.put("rate", rate);
+                                    reviewsMap.put("review", review);
+
+                                    // Actualizamos el nodo "reviews"
+                                    orderSnapshot.getRef().child("reviews").updateChildren(reviewsMap, new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                            if (databaseError == null) {
+                                                callback.onResult(true); // Éxito
+                                            } else {
+                                                callback.onResult(false); // Error al actualizar
+                                            }
+                                        }
+                                    });
+                                    break; // Salimos del bucle interno
+                                }
+                            }
+                        }
+
+                        if (orderFound) break; // Salimos si ya encontramos el pedido
+                    }
+                }
+
+                if (!orderFound) {
+                    callback.onResult(false); // No se encontró el pedido
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onResult(false); // Error en la base de datos
+            }
+        });
+    }
+
+
+
+    public interface OnReviewAddedCallback {
+        void onResult(boolean success);
+    }
 
 }

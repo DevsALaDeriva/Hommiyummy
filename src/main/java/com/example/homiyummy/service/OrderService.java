@@ -5,6 +5,8 @@ import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumResponse;
 import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
 import com.example.homiyummy.model.order.*;
+import com.example.homiyummy.model.reviews.ReviewRequest;
+import com.example.homiyummy.model.reviews.ReviewResponse;
 import com.example.homiyummy.model.user.UserInGetTasksResponse;
 import com.example.homiyummy.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -309,4 +311,30 @@ public class OrderService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    public CompletableFuture<ReviewResponse> createReviewForOrder(ReviewRequest request) {
+        CompletableFuture<ReviewResponse> future = new CompletableFuture<>();
+
+        orderRepository.addReviewToOrder(
+                request.getNum_order(),
+                request.getReview(),
+                request.getRate(),
+                new OrderRepository.OnReviewAddedCallback() {
+                    @Override
+                    public void onResult(boolean success) {
+                        ReviewResponse response = new ReviewResponse();
+                        response.setSave(success);
+
+                        if (success) {
+                            future.complete(response); // Completar el CompletableFuture en caso de éxito
+                        } else {
+                            future.completeExceptionally(new RuntimeException("Error al guardar la review.")); // En caso de fallo
+                        }
+                    }
+                }
+        );
+
+        return future; // Devolver el CompletableFuture
+    }
 }
+
+

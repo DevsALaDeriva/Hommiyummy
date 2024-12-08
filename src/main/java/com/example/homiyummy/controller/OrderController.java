@@ -3,6 +3,8 @@ package com.example.homiyummy.controller;
 import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
 import com.example.homiyummy.model.order.*;
 import com.example.homiyummy.model.restaurant.RestaurantReadRequest;
+import com.example.homiyummy.model.reviews.ReviewRequest;
+import com.example.homiyummy.model.reviews.ReviewResponse;
 import com.example.homiyummy.model.user.UserReadRequest;
 import com.example.homiyummy.repository.OrderRepository;
 import com.example.homiyummy.service.OrderService;
@@ -97,4 +99,12 @@ public class OrderController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    @PostMapping("review/create")
+    public CompletableFuture<ResponseEntity<ReviewResponse>> createReview(@RequestBody ReviewRequest request) {
+        return orderService.createReviewForOrder(request)
+                .thenApply(response -> ResponseEntity.ok(response)) // Respuesta 200 OK con la ReviewResponse
+                .exceptionally(ex -> ResponseEntity.badRequest()
+                        .body(new ReviewResponse(false))); // En caso de error, respuesta 400 con success = false
+    }
+    
 }
