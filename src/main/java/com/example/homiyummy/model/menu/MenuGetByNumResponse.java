@@ -17,7 +17,7 @@ public class MenuGetByNumResponse {
     private int date = 0;
     private DishGetByResponse first_course = new DishGetByResponse();
     private DishGetByResponse second_course = new DishGetByResponse();
-    private Object dessert = new DishGetByResponse(); // Usamos Object para permitir flexibilidad
+    private Object dessert = new DishGetByResponse(); // USAMOS OBJECT PARA PERMITIR QUE ACEPTE TANTO UN PLATO COMO UN ARRAY VACÍO
     private float price = 0;
     private String status = "";
 

@@ -234,7 +234,6 @@ public class OrderRepository {
                                             String dessertImg = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("image").getValue(String.class);
                                             DishGetByEntity dessertEntity = new DishGetByEntity(dessertID, dessertName, dessertIngs, dessertAllergens, dessertImg);
 
-
                                             float totalMenu = menu.child("price").getValue(Float.class);
                                             String status = menu.child("status").getValue(String.class);
 

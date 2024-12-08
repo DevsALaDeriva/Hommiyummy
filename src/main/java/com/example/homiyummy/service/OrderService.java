@@ -111,7 +111,7 @@ public class OrderService {
                         allMenusResponse.add(menuResponse);
                     }
                     else {
-                        Map<String, Object> emptyDessert = new HashMap<>(); // Objeto vacío
+                        ArrayList<String> emptyDessert = new ArrayList<>();
 
                         MenuGetByNumResponse menuResponse = new MenuGetByNumResponse(
                                 menuId, menuDate, firstCourseResponse, secondCourseResponse, emptyDessert, menuPrice, menuStatus
@@ -224,12 +224,12 @@ public class OrderService {
                 for(OrderGetTasksEntity task : tasksEntity){
 
                     // CREAMOS EL ID
-                    String menuIdResponse = task.getNum_order();
+                    String menuNumOrderResponse = task.getNum_order();
 
                     // CREAMOS EL MENÚ
-                    MenuInGetTasksResponse menuResponse = new MenuInGetTasksResponse();
-                    menuResponse.setId(task.getMenu().getId());
-                    menuResponse.setDate(task.getMenu().getDate());
+
+                    int menuId = task.getMenu().getId();
+                    int menuDate = task.getMenu().getDate();
 
                     DishGetDayTaskResponse firstResponse = new DishGetDayTaskResponse();
                     firstResponse.setId(task.getMenu().getFirst_course().getId());
@@ -245,17 +245,23 @@ public class OrderService {
                     secondResponse.setAllergens(task.getMenu().getSecond_course().getAllergens());
                     secondResponse.setImage(task.getMenu().getSecond_course().getImage());
 
-                    DishGetDayTaskResponse dessertResponse = new DishGetDayTaskResponse();
-                    dessertResponse.setId(task.getMenu().getDessert().getId());
-                    dessertResponse.setName(task.getMenu().getDessert().getName());
-                    dessertResponse.setIngredients(task.getMenu().getDessert().getIngredients());
-                    dessertResponse.setAllergens(task.getMenu().getDessert().getAllergens());
-                    dessertResponse.setImage(task.getMenu().getDessert().getImage());
+                    String menuStatus = task.getMenu().getStatus();
 
-                    menuResponse.setFirst_course(firstResponse);
-                    menuResponse.setSecond_course(secondResponse);
-                    menuResponse.setDessert(dessertResponse);
-                    menuResponse.setStatus(task.getMenu().getStatus());
+                    MenuInGetTasksResponse menuResponse = new MenuInGetTasksResponse();
+
+                    if(task.getMenu().getDessert().getId() != 0){
+                        DishGetDayTaskResponse dessertResponse = new DishGetDayTaskResponse(
+                                task.getMenu().getDessert().getId(),
+                                task.getMenu().getDessert().getName(),
+                                task.getMenu().getDessert().getIngredients(),
+                                task.getMenu().getDessert().getAllergens(),
+                                task.getMenu().getDessert().getImage());
+                        menuResponse = new MenuInGetTasksResponse(menuId, menuDate, firstResponse, secondResponse, dessertResponse, menuStatus);
+                    }
+                    else {
+                        ArrayList<String> emptyDessert = new ArrayList<>();
+                        menuResponse = new MenuInGetTasksResponse(menuId, menuDate, firstResponse, secondResponse, emptyDessert, menuStatus);
+                    }
 
                     // CREAMOS USUARIO
                     UserInGetTasksResponse userResponse = new UserInGetTasksResponse();
@@ -265,7 +271,7 @@ public class OrderService {
                     userResponse.setEmail(task.getCustomer().getEmail());
                     userResponse.setAllergens(task.getCustomer().getAllergens());
 
-                    OrderGetTasksResponse orderResponse = new OrderGetTasksResponse(menuIdResponse, menuResponse, userResponse);
+                    OrderGetTasksResponse orderResponse = new OrderGetTasksResponse(menuNumOrderResponse, menuResponse, userResponse);
 
                     tasksResponse.add(orderResponse);
                 }
