@@ -562,35 +562,40 @@ public class RestaurantRepository {
                                 String image = singleRestaurantSnapshot.child("image").getValue(String.class);
                                 String phone = singleRestaurantSnapshot.child("phone").getValue(String.class);
                                 String schedule = singleRestaurantSnapshot.child("schedule").getValue(String.class);
-                                Integer rate = singleRestaurantSnapshot.child("rate").getValue(Integer.class);
-                                rate = rate != null ? rate : 0;
                                 String description = singleRestaurantSnapshot.child("description").getValue(String.class);
                                 String city = singleRestaurantSnapshot.child("city").getValue(String.class);
 
+                                int average_rate = 0;
                                 // 2º OBTENEMOS EL CAMPO REVIEWS QUE ES DEL TIPO ARRAYLIST
                                 ArrayList<ReviewsEntity> reviewsEntityList = new ArrayList<>();
-
                                 DataSnapshot ordersSnapshot = singleRestaurantSnapshot.child("orders/items");
+
                                 if(ordersSnapshot.exists()){
-                                    for(DataSnapshot singleOrder : ordersSnapshot.getChildren()){
 
-                                        DataSnapshot reviewSnapshot = singleOrder.child("reviews");
+                                    int sumOfRates = 0;
+                                    int numberOfReviews = (int)ordersSnapshot.getChildrenCount();
 
-                                        if(reviewSnapshot.exists()){
+                                    for(DataSnapshot order : ordersSnapshot.getChildren()){
 
-                                            String customerUID = singleOrder.child("uidCustomer").getValue(String.class);
+                                        String revName = "";
+                                        String revSurname = "";
+                                        String revText = "";
+                                        int orderRate = 0;
 
-                                            String revName = dataSnapshot.child("users").child(customerUID).child("name").getValue(String.class);
-                                            String revSurname = dataSnapshot.child("users").child(customerUID).child("surname").getValue(String.class);
-                                            String fullName = revName + " " + revSurname;
-
-                                            String revText = reviewSnapshot.child("review").getValue(String.class);
-                                            int revRate = reviewSnapshot.child("rate").getValue(Integer.class);
-
-                                            ReviewsEntity revEntity = new ReviewsEntity(fullName, revText, revRate);
-
-                                            reviewsEntityList.add(revEntity);
+                                        if(order.child("reviews/rate").exists()){
+                                            String customerUID = order.child("uidCustomer").getValue(String.class);
+                                            revName = dataSnapshot.child("users").child(customerUID).child("name").getValue(String.class);
+                                            revSurname = dataSnapshot.child("users").child(customerUID).child("surname").getValue(String.class);
+                                            revText = order.child("reviews/review").getValue(String.class);
+                                            orderRate = order.child("reviews/rate").getValue(Integer.class);
+                                            sumOfRates += orderRate;
                                         }
+
+                                        String fullName = revName + " " + revSurname;
+                                        average_rate = Math.round((float)sumOfRates / numberOfReviews);
+                                        ReviewsEntity revEntity = new ReviewsEntity(fullName, revText, orderRate);
+
+                                        reviewsEntityList.add(revEntity);
                                     }
                                 }
 
@@ -605,7 +610,6 @@ public class RestaurantRepository {
                                         int id = menu.child("id").getValue(Integer.class);
                                         float priceWithDessert = menu.child("priceWithDessert").getValue(Float.class);
                                         float priceNoDessert = menu.child("priceNoDessert").getValue(Float.class);
-
 
                                         // OBTENEMOS EL POSTRE
                                         int dessertID = menu.child("dessert").getValue(Integer.class);
@@ -687,7 +691,7 @@ public class RestaurantRepository {
                                     }
 
                                     RestaurantGetByUrlEntity entity = new RestaurantGetByUrlEntity(uid, name, foodType,
-                                            address, image, phone, schedule, rate, description, city, reviewsEntityList, menuEntityList);
+                                            address, image, phone, schedule, average_rate, description, city, reviewsEntityList, menuEntityList);
 
                                     callback.onSearchingSuccess(entity);
                                 }

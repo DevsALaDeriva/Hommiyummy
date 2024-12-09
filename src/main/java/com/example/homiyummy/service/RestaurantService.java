@@ -436,7 +436,7 @@ public class RestaurantService {
                 String image = restaurantGetByUrlEntity.getImage();
                 String phone = restaurantGetByUrlEntity.getPhone();
                 String schedule = restaurantGetByUrlEntity.getSchedule();
-                Integer rate = restaurantGetByUrlEntity.getRate();
+                Integer average_rate = restaurantGetByUrlEntity.getAverage_rate();
                 String description = restaurantGetByUrlEntity.getDescription();
                 String city = restaurantGetByUrlEntity.getCity();
 
@@ -463,7 +463,7 @@ public class RestaurantService {
                     menus.add(menu);
                 }
                 RestaurantGetByUrlResponse restaurantGetByUrlResponse = new RestaurantGetByUrlResponse(uid, name, food_type,
-                        address, image, phone, schedule, rate, description, city, reviews, menus);
+                        address, image, phone, schedule, average_rate, description, city, reviews, menus);
 
                 futureResponse.complete(restaurantGetByUrlResponse);
             }
