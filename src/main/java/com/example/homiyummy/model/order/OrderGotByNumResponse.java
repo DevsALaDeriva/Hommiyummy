@@ -2,6 +2,8 @@ package com.example.homiyummy.model.order;
 
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumResponse;
+import com.example.homiyummy.model.reviews.ReviewsGetByNumOrderEntity;
+import com.example.homiyummy.model.reviews.ReviewsGetByNumOrderResponse;
 import com.example.homiyummy.model.user.UserReadResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +21,7 @@ public class OrderGotByNumResponse {
     private int date = 0;
     private String uidCustomer = "";
     private ArrayList<MenuGetByNumResponse> menus = new ArrayList<>();
+    private Object review = new ReviewsGetByNumOrderResponse();
     private String status = "";
     private float total = 0;
 }

@@ -7,6 +7,7 @@ import com.example.homiyummy.model.menu.MenuGetByUrlEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuInGetTaskEntity;
 import com.example.homiyummy.model.order.*;
+import com.example.homiyummy.model.reviews.ReviewsGetByNumOrderEntity;
 import com.example.homiyummy.model.user.UserInGetTaskEntity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -168,6 +169,8 @@ public class OrderRepository {
                                     int date = order.child("date").getValue(Integer.class); // GUARDAMOS FECHA DEL PEDIDO
                                     float totalOrder = order.child("total").getValue(Float.class); // GUARDAMOS TOTAL DEL PEDIDO
 
+
+
                                     DataSnapshot menusSnapshot = order.child("menus");
 
                                     if(menusSnapshot.exists()){
@@ -252,9 +255,29 @@ public class OrderRepository {
                                             menusInOrder.add(singleMenu); // Y LO METEMOS DENTRO DEL ARRAY DE MENÚS DEL PEDIDO
                                         }
 
-                                        OrderGotByNumEntity dataEntity = new OrderGotByNumEntity(restUID, date, customerUID, menusInOrder, orderStatus, totalOrder);
 
-                                        callback.onFindingSuccess(dataEntity);
+                                        //-------IMPORTANTE ------ ADAPTAMOS LA CLASE OrderGotByNumEntity DANDO A reviews UN TIPO Object PQ NECESITAMOS QUE SEA AMBIVALENTE (OBJETO O ReviewsGetByNumOrderEntity)
+                                                // SI EL PEDIDIO TIENE REVIEW DEVUELVO UN OBJETO ReviewsGetByNumOrderEntity
+                                        ReviewsGetByNumOrderEntity reviewEntity = null;
+                                        DataSnapshot reviewSnapshot = order.child("reviews");
+                                        if (reviewSnapshot.exists()) {
+                                            int reviewRate = reviewSnapshot.child("rate").getValue(Integer.class);
+                                            String text = reviewSnapshot.child("review").getValue(String.class);
+                                            reviewEntity = new ReviewsGetByNumOrderEntity();
+                                            reviewEntity.setRate(reviewRate);
+                                            reviewEntity.setReview(text);
+
+                                            OrderGotByNumEntity dataEntity = new OrderGotByNumEntity(restUID, date, customerUID, menusInOrder, reviewEntity, orderStatus, totalOrder);
+                                            callback.onFindingSuccess(dataEntity);
+                                        } else {
+                                            // SI EL PEDIDIO NO TIENE REVIEW DEVUELVO UN ARRAYLIST VACÍO
+                                            ArrayList<String> emptyReview = new ArrayList<>();
+                                            OrderGotByNumEntity dataEntity = new OrderGotByNumEntity(restUID, date, customerUID, menusInOrder, emptyReview, orderStatus, totalOrder);
+                                            callback.onFindingSuccess(dataEntity);
+                                        }
+                                        //-------------
+
+
                                     }
                                 }
                             }

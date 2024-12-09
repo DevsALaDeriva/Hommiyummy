@@ -77,6 +77,7 @@ public class OrderController {
                     System.err.println("Error during request processing: " + ex.getMessage());
                     ex.printStackTrace();
                     OrderGotByNumResponse errorResponse = new OrderGotByNumResponse();
+                    errorResponse.setReview(new ArrayList<>());//ESTABLECEMOS UN ARRAY VACÍO EN LAS REVIEWS PARA FORZAR A QUE NO DE VALORES VACÍOS A LAS PROPIEDADES
                     return new ResponseEntity<>(errorResponse, HttpStatus.OK);
                 });
     }
