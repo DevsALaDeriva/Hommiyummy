@@ -479,5 +479,44 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    public CompletableFuture<RestaurantGetAllMenusResponse> getAllMenus(String uid){
+
+        CompletableFuture<RestaurantGetAllMenusResponse> futureMenus = new CompletableFuture<>();
+
+        restaurantRepository.getMenus(uid, new RestaurantRepository.OnMenusGot() {
+            @Override
+            public void onSearchingSuccess(RestaurantGetAllMenusEntity allMenusEntity) {
+
+                RestaurantGetAllMenusResponse menusResponse = new RestaurantGetAllMenusResponse();
+
+                ArrayList<MenuGetAllMenusResponse> menus = new ArrayList<>();
+
+                for(MenuGetAllMenusEntity menuEntity : allMenusEntity.getMenus()){
+
+                    MenuGetAllMenusResponse menu = new MenuGetAllMenusResponse();
+
+                    menu.setId(menuEntity.getId());
+                    menu.setDate(menuEntity.getDate());
+                    menu.setFirst_course(menuEntity.getFirst_course());
+                    menu.setSecond_course(menuEntity.getSecond_course());
+                    menu.setDessert(menuEntity.getDessert());
+                    menu.setPriceWithDessert(menuEntity.getPriceWithDessert());
+                    menu.setPriceNoDessert(menuEntity.getPriceNoDessert());
+                    menus.add(menu);
+                }
+
+                menusResponse.setMenus(menus);
+                futureMenus.complete(menusResponse);
+            }
+
+            @Override
+            public void onSearchingFailure(Exception exception) {
+                futureMenus.completeExceptionally(exception);
+            }
+        });
+        return futureMenus;
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
 }

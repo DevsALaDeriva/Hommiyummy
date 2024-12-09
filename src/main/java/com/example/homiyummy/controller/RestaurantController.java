@@ -3,8 +3,6 @@ package com.example.homiyummy.controller;
 import com.example.homiyummy.model.dish.DishAllResponse;
 import com.example.homiyummy.model.dish.MenuSimpleResponse;
 import com.example.homiyummy.model.menu.MenuByPeriodRequest;
-import com.example.homiyummy.model.menu.MenuDetaliedResponse;
-import com.example.homiyummy.model.menu.MenuResponseByPeriod;
 import com.example.homiyummy.model.order.OrderGetRestaurantOrdersResponse;
 import com.example.homiyummy.model.order.OrderGetTasksRequest;
 import com.example.homiyummy.model.order.OrderGetTasksResponse;
@@ -211,6 +209,28 @@ public class RestaurantController {
                     return new ResponseEntity<>(mapEmpty, HttpStatus.OK);
                 });
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    @PostMapping("getAllMenus")
+    public CompletableFuture<RestaurantGetAllMenusResponse> getAllMenus(@RequestBody RestaurantReadRequest request){
+        if(!request.getUid().isEmpty()){
+            return restaurantService.getAllMenus(request.getUid())
+                    .exceptionally(ex -> {
+                        ex.printStackTrace();
+                        RestaurantGetAllMenusResponse emptyResponse = new RestaurantGetAllMenusResponse();
+                        return emptyResponse;
+                    });
+        }
+        else{
+            RestaurantGetAllMenusResponse emptyResponse = new RestaurantGetAllMenusResponse();
+            return CompletableFuture.completedFuture(emptyResponse);
+        }
+
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
 
 }
 
