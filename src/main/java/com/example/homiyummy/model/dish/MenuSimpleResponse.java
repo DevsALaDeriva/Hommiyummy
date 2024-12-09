@@ -14,8 +14,8 @@ import java.util.List;
 public class MenuSimpleResponse {
     private int id;
     private int date;
-    private List<DishSimpleResponse> firstCourse;
-    private List<DishSimpleResponse> secondCourse;
+    private List<DishSimpleResponse> first_course;
+    private List<DishSimpleResponse> second_course;
     private DishSimpleResponse dessert;
     private float priceWithDessert;
     private float priceNoDessert;

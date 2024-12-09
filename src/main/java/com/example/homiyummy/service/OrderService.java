@@ -5,8 +5,6 @@ import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumResponse;
 import com.example.homiyummy.model.menu.MenuInGetTasksResponse;
 import com.example.homiyummy.model.order.*;
-import com.example.homiyummy.model.reviews.ReviewsGetByNumOrderEntity;
-import com.example.homiyummy.model.reviews.ReviewsGetByNumOrderResponse;
 import com.example.homiyummy.model.user.UserInGetTasksResponse;
 import com.example.homiyummy.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -123,22 +121,6 @@ public class OrderService {
 
                 }
                 orderResponse.setMenus(allMenusResponse);
-
-
-                //------------
-                Object review = orderGotByNumEntity.getReview(); // AQUÍ RECIBIMOS A LA REVIEW, PARA VER SI ES UN OBJETO ReviewsGetByNumOrderEntity O UN ARRAY
-                if (review instanceof ReviewsGetByNumOrderEntity) {
-                    ReviewsGetByNumOrderEntity reviewEntity = (ReviewsGetByNumOrderEntity) review;
-                    ReviewsGetByNumOrderResponse reviewResponse = new ReviewsGetByNumOrderResponse();
-                    reviewResponse.setRate(reviewEntity.getRate());
-                    reviewResponse.setReview(reviewEntity.getReview());
-                    orderResponse.setReview(reviewResponse);
-                } else if (review instanceof ArrayList) {
-                    ArrayList<String> emptyReview = (ArrayList<String>) review;
-                    orderResponse.setReview(emptyReview);
-                }
-                //-------------
-
                 orderResponse.setStatus(orderGotByNumEntity.getStatus());
                 orderResponse.setTotal(orderGotByNumEntity.getTotal());
 
