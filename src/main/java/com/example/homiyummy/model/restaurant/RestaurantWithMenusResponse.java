@@ -24,7 +24,7 @@ public class RestaurantWithMenusResponse {
     private String food_type = "";
     private String description = "";
     private String image = "";
-    private Integer rate = 0;
+    private Integer average_rate = 0;
     //private Float average_price = 0.0F;
     private RestaurantLocation location = new RestaurantLocation(0.0F, 0.0F);
     private ArrayList<MenuReadResponse> menus = new ArrayList<>();

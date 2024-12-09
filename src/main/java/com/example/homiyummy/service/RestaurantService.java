@@ -180,7 +180,7 @@ public class RestaurantService {
                     restaurantGetAllFormatResponse.setSchedule(restaurant.getSchedule());
                     restaurantGetAllFormatResponse.setFood_type(restaurant.getFood_type());
                     restaurantGetAllFormatResponse.setImage(restaurant.getImage());
-                    restaurantGetAllFormatResponse.setRate(restaurant.getRate());
+                    restaurantGetAllFormatResponse.setRate(restaurant.getAverage_rate());
                     restaurantGetAllFormatResponse.setAverage_price(restaurant.getAverage_price());
                     restaurantGetAllFormatResponse.setLocation(restaurant.getLocation());
 
@@ -378,7 +378,7 @@ public class RestaurantService {
                         restToBeAddedResponse.setFood_type(re.getFood_type());
                         restToBeAddedResponse.setDescription(re.getDescription());
                         restToBeAddedResponse.setImage(re.getImage());
-                        restToBeAddedResponse.setRate(re.getRate());
+                        restToBeAddedResponse.setAverage_rate(re.getAverage_rate());
                         //restToBeAddedResponse.setAverage_price(re.getAverage_price());
                         restToBeAddedResponse.setLocation(re.getLocation());
 
