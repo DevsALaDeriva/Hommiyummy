@@ -431,11 +431,12 @@ public class RestaurantRepository {
                             DataSnapshot ordersSnapshot = restaurantSnapshot.child("orders/items");
                             if(ordersSnapshot.exists()){
                                 int sumOfRates = 0;
-                                int numberOfReviews = (int)ordersSnapshot.getChildrenCount();
+                                int numberOfReviews = 0;
                                 for(DataSnapshot order : ordersSnapshot.getChildren()){
                                     if(order.child("reviews/rate").exists()){
                                         int orderRate = order.child("reviews/rate").getValue(Integer.class);
                                         sumOfRates += orderRate;
+                                        numberOfReviews++;
                                     }
                                     average_rate = Math.round((float)sumOfRates / numberOfReviews);
                                 }
@@ -573,30 +574,38 @@ public class RestaurantRepository {
                                 if(ordersSnapshot.exists()){
 
                                     int sumOfRates = 0;
-                                    int numberOfReviews = (int)ordersSnapshot.getChildrenCount();
+                                    int numberOfReviews = 0;
 
                                     for(DataSnapshot order : ordersSnapshot.getChildren()){
 
-                                        String revName = "";
-                                        String revSurname = "";
-                                        String revText = "";
-                                        int orderRate = 0;
+                                        //String revName = "";
+                                        //String revSurname = "";
+                                        //String revText = "";
+                                        //int orderRate = 0;
 
-                                        if(order.child("reviews/rate").exists()){
+                                        if(order.child("reviews").exists()){
                                             String customerUID = order.child("uidCustomer").getValue(String.class);
-                                            revName = dataSnapshot.child("users").child(customerUID).child("name").getValue(String.class);
-                                            revSurname = dataSnapshot.child("users").child(customerUID).child("surname").getValue(String.class);
-                                            revText = order.child("reviews/review").getValue(String.class);
-                                            orderRate = order.child("reviews/rate").getValue(Integer.class);
+                                            String revName = dataSnapshot.child("users").child(customerUID).child("name").getValue(String.class);
+                                            String revSurname = dataSnapshot.child("users").child(customerUID).child("surname").getValue(String.class);
+                                            String revText = order.child("reviews/review").getValue(String.class);
+                                            int orderRate = order.child("reviews/rate").getValue(Integer.class);
+
+                                            String fullName = revName + " " + revSurname;
+                                            ReviewsEntity revEntity = new ReviewsEntity(fullName, revText, orderRate);
+
+                                            reviewsEntityList.add(revEntity);
+
+                                            numberOfReviews++;
                                             sumOfRates += orderRate;
                                         }
 
-                                        String fullName = revName + " " + revSurname;
-                                        average_rate = Math.round((float)sumOfRates / numberOfReviews);
-                                        ReviewsEntity revEntity = new ReviewsEntity(fullName, revText, orderRate);
+                                        //String fullName = revName + " " + revSurname;
+                                       // average_rate = Math.round((float)sumOfRates / numberOfReviews);
+                                        //ReviewsEntity revEntity = new ReviewsEntity(fullName, revText, orderRate);
 
-                                        reviewsEntityList.add(revEntity);
+                                        //reviewsEntityList.add(revEntity);
                                     }
+                                    average_rate = Math.round((float)sumOfRates / numberOfReviews);
                                 }
 
                                 DataSnapshot menusSnapshot = singleRestaurantSnapshot.child("menus/items");
