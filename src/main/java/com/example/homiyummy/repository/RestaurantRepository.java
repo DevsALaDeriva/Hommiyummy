@@ -42,6 +42,7 @@ public class RestaurantRepository {
         restaurantEntityToSave.put("food_type", restaurantEntity.getFood_type());
         restaurantEntityToSave.put("schedule", restaurantEntity.getSchedule());
         restaurantEntityToSave.put("location", restaurantEntity.getLocation());
+        restaurantEntityToSave.put("uid", restaurantEntity.getUid());
 
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(restaurantEntity.getUid());
 
