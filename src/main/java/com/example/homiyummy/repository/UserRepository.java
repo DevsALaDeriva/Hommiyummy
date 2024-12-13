@@ -77,22 +77,27 @@ public class UserRepository {
 // ------------------------------------------------------------------------------------------------------------
 
     public void updateUserData(UserEntity userEntity, GetUpdateConfirmationCallback callback) { // IMPLEMENTA LA INTERFAZ QUE LE SERVIRÁ AL SERVICIO PARA OBTENER LA CONFIRMACIÓN DEL ÉXITO O FALLO DE LA ACTUALIZACIÓN
-       DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
 
-       //EL uid NO SE INCLUYE ENTRE LOS DATOS DEL USUARIO, VA A PARTE (EN EL NODO)
+        DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() { // PRIMERO VER EL CONTENIDO GUARDADO EN REALTIME DEL USUARIO ANTES DE GUARDAR EL NUEVO
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
-
                         String currentName = dataSnapshot.child("name").getValue(String.class);
                         String currentSurname = dataSnapshot.child("surname").getValue(String.class);
-                        String currentPhone = dataSnapshot.child("phone").getValue(String.class);
-                        ArrayList<String> currentAllergens = (ArrayList<String>) dataSnapshot.child("allergens").getValue();
                         String currentEmail = dataSnapshot.child("email").getValue(String.class);
-                        String currentCity = dataSnapshot.child("city").getValue(String.class);
+                        String currentPhone = dataSnapshot.child("phone").getValue(String.class);
                         String currentAddress = dataSnapshot.child("address").getValue(String.class);
+                        String currentCity = dataSnapshot.child("city").getValue(String.class);
+
+                        ArrayList<String> currentAllergens = new ArrayList<>();
+                        if(dataSnapshot.child("allergens").exists()){
+                            DataSnapshot allergensSnapshot = dataSnapshot.child("allergens");
+                            for(DataSnapshot allergen : allergensSnapshot.getChildren()){
+                                currentAllergens.add(allergen.getValue(String.class));
+                            }
+                        }
 
                         UserEntity userEntityToBeSaved = new UserEntity(); // PODRÍA NO CREAR OTRO Y GRABARLO SOBRE EL MISMO QUE LLEGA, PERO LO HAGO ASÍ
 
@@ -111,13 +116,31 @@ public class UserRepository {
                                 userRef.addListenerForSingleValueEvent(new ValueEventListener() { // VUELVO A ENTRAR EN EL NODO PARA VER SI SE HA GRABADO
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        UserResponse ur = dataSnapshot.getValue(UserResponse.class);                           // SOLO LO CREO PARA VER SI TIENE COSAS
-                                        if(!ur.getName().isEmpty() && !ur.getSurname().isEmpty() && !ur.getPhone().isEmpty()){ // SI HAY DATOS GRABADOS DEVUELVE TRUE
-                                            callback.onSuccess(true);
+                                        if(dataSnapshot.exists()){
+                                            UserEntity updatedEntity = new UserEntity();
+                                            updatedEntity.setName(dataSnapshot.child("name").getValue(String.class));
+                                            updatedEntity.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                                            updatedEntity.setEmail(dataSnapshot.child("email").getValue(String.class));
+                                            updatedEntity.setAddress(dataSnapshot.child("address").getValue(String.class));
+                                            updatedEntity.setCity(dataSnapshot.child("city").getValue(String.class));
+                                            updatedEntity.setPhone(dataSnapshot.child("phone").getValue(String.class));
+                                            ArrayList<String> allergens = new ArrayList<>();
+                                            if(dataSnapshot.child("allergens").exists()){
+                                                DataSnapshot allergensSnapshot = dataSnapshot.child("allergens");
+                                                for(DataSnapshot allergen : allergensSnapshot.getChildren()){
+                                                    allergens.add(allergen.getValue(String.class));
+                                                }
+                                                updatedEntity.setAllergens(allergens);
+                                            }
+
+                                            if(!updatedEntity.getName().isEmpty() && !updatedEntity.getSurname().isEmpty() && !updatedEntity.getEmail().isEmpty()){ // SI HAY DATOS GRABADOS DEVUELVE TRUE
+                                                callback.onSuccess(true);
+                                            }
+                                            else{
+                                                callback.onSuccess(false);
+                                            }
                                         }
-                                        else{
-                                            callback.onSuccess(false);
-                                        }
+
                                     }
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
@@ -133,7 +156,7 @@ public class UserRepository {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                    callback.onFailure(new Exception("Error al conectarse a la base de datos"));
             }
         });
     }
