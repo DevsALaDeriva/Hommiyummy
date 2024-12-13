@@ -48,28 +48,33 @@ public class UserService {
 
         /**
          *
-         * COMO EL saveUser DEL REPOSITORIO DEVUELVE EL UserResponse QUE QUEREMOS RECIBIR (PARA LUEGO MANDÁRSELO DESDE AQUÍ AL CONTROLLER)
-         * USANDO UN CALLBACK,
-         * 1º CREAMOS UN "Futuro" DONDE LO ALMACENAREMOS Y
-         * 2º LE TENEMOS QUE PASAR ESE CALLBACK QUE COMPLETE EL FUTURO
+         * EL saveUser DEL REPOSITORIO DEVUELVE VIA CALLBACK UN OBJETO UserEntity QUE TRANSFORMAMOS EN UN UserResponse (PARA LUEGO MANDÁRSELO DESDE AQUÍ AL CONTROLLER)
          */
 
         CompletableFuture<UserResponse> futureResponse = new CompletableFuture<>();
 
         userRepository.saveUser(userEntity, new UserRepository.SaveUserCallback() {
             @Override
-            public void onSuccess(UserResponse userResponse) {
-                futureResponse.complete(userResponse); // Completa el futuro con éxito
+            public void onSuccess(UserEntity userEntity) {
+                UserResponse userResponse = new UserResponse();
+                userResponse.setUid(userEntity.getUid());
+                userResponse.setName(userEntity.getName());
+                userResponse.setSurname(userEntity.getSurname());
+                userResponse.setEmail(userEntity.getEmail());
+                userResponse.setAddress(userEntity.getAddress());
+                userResponse.setCity(userEntity.getCity());
+                userResponse.setPhone(userEntity.getPhone());
+                userResponse.setAllergens(userEntity.getAllergens());
+                futureResponse.complete(userResponse);
             }
             @Override
             public void onFailure(Exception exception) {
-                futureResponse.completeExceptionally(exception); // Completa el futuro con excepción
+                futureResponse.completeExceptionally(exception);
             }
         });
 
-        // Bloquea y espera el resultado de futureResponse antes de retornar
         try {
-            return futureResponse.get(); // Retorna el UserResponse cuando esté disponible
+            return futureResponse.get(); // ESTO BLOQUEA EL CÓDIGO HASTA QUE ESTÉ DISPONIBLE EL DATO ANTES DE DEVOLVER
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar el usuario en Firebase", e);
         }

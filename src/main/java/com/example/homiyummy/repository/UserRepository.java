@@ -38,9 +38,23 @@ public class UserRepository {
                 userRef.addListenerForSingleValueEvent(new ValueEventListener() {               // CONFIRMADO QUE NO HAY ERROR, LEEMOS LOS DATOS RECIÉN GUARDADOS
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        UserResponse userResponse = dataSnapshot.getValue(UserResponse.class);  // CREAMOS UN OBJETO UserResponse CON ELLOS
-                        userResponse.setUid(userRef.getKey());                                  // LE AÑADO EL ID DE SU NODO
-                        callback.onSuccess(userResponse);                                       // DEVOLVEMOS ESE OBJETO COMO PARÁMETRO DEL SEGUNDO CALLBACK (DE NUESTRA INTERFACE) SI ES EXITOSO
+                        UserEntity recordedEntity = new UserEntity();
+                        recordedEntity.setUid(dataSnapshot.child("uid").getValue(String.class));
+                        recordedEntity.setName(dataSnapshot.child("name").getValue(String.class));
+                        recordedEntity.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                        recordedEntity.setEmail(dataSnapshot.child("email").getValue(String.class));
+                        recordedEntity.setAddress(dataSnapshot.child("address").getValue(String.class));
+                        recordedEntity.setCity(dataSnapshot.child("city").getValue(String.class));
+                        recordedEntity.setPhone(dataSnapshot.child("phone").getValue(String.class));
+                        ArrayList<String> allergens = new ArrayList<>();
+                        if(dataSnapshot.child("allergens").exists()){
+                            DataSnapshot allergensSnapshot = dataSnapshot.child("allergens");
+                            for(DataSnapshot allergen : allergensSnapshot.getChildren()){
+                                allergens.add(allergen.getValue(String.class));
+                            }
+                            recordedEntity.setAllergens(allergens);
+                        }
+                        callback.onSuccess(recordedEntity);                                       // DEVOLVEMOS ESE OBJETO COMO PARÁMETRO DEL SEGUNDO CALLBACK (DE NUESTRA INTERFACE) SI ES EXITOSO
                     }
 
                     @Override
@@ -57,7 +71,7 @@ public class UserRepository {
 // ------------------------------------------------------------------------------------------------------------
 
     public interface SaveUserCallback {
-        void onSuccess(UserResponse userResponse);
+        void onSuccess(UserEntity userEntity);
         void onFailure(Exception exception);
     }
 // ------------------------------------------------------------------------------------------------------------
@@ -188,122 +202,5 @@ public class UserRepository {
         void onFailure(Exception exception);
     }
     // ----------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//    public static UserResponse getUser(UserEntity userEntity) {
-//        // Crear un nuevo UserResponse y mapear los datos de UserEntity
-//        UserResponse userResponse = new UserResponse();
-//        userResponse.setUid(userEntity.getUid());
-//        userResponse.setName(userEntity.getName());
-//        userResponse.setSurname(userResponse.getSurname());
-//        userResponse.setEmail(userEntity.getEmail());
-//        userResponse.setPhone(userEntity.getPhone());
-//
-//        // Si UserResponse tiene campos adicionales que no estén en UserEntity, inicialízalos según sea necesario.
-//        //userResponse.setStatus("ACTIVE"); // Ejemplo de campo adicional
-//
-//        return userResponse;
-//    }
-//
-//
-//
-//
-//    // Métod o para convertir UserEntity en un Map
-//    private Map<String, Object> convertToMap(UserEntity userEntity) {
-//        Map<String, Object> userMap = new HashMap<>();
-//        userMap.put("name", userEntity.getName());
-//        userMap.put("email", userEntity.getEmail());
-//        // Agrega aquí los demás campos necesarios de UserEntity
-//        return userMap;
-//    }
-//
-//
-//
-//
-//
-//    public CompletableFuture<UserEntity> getUserById(String userId) {
-//        CompletableFuture<UserEntity> future = new CompletableFuture<>();
-//
-//        DatabaseReference userRef = firebaseDatabase.getReference("users").child(userId);
-//        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot snapshot) {
-//                UserEntity userEntity = snapshot.getValue(UserEntity.class);
-//                future.complete(userEntity);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                future.completeExceptionally(error.toException());
-//            }
-//        });
-//
-//        return future;
-//    }
-//
-//
-//
-//    public CompletableFuture<Void> deleteUser(String userId) {
-//        CompletableFuture<Void> future = new CompletableFuture<>();
-//
-//        DatabaseReference userRef = firebaseDatabase.getReference("users").child(userId);
-//        userRef.removeValue((error, ref) -> {
-//            if (error == null) {
-//                future.complete(null); // Eliminación exitosa
-//            } else {
-//                System.out.println("Error al eliminar en Firebase: " + error.getMessage());
-//                future.completeExceptionally(error.toException());
-//            }
-//        });
-//
-//        return future;
-//    }
-
-
-
 
 }
