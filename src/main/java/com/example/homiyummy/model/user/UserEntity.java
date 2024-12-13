@@ -40,4 +40,5 @@ public class UserEntity {
         this.phone = phone;
         this.allergens = allergens;
     }
+
 }

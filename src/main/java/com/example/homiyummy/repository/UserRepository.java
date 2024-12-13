@@ -1,6 +1,7 @@
 package com.example.homiyummy.repository;
 
 import com.example.homiyummy.model.user.UserEntity;
+import com.example.homiyummy.model.user.UserFindEntity;
 import com.example.homiyummy.model.user.UserReadResponse;
 import com.example.homiyummy.model.user.UserResponse;
 import com.google.firebase.auth.FirebaseAuth;
@@ -178,7 +179,6 @@ public class UserRepository {
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                // Si el snapshot existe, el usuario existe
                 future.complete(snapshot.exists());
             }
             @Override
@@ -199,9 +199,26 @@ public class UserRepository {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
-                        UserReadResponse user = dataSnapshot.getValue(UserReadResponse.class);
-                        if(!user.getName().isEmpty() && !user.getEmail().isEmpty()){
-                            callback.onSuccess(user);
+                        UserFindEntity userEntity = new UserFindEntity();
+
+                        userEntity.setEmail(dataSnapshot.child("email").getValue(String.class));
+                        userEntity.setName(dataSnapshot.child("name").getValue(String.class));
+                        userEntity.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                        userEntity.setAddress(dataSnapshot.child("address").getValue(String.class));
+                        userEntity.setCity(dataSnapshot.child("city").getValue(String.class));
+                        userEntity.setPhone(dataSnapshot.child("phone").getValue(String.class));
+
+                        ArrayList<String> allergens = new ArrayList<>();
+                        if(dataSnapshot.child("allergens").exists()){
+                            DataSnapshot allergensSnapshot = dataSnapshot.child("allergens");
+                            for(DataSnapshot allergen : allergensSnapshot.getChildren()){
+                                allergens.add(allergen.getValue(String.class));
+                            }
+                            userEntity.setAllergens(allergens);
+                        }
+
+                        if(!userEntity.getName().isEmpty() && !userEntity.getEmail().isEmpty()){
+                            callback.onSuccess(userEntity);
                         }
                         else{
                             callback.onFailure(new Exception("El usuario tiene los campos vacíos en base de datos"));
@@ -221,7 +238,7 @@ public class UserRepository {
     // ----------------------------------------------------------------------------------------------------------------
 
     public interface FindUserCallback{
-        void onSuccess(UserReadResponse userReadResponse);
+        void onSuccess(UserFindEntity userFindEntity);
         void onFailure(Exception exception);
     }
     // ----------------------------------------------------------------------------------------------------------------

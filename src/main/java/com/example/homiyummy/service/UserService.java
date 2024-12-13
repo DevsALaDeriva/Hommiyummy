@@ -2,10 +2,7 @@ package com.example.homiyummy.service;
 
 import com.example.homiyummy.model.order.OrderGotByNumResponse;
 import com.example.homiyummy.model.order.OrderWithRestaurantDataEntity;
-import com.example.homiyummy.model.user.UserDTO;
-import com.example.homiyummy.model.user.UserEntity;
-import com.example.homiyummy.model.user.UserReadResponse;
-import com.example.homiyummy.model.user.UserResponse;
+import com.example.homiyummy.model.user.*;
 import com.example.homiyummy.repository.UserRepository;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -129,7 +126,17 @@ public class UserService {
 
         userRepository.find(uid, new UserRepository.FindUserCallback() {
             @Override
-            public void onSuccess(UserReadResponse userReadResponse) {
+            public void onSuccess(UserFindEntity userFindEntity) {
+                UserReadResponse userReadResponse = new UserReadResponse();
+
+                userReadResponse.setEmail(userFindEntity.getEmail());
+                userReadResponse.setName(userFindEntity.getName());
+                userReadResponse.setSurname(userFindEntity.getSurname());
+                userReadResponse.setAddress(userFindEntity.getAddress());
+                userReadResponse.setCity(userFindEntity.getCity());
+                userReadResponse.setPhone(userFindEntity.getPhone());
+                userReadResponse.setAllergens(userFindEntity.getAllergens());
+
                 futureUser.complete(userReadResponse);
             }
             @Override
