@@ -105,7 +105,7 @@ public class UserRepository {
                         userEntityToBeSaved.setName(userEntity.getName() != null && !userEntity.getName().isEmpty() ? userEntity.getName() : currentName);
                         userEntityToBeSaved.setSurname(userEntity.getSurname() != null && !userEntity.getSurname().isEmpty() ? userEntity.getSurname() : currentSurname);
                         userEntityToBeSaved.setPhone(userEntity.getPhone() != null && !userEntity.getPhone().isEmpty() ? userEntity.getPhone() : currentPhone);
-                        userEntityToBeSaved.setAllergens(userEntity.getAllergens() != null  ? userEntity.getAllergens() : currentAllergens);
+                        userEntityToBeSaved.setAllergens(userEntity.getAllergens() != null && !userEntity.getAllergens().isEmpty() ? userEntity.getAllergens() : currentAllergens);
                         // LOS VALORES PARA EMAIL, CITY Y ADDRESS SE MANTIENEN LOS QUE HABÍA GUARDADOS
                         userEntityToBeSaved.setEmail(currentEmail);
                         userEntityToBeSaved.setCity(currentCity);
