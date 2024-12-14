@@ -28,7 +28,7 @@ public class RestaurantRepository {
 
     public void saveRestaurant(RestaurantEntity restaurantEntity, getSaveRestaurantCallback callback) {
 
-        Map<String, Object> restaurantEntityToSave = new HashMap<>(); // GUARDAMOS TOD-O MENOS EL ID
+        Map<String, Object> restaurantEntityToSave = new HashMap<>();
 
         restaurantEntityToSave.put("email", restaurantEntity.getEmail());
         restaurantEntityToSave.put("name", restaurantEntity.getName());
@@ -166,7 +166,6 @@ public class RestaurantRepository {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    // Completa el future con `true` si existe, `false` si no existe
                     callback.onSuccess(true);
                 }
                 else{
@@ -177,7 +176,6 @@ public class RestaurantRepository {
             @Override
             public void onCancelled(DatabaseError error) {
                 callback.onSuccess(false);
-                //future.completeExceptionally(error.toException());
             }
         });
     }
