@@ -85,6 +85,7 @@ public class UserRepository {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
+                        String currentUID = dataSnapshot.child("uid").getValue(String.class);
                         String currentName = dataSnapshot.child("name").getValue(String.class);
                         String currentSurname = dataSnapshot.child("surname").getValue(String.class);
                         String currentEmail = dataSnapshot.child("email").getValue(String.class);
@@ -106,10 +107,11 @@ public class UserRepository {
                         userEntityToBeSaved.setSurname(userEntity.getSurname() != null && !userEntity.getSurname().isEmpty() ? userEntity.getSurname() : currentSurname);
                         userEntityToBeSaved.setPhone(userEntity.getPhone() != null && !userEntity.getPhone().isEmpty() ? userEntity.getPhone() : currentPhone);
                         userEntityToBeSaved.setAllergens(userEntity.getAllergens() != null && !userEntity.getAllergens().isEmpty() ? userEntity.getAllergens() : currentAllergens);
-                        // LOS VALORES PARA EMAIL, CITY Y ADDRESS SE MANTIENEN LOS QUE HABÍA GUARDADOS
+                        // LOS VALORES PARA EMAIL, CITY, UID Y ADDRESS SE MANTIENEN LOS QUE HABÍA GUARDADOS
                         userEntityToBeSaved.setEmail(currentEmail);
                         userEntityToBeSaved.setCity(currentCity);
                         userEntityToBeSaved.setAddress(currentAddress);
+                        userEntityToBeSaved.setUid(currentUID);
 
                         // AHORA GUARDAMOS EL OBJETO ENTERO RECIÉN CONFIGURADO Y LLENADO EN REALTIME
                         userRef.setValue(userEntityToBeSaved, ((databaseError, databaseReference) -> {
