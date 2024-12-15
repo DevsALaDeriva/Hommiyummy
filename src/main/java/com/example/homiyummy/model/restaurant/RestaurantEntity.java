@@ -17,21 +17,21 @@ import java.util.ArrayList;
 @Setter
 
 public class RestaurantEntity {
-    private String uid;
-    private String email;
-    private String name;
-    private String description_mini;
-    private String description;
-    private String url;
-    private String address;
-    private String city;
-    private String phone;
-    private String schedule;
-    private String image;
-    private String food_type;
-    private ArrayList<DishEntity> dishes;
+    private String uid = "";
+    private String email = "";
+    private String name = "";
+    private String description_mini = "";
+    private String description = "";
+    private String url = "";
+    private String address = "";
+    private String city = "";
+    private String phone = "";
+    private String schedule = "";
+    private String image = "";
+    private String food_type = "";
+    private ArrayList<DishEntity> dishes = new ArrayList<>();
     private Integer average_rate = 0;
     private Float average_price = 0.0F;
     RestaurantLocation location = new RestaurantLocation();
-    private ArrayList<MenuEntity> menus;
+    private ArrayList<MenuEntity> menus = new ArrayList<>();
 }

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 @AllArgsConstructor
 
 public class DishInOrderEntity {
-
     private String name = "";
     private String ingredients = "";
     private String allergens = "";

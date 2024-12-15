@@ -12,14 +12,14 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private String uid;
-    private String name;
-    private String surname;
-    private String email;
-    private String address;
-    private String city;
-    private String phone;
-    private ArrayList<String> allergens ;
+    private String uid = "";
+    private String name = "";
+    private String surname = "";
+    private String email = "";
+    private String address = "";
+    private String city = "";
+    private String phone = "";
+    private ArrayList<String> allergens = new ArrayList<>();
 
 
     public UserResponse(String uid){

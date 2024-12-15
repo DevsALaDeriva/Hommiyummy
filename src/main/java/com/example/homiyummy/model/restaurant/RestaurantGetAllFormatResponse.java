@@ -15,7 +15,6 @@ import java.util.ArrayList;
  * CLASE CREADA PARA ENVIAR AL FRONTEND TODOS LOS RESTAURANTES CON TODAS SUS PROPIEDADES
  */
 public class RestaurantGetAllFormatResponse {
-    //private String uid ="";
     private String name = "";
     private String description_mini = "";
     private String url = "";

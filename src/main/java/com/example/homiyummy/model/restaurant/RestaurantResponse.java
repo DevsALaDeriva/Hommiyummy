@@ -15,19 +15,19 @@ import java.util.ArrayList;
 @Setter
 
 public class RestaurantResponse {
-    private String uid;
-    private String email;
-    private String name;
-    private String description_mini;
-    private String description;
-    private String url;
-    private String address;
-    private String city;
-    private String phone;
-    private String schedule;
-    private String image;
-    private String food_type;
-    private ArrayList<DishResponse> dishes;
+    private String uid = "";
+    private String email = "";
+    private String name = "";
+    private String description_mini ="";
+    private String description ="";
+    private String url = "";
+    private String address = "";
+    private String city = "";
+    private String phone = "";
+    private String schedule = "";
+    private String image = "";
+    private String food_type = "";
+    private ArrayList<DishResponse> dishes = new ArrayList<>();
 
     public RestaurantResponse(String email,
                               String name,

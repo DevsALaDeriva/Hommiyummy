@@ -12,15 +12,15 @@ import java.util.ArrayList;
 
 public class UserEntity {
     
-    private String uid;
-    private String name;
-    private String surname;
-    private String email;
-    private String phone;
-    private String address;
-    private String city;
-    private String password;
-    private ArrayList<String> allergens;
+    private String uid = "";
+    private String name = "";
+    private String surname = "";
+    private String email = "";
+    private String phone = "";
+    private String address = "";
+    private String city = "";
+    private String password = "";
+    private ArrayList<String> allergens = new ArrayList<>();
 
     public UserEntity(String uid, String name, String surname, String email, String address, String city, String phone, ArrayList<String> allergens){ // USO ESTE CONSTRUCTOR PARA COMUNCARME CON BBDD AL CREAR UN USUARIO
         this.uid = uid;

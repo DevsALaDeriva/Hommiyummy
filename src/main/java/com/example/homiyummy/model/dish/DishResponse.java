@@ -13,7 +13,6 @@ import java.util.ArrayList;
 @AllArgsConstructor
 
 public class DishResponse {
-
     private int id;
     private String name = "";
     private String ingredients = "";

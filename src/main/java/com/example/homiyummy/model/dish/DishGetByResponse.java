@@ -17,8 +17,5 @@ public class DishGetByResponse {
     private String name = "";
     private String ingredients = "";
     private ArrayList<String> allergens = new ArrayList<>();
-    //private String allergens = "";
     private String image = "";
-
-
 }
