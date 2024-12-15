@@ -152,51 +152,6 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    public CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> getAll(){
-
-        CompletableFuture<Map<String, ArrayList<RestaurantGetAllFormatResponse>>> futureAllRestaurants = new CompletableFuture<>();
-
-        restaurantRepository.getAllRestaurantList(new RestaurantRepository.OnRestaurantListCallback() {
-            @Override
-            public void onSearchingSuccess(ArrayList<RestaurantEntity> restaurants) {
-
-                ArrayList<RestaurantGetAllFormatResponse> restListResponse = new ArrayList<>();
-
-                for(RestaurantEntity restaurant : restaurants){
-
-                    RestaurantGetAllFormatResponse restaurantGetAllFormatResponse = new RestaurantGetAllFormatResponse();
-
-                    restaurantGetAllFormatResponse.setName(restaurant.getName());
-                    restaurantGetAllFormatResponse.setDescription_mini(restaurant.getDescription_mini());
-                    restaurantGetAllFormatResponse.setUrl(restaurant.getUrl());
-                    restaurantGetAllFormatResponse.setAddress(restaurant.getAddress());
-                    restaurantGetAllFormatResponse.setPhone(restaurant.getPhone());
-                    restaurantGetAllFormatResponse.setSchedule(restaurant.getSchedule());
-                    restaurantGetAllFormatResponse.setFood_type(restaurant.getFood_type());
-                    restaurantGetAllFormatResponse.setImage(restaurant.getImage());
-                    restaurantGetAllFormatResponse.setRate(restaurant.getAverage_rate());
-                    restaurantGetAllFormatResponse.setAverage_price(restaurant.getAverage_price());
-                    restaurantGetAllFormatResponse.setLocation(restaurant.getLocation());
-
-                    restListResponse.add(restaurantGetAllFormatResponse);
-                }
-
-                Map<String, ArrayList<RestaurantGetAllFormatResponse>> dataResponse = new HashMap<>();
-                dataResponse.put("restaurants", restListResponse);
-
-                futureAllRestaurants.complete(dataResponse);
-            }
-
-            @Override
-            public void onSearchingFailure(Exception exception) {
-                futureAllRestaurants.completeExceptionally(exception);
-            }
-        });
-        return futureAllRestaurants;
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-
     public CompletableFuture<ArrayList<RestaurantWithMenusResponse>> getAllRestaurantWithMenus(){
 
         CompletableFuture<ArrayList<RestaurantWithMenusResponse>> futureList = new CompletableFuture<>();
