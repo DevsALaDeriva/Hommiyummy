@@ -34,6 +34,8 @@ public class UserRepository {
 
         DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
 
+        userEntity.setPassword(null);
+
         userRef.setValue(userEntity, (databaseError, databaseReference) -> {
             if (databaseError == null) {
                 userRef.addListenerForSingleValueEvent(new ValueEventListener() {               // CONFIRMADO QUE NO HAY ERROR, LEEMOS LOS DATOS RECIÉN GUARDADOS
@@ -55,6 +57,7 @@ public class UserRepository {
                             }
                             recordedEntity.setAllergens(allergens);
                         }
+
                         callback.onSuccess(recordedEntity);                                       // DEVOLVEMOS ESE OBJETO COMO PARÁMETRO DEL SEGUNDO CALLBACK (DE NUESTRA INTERFACE) SI ES EXITOSO
                     }
 
@@ -112,6 +115,7 @@ public class UserRepository {
                         userEntityToBeSaved.setCity(currentCity);
                         userEntityToBeSaved.setAddress(currentAddress);
                         userEntityToBeSaved.setUid(currentUID);
+                        userEntityToBeSaved.setPassword(null);
 
                         // AHORA GUARDAMOS EL OBJETO ENTERO RECIÉN CONFIGURADO Y LLENADO EN REALTIME
                         userRef.setValue(userEntityToBeSaved, ((databaseError, databaseReference) -> {
