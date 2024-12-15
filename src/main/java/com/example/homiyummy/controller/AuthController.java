@@ -94,13 +94,6 @@ public class AuthController {
 
 // ------------------------------------------------------------------------------------------------------------
 
-    @PostMapping("/deleteAllFuckingUsers19JuJu")
-    public void deleteAllUsers() {
-        System.out.println("borrando");
-        //DeleteAllUsers.deleteAllUsers();  // ---------------> COMENTADO POR SEGURIDAD (DESCOMENTAR SI SE QUIERE USAR)
-    }
-
-
 
 }
 
