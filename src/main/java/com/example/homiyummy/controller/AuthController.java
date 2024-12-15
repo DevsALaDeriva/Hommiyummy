@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@RestController // RestController para que nos permita manejar peticiones entrantes
-@RequestMapping("/auth") // Es el path base
+@RestController
+@RequestMapping("/auth")
 public class AuthController {
 
     private final UserService userService;
@@ -43,7 +43,7 @@ public class AuthController {
         try {
             String uid = authService.authenticateUser(request.getEmail(), request.getPassword());
 
-            return userTypeService.getUserTypeByUid(uid) // DEVOLVEMOS EL RESULTADO DEL MÉTOD getUserTYpe QUE CREAMOS EN EL SERVICIO NUEVO COMUN A USER Y RESTAURANTE
+            return userTypeService.getUserTypeByUid(uid) // DEVOLVEMOS EL RESULTADO DEL MÉTOD-O getUserTYpe QUE CREAMOS EN EL SERVICIO NUEVO COMUN A USER Y RESTAURANTE
                     .thenApply(userType -> {
                         LoginResponseDTO loginResponse = new LoginResponseDTO(uid, userType);
                         return ResponseEntity.ok(loginResponse);
@@ -75,19 +75,19 @@ public class AuthController {
 // ------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/changePassword")
-    public CompletableFuture<ResponseEntity<Map<String, Boolean>>> changePassword(@RequestBody ChangePassRequest changePassRequest) throws FirebaseAuthException { // CLASE ChangePassRequest CREADA EN PACKAGE auth PARA PODER PONER AQUÍ UN OBJETO DE ESTE TIPO
+    public CompletableFuture<ResponseEntity<Map<String, Boolean>>> changePassword(@RequestBody ChangePassRequest changePassRequest) throws FirebaseAuthException { // CLASE ChangePassRequest Q CREO EN PACKAGE auth PARA PODER PONER AQUÍ UN OBJETO DE ESTE TIPO
 
         Map<String, Boolean> result = new HashMap<>();
 
-        if (changePassRequest.getPassword() == null || changePassRequest.getPassword().isEmpty()) { // PARA PREPARAR EL FUTURO ERROR TENEMOS QUE VALIDAR LA CONTRASEÑA
-            result.put("change", false);                                                            // Y SI NO ES VÁLIDA NI SIQUIERA LA MANDAMOS AL SERVICIO Y CONTESTAMOS YA AL FRONTEND
+        if (changePassRequest.getPassword() == null || changePassRequest.getPassword().isEmpty()) {
+            result.put("change", false);
             return CompletableFuture.completedFuture(ResponseEntity.ok(result));
         }
 
-        return authService.changeUserPassword(changePassRequest.getUid(), changePassRequest.getPassword())// SI ES VÁLIDA, SE LA PASA AL SERVICIO
+        return authService.changeUserPassword(changePassRequest.getUid(), changePassRequest.getPassword())
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(e -> {
-                    result.put("change", false); // Completa con "change": false en caso de cualquier error
+                    result.put("change", false);
                     return ResponseEntity.ok(result);
                 });
     }

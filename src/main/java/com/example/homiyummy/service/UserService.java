@@ -23,7 +23,6 @@ public class UserService {
     private final FirebaseAuth firebaseAuth;
     private final DatabaseReference bbddRef;
 
-    // CONSTRUCTOR PARA INYECTAR FIREBASEAPP
     public UserService(FirebaseAuth firebaseAuth, FirebaseApp firebaseApp){
         bbddRef = FirebaseDatabase.getInstance().getReference(); // INYECTA LA REFERENCIA DE LA BBDD
         this.firebaseAuth = firebaseAuth;
@@ -42,11 +41,6 @@ public class UserService {
         userEntity.setEmail(userDTO.getEmail());
         userEntity.setPhone(userDTO.getPhone());
         userEntity.setAllergens(userDTO.getAllergens());
-
-        /**
-         *
-         * EL saveUser DEL REPOSITORIO DEVUELVE VIA CALLBACK UN OBJETO UserEntity QUE TRANSFORMAMOS EN UN UserResponse (PARA LUEGO MANDÁRSELO DESDE AQUÍ AL CONTROLLER)
-         */
 
         CompletableFuture<UserResponse> futureResponse = new CompletableFuture<>();
 
@@ -111,15 +105,19 @@ public class UserService {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-    // LE LLAMARÁ getUserTypeByUid DESDE UserTypeService. SERVICIO CREADO SOLO PARA IDENTIFICAR SI UN USUARIO ES user o restaurant.
-    // PQ HAY QUE HACER UNA CONSULTA SIN SABER DE ENTRADA A CUÁL DE LOS DOS SERVICIOS SE LO MANDAMOS.
+    /**
+     * SERVICIO CREADO SOLO PARA IDENTIFICAR SI UN USUARIO ES user o restaurant.
+     * LE LLAMARÁ getUserTypeByUid DESDE UserTypeService PQ HAY QUE HACER UNA CONSULTA SIN SABER DE ENTRADA A CUÁL DE LOS DOS SERVICIOS SE LO MANDAMOS.
+     * @param uid el uid del usuario en Authentication
+     * @return el boolean que trae del repositorio
+     */
+
     public CompletableFuture<Boolean> existsByUid(String uid) {
-        return userRepository.existsByUid(uid); // SE LO PASAMOS AL REPOSITORIO
+        return userRepository.existsByUid(uid);
     }
 
 // ----------------------------------------------------------------------------------------------------------------
 
-    // MÉTOD O CON UN PARÁMETRO
     public CompletableFuture<UserReadResponse> findUserByUid(String uid){
 
         CompletableFuture<UserReadResponse> futureUser = new CompletableFuture<>();
@@ -148,7 +146,6 @@ public class UserService {
     }
 
 // ----------------------------------------------------------------------------------------------------------------
-
 
 
 }

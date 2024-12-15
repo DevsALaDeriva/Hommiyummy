@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-
 @Repository
 public class RestaurantRepository {
 
@@ -69,7 +68,6 @@ public class RestaurantRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    // INTERFAZ PARA MANEJAR LA DEVOLUCIÓN DEL RestaurantResponse DESDE EL REPOSITORIO
     public interface getSaveRestaurantCallback{
         void onRestaurantGot(RestaurantResponse restaurantResponse);
         void onFailure(Exception exception);
@@ -160,7 +158,6 @@ public class RestaurantRepository {
     // USADO PARA VER SI UN RESTAURANTE EXISTE
     public void exists(String uid, ExistsRestaurantCallback callback) {
 
-       // CompletableFuture<Boolean> future = new CompletableFuture<>();
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(uid);
         restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -224,176 +221,6 @@ public class RestaurantRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-//    public void getAllRestaurantList(OnRestaurantListCallback callback){
-//
-//        DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
-//
-//        allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {                                     // UBICACIÓN DEL NODO "restaurants"
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if(dataSnapshot.exists()){
-//
-//                    ArrayList<RestaurantEntity> restaurantList = new ArrayList<>();                                     // ARRAY DONDE GUARDAREMOS TODOS LOS RESTAURANTES
-//
-//                    int totalRestaurants = (int)dataSnapshot.getChildrenCount();
-//                    int[] contados = {0};
-//
-//                    for(DataSnapshot restaurantSnapshot: dataSnapshot.getChildren()){                                   // RECORRO EL SNAPSHOT DEL NODO "RESTAURANTS"
-//
-//                        String uid = restaurantSnapshot.getKey();                                                       // OBTENEMOS EL UID DEL RESTAURANTE ( QUE ES SU KEY)
-//
-//                        DatabaseReference eachRestaurantRef = allRestaurantsRef.child(uid);                             // OBTENEMOS LA REFERENCIA DE CADA RESTAURANTE.
-//
-//                        eachRestaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {                     // APUNTAMOS A LA REF DEL RESTAURANTE
-//                            @Override
-//                            public void onDataChange(DataSnapshot restaurantSnapshot) {
-//                                if(restaurantSnapshot.exists()){
-//                                    String uid = restaurantSnapshot.getKey();                                           // GUARDAMOS EL VALOR DE CADA PROPIEDAD DEL RESTAURANTE
-//                                    String email = restaurantSnapshot.child("email").getValue(String.class);
-//                                    String name = restaurantSnapshot.child("name").getValue(String.class);
-//                                    String description_mini = restaurantSnapshot.child("description_mini").getValue(String.class);
-//                                    String description = restaurantSnapshot.child("description").getValue(String.class);
-//                                    String url = restaurantSnapshot.child("url").getValue(String.class);
-//                                    String address = restaurantSnapshot.child("address").getValue(String.class);
-//                                    String city = restaurantSnapshot.child("city").getValue(String.class);
-//                                    String phone = restaurantSnapshot.child("phone").getValue(String.class);
-//                                    String schedule = restaurantSnapshot.child("schedule").getValue(String.class);
-//                                    String image = restaurantSnapshot.child("image").getValue(String.class);
-//                                    String food_type = restaurantSnapshot.child("food_type").getValue(String.class);
-//                                    //Integer rate = restaurantSnapshot.child("rate").getValue(Integer.class);
-//                                    Float average_price = restaurantSnapshot.child("average_price").getValue(Float.class);
-//                                    RestaurantLocation location = restaurantSnapshot.child("location").getValue(RestaurantLocation.class);
-//                                    int average_rate = 0;
-//                                    DataSnapshot ordersSnapshot = restaurantSnapshot.child("orders/items");
-//                                    if(ordersSnapshot.exists()){
-//                                        int sumOfRates = 0;
-//                                        int numberOfReviews = (int)ordersSnapshot.getChildrenCount();
-//                                        for(DataSnapshot order : ordersSnapshot.getChildren()){
-//                                            int orderRate = order.child("reviews/rate").getValue(Integer.class);
-//                                            sumOfRates += orderRate;
-//                                        }
-//                                        average_rate = Math.round((float)sumOfRates / numberOfReviews);
-//                                    }
-//
-//                                    //System.out.println(average_rate);
-//
-//
-//
-//                                    // PREPARANDO LAS REVIEWS-----------------------
-//                                    //----------------------------------------------
-////                                    ArrayList<ReviewsEntity> reviewsList = new ArrayList<>();
-////                                    DataSnapshot reviewsSnapshot = restaurantSnapshot.child("reviews");
-////
-////                                    if(reviewsSnapshot.exists()){
-////                                        for(DataSnapshot singleReviewSnapshot : reviewsSnapshot.getChildren()){
-////                                            String reviewName = singleReviewSnapshot.child("name").getValue(String.class);
-////                                            String reviewText = singleReviewSnapshot.child("review").getValue(String.class);
-////                                            Integer reviewRate = singleReviewSnapshot.child("rate").getValue(Integer.class);
-////
-////                                            ReviewsEntity reviewsEntity = new ReviewsEntity(reviewName, reviewText, reviewRate);
-////
-////                                            reviewsList.add(reviewsEntity);
-////                                        }
-////                                    }
-//
-//
-//
-//
-//                                    //----------------------------------------------
-//
-//
-//                                    // AHORA LOS PLATOS
-//                                    ArrayList<DishEntity> dishes = new ArrayList<>();
-//                                    DataSnapshot dishesSnapshot = restaurantSnapshot.child("dishes/items");        // COMO YA TENEMOS EL DATASNAPSHOT PRINCIPAL, DESDE EL PODEMOS ACCEDER A "HIJOS" SIN TENER QUE VOLVER A HACER UNA PETICIÓN A LA BBDD
-//                                    if(dishesSnapshot.exists()) {
-//
-//                                        for(DataSnapshot dishSnapSoht : dishesSnapshot.getChildren()){
-//                                            int id = dishSnapSoht.child("id").getValue(Integer.class);
-//                                            String dishName = dishSnapSoht.child("name").getValue(String.class);
-//                                            String ingredients = dishSnapSoht.child("ingredients").getValue(String.class);
-//
-//                                            DataSnapshot allergensSnapshot = dishSnapSoht.child("allergens");      // CREO OTRA IMAGEN PARTIENDO DE LA QUE YA TENÍA SIN TENER QUE HACER OTRA PETICIÓN A BBDD
-//                                            ArrayList<String> allergens = new ArrayList<>();
-//
-//                                            if(allergensSnapshot.exists()){
-//                                                for(DataSnapshot allergen : allergensSnapshot.getChildren()){
-//                                                    allergens.add(allergen.getValue().toString());
-//                                                }
-//                                            }
-//
-//                                            String dishImage = dishSnapSoht.child("image").getValue(String.class);
-//                                            String dishType = dishSnapSoht.child("type").getValue(String.class);
-//                                            // 1º CREAMOS EL DISH ENTITY PQ LO EXTRAEMOS DE LA BBDD
-//                                            DishEntity dishEntity = new DishEntity(id, dishName, ingredients, allergens, dishImage, dishType);
-//
-//                                            dishes.add(dishEntity);
-//                                        }
-//                                    }
-//
-//                                    // AHORA LOS MENÚS
-//                                    ArrayList<MenuEntity> menus = new ArrayList<>();
-//                                    DataSnapshot menusSnapshot = restaurantSnapshot.child("menus/items");
-//                                    if(menusSnapshot.exists()){
-//                                        for(DataSnapshot singleMenuSnapshot : menusSnapshot.getChildren()){
-//                                            int date = singleMenuSnapshot.child("date").getValue(Integer.class);
-//                                            int dessert = singleMenuSnapshot.child("dessert").getValue(Integer.class);
-//                                            int id = singleMenuSnapshot.child("id").getValue(Integer.class);
-//                                            float priceWithDessert = singleMenuSnapshot.child("priceWithDessert").getValue(Float.class);
-//                                            float priceNoDessert = singleMenuSnapshot.child("priceNoDessert").getValue(Float.class);
-//                                            ArrayList<Integer> firstCourses = new ArrayList<>();
-//                                            DataSnapshot firstCoursesSnapshot = singleMenuSnapshot.child("first_course");
-//                                            if(firstCoursesSnapshot.exists()){
-//                                                for(DataSnapshot first : firstCoursesSnapshot.getChildren()){
-//                                                    firstCourses.add(Integer.parseInt(first.getValue().toString()));
-//                                                }
-//                                            }
-//                                            ArrayList<Integer> secondCourses = new ArrayList<>();
-//                                            DataSnapshot secondCoursesSnapshot = singleMenuSnapshot.child("second_course");
-//                                            if(secondCoursesSnapshot.exists()){
-//                                                for(DataSnapshot second : secondCoursesSnapshot.getChildren()){
-//                                                    secondCourses.add(Integer.parseInt(second.getValue().toString()));
-//                                                }
-//                                            }
-//                                            MenuEntity menuEntity = new MenuEntity(id, date, firstCourses, secondCourses, dessert, priceWithDessert, priceNoDessert);
-//                                            menus.add(menuEntity);
-//                                        }
-//                                    }
-//
-//                                    RestaurantEntity restaurantEntity = new RestaurantEntity(
-//                                            uid, email, name, description_mini, description, url, address, city, phone,
-//                                            schedule, image, food_type, dishes, average_rate, average_price, location, menus);
-//                                      restaurantList.add(restaurantEntity);                                             // AÑADIMOS EL RESTAURANTE AL ARRAY
-//                                }
-//
-//                                contados[0]++;
-//                                System.out.println("totalRestaurants: " + totalRestaurants + "----- contados: " + contados[0]);
-//                                if (contados[0] == totalRestaurants) {                                                // SOLO SEGUIMOS CUANDO HEMOS AÑADIDO TODOS
-//
-//
-//                                    callback.onSearchingSuccess(restaurantList);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError) {
-//                                // TODO --------> FALTA
-//                            }
-//                        });
-//                    }
-//                }
-//                else{
-//                    callback.onSearchingSuccess(new ArrayList<>());
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                callback.onSearchingFailure(new Exception());
-//            }
-//        });
-//    }
-
-
     public void getAllRestaurantList(OnRestaurantListCallback callback){
 
         DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
@@ -442,7 +269,6 @@ public class RestaurantRepository {
 
                             }
 
-                            // AHORA LOS PLATOS
                             ArrayList<DishEntity> dishes = new ArrayList<>();
                             DataSnapshot dishesSnapshot = restaurantSnapshot.child("dishes/items");        // COMO YA TENEMOS EL DATASNAPSHOT PRINCIPAL, DESDE EL PODEMOS ACCEDER A "HIJOS" SIN TENER QUE VOLVER A HACER UNA PETICIÓN A LA BBDD
                             if(dishesSnapshot.exists()) {
@@ -452,7 +278,7 @@ public class RestaurantRepository {
                                     String dishName = dishSnapSoht.child("name").getValue(String.class);
                                     String ingredients = dishSnapSoht.child("ingredients").getValue(String.class);
 
-                                    DataSnapshot allergensSnapshot = dishSnapSoht.child("allergens");      // CREO OTRA IMAGEN PARTIENDO DE LA QUE YA TENÍA SIN TENER QUE HACER OTRA PETICIÓN A BBDD
+                                    DataSnapshot allergensSnapshot = dishSnapSoht.child("allergens");
                                     ArrayList<String> allergens = new ArrayList<>();
 
                                     if(allergensSnapshot.exists()){
@@ -463,14 +289,13 @@ public class RestaurantRepository {
 
                                     String dishImage = dishSnapSoht.child("image").getValue(String.class);
                                     String dishType = dishSnapSoht.child("type").getValue(String.class);
-                                    // 1º CREAMOS EL DISH ENTITY PQ LO EXTRAEMOS DE LA BBDD
+
                                     DishEntity dishEntity = new DishEntity(id, dishName, ingredients, allergens, dishImage, dishType);
 
                                     dishes.add(dishEntity);
                                 }
                             }
 
-                            // AHORA LOS MENÚS
                             ArrayList<MenuEntity> menus = new ArrayList<>();
                             DataSnapshot menusSnapshot = restaurantSnapshot.child("menus/items");
                             if(menusSnapshot.exists()){
@@ -502,12 +327,11 @@ public class RestaurantRepository {
                             RestaurantEntity restaurantEntity = new RestaurantEntity(
                                     uid, email, name, description_mini, description, url, address, city, phone,
                                     schedule, image, food_type, dishes, average_rate, average_price, location, menus);
-                            restaurantList.add(restaurantEntity);                                             // AÑADIMOS EL RESTAURANTE AL ARRAY
+                            restaurantList.add(restaurantEntity);
                         }
 
                         contados[0]++;
-                        //System.out.println("Uid: " + uid + " --- totalRestaurants: " + totalRestaurants + "----- contados: " + contados[0]);
-                        if (contados[0] == totalRestaurants) {                                                // SOLO SEGUIMOS CUANDO HEMOS AÑADIDO TODOS
+                        if (contados[0] == totalRestaurants) {
                             callback.onSearchingSuccess(restaurantList);
                         }
                     }
@@ -554,7 +378,6 @@ public class RestaurantRepository {
 
                             if(urlSnapshot.equals(url)){
 
-                                // 1º OBTENEMOS CAMPOS EN FORMATO STRING E INT DEL RESTAURANTE
                                 String uid = singleRestaurantSnapshot.getKey();
                                 String name = singleRestaurantSnapshot.child("name").getValue(String.class);
                                 String foodType = singleRestaurantSnapshot.child("food_type").getValue(String.class);
@@ -566,7 +389,7 @@ public class RestaurantRepository {
                                 String city = singleRestaurantSnapshot.child("city").getValue(String.class);
 
                                 int average_rate = 0;
-                                // 2º OBTENEMOS EL CAMPO REVIEWS QUE ES DEL TIPO ARRAYLIST
+
                                 ArrayList<ReviewsEntity> reviewsEntityList = new ArrayList<>();
                                 DataSnapshot ordersSnapshot = singleRestaurantSnapshot.child("orders/items");
 
@@ -576,11 +399,6 @@ public class RestaurantRepository {
                                     int numberOfReviews = 0;
 
                                     for(DataSnapshot order : ordersSnapshot.getChildren()){
-
-                                        //String revName = "";
-                                        //String revSurname = "";
-                                        //String revText = "";
-                                        //int orderRate = 0;
 
                                         if(order.child("reviews").exists()){
                                             String customerUID = order.child("uidCustomer").getValue(String.class);
@@ -598,11 +416,6 @@ public class RestaurantRepository {
                                             sumOfRates += orderRate;
                                         }
 
-                                        //String fullName = revName + " " + revSurname;
-                                       // average_rate = Math.round((float)sumOfRates / numberOfReviews);
-                                        //ReviewsEntity revEntity = new ReviewsEntity(fullName, revText, orderRate);
-
-                                        //reviewsEntityList.add(revEntity);
                                     }
                                     average_rate = Math.round((float)sumOfRates / numberOfReviews);
                                 }
@@ -610,7 +423,7 @@ public class RestaurantRepository {
                                 DataSnapshot menusSnapshot = singleRestaurantSnapshot.child("menus/items");
 
                                 if(menusSnapshot.exists()){
-                                    // 3º OBTENEMOS EL CAMPO MENUS QUE ES DEL TIPO ARRAYLIST
+
                                     ArrayList<MenuGetByUrlEntity> menuEntityList = new ArrayList<>();
 
                                     for(DataSnapshot menu : menusSnapshot.getChildren()){
@@ -619,7 +432,7 @@ public class RestaurantRepository {
                                         float priceWithDessert = menu.child("priceWithDessert").getValue(Float.class);
                                         float priceNoDessert = menu.child("priceNoDessert").getValue(Float.class);
 
-                                        // OBTENEMOS EL POSTRE
+
                                         int dessertID = menu.child("dessert").getValue(Integer.class);
                                         String dessertName = singleRestaurantSnapshot.child("dishes/items")
                                                 .child(String.valueOf(dessertID)).child("name").getValue(String.class);
@@ -638,7 +451,7 @@ public class RestaurantRepository {
                                         DishGetByEntity dessertEntity = new DishGetByEntity(dessertID, dessertName, dessertIngs, dessertAllergens, dessertImg);
 
 
-                                        // OBTENEMOS LOS PRIMEROS
+
                                         ArrayList<DishGetByEntity> firstCourses = new ArrayList<>();
                                         DataSnapshot firstCoursesSnapshot = menu.child("first_course");
 
@@ -665,7 +478,6 @@ public class RestaurantRepository {
                                             }
                                         }
 
-                                        // OBTENEMOS LOS SEGUNDOS
                                         ArrayList<DishGetByEntity> secondCourses = new ArrayList<>();
                                         DataSnapshot secondCoursesSnapshot = menu.child("second_course");
                                         if(secondCoursesSnapshot.exists()){
@@ -773,8 +585,6 @@ public class RestaurantRepository {
 
                             DishGetByEntity dessertEntity = new DishGetByEntity(dessertID, dessertName, dessertIngs, dessertAllergens, dessertImg);
 
-
-                            // OBTENEMOS LOS PRIMEROS
                             ArrayList<DishGetByEntity> firstCourses = new ArrayList<>();
                             DataSnapshot firstCoursesSnapshot = menu.child("first_course");
 
@@ -801,7 +611,6 @@ public class RestaurantRepository {
                                 }
                             }
 
-                            // OBTENEMOS LOS SEGUNDOS
                             ArrayList<DishGetByEntity> secondCourses = new ArrayList<>();
                             DataSnapshot secondCoursesSnapshot = menu.child("second_course");
                             if(secondCoursesSnapshot.exists()){

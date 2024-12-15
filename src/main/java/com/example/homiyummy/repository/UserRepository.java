@@ -38,7 +38,7 @@ public class UserRepository {
 
         userRef.setValue(userEntity, (databaseError, databaseReference) -> {
             if (databaseError == null) {
-                userRef.addListenerForSingleValueEvent(new ValueEventListener() {               // CONFIRMADO QUE NO HAY ERROR, LEEMOS LOS DATOS RECIÉN GUARDADOS
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         UserEntity recordedEntity = new UserEntity();
@@ -58,12 +58,12 @@ public class UserRepository {
                             recordedEntity.setAllergens(allergens);
                         }
 
-                        callback.onSuccess(recordedEntity);                                       // DEVOLVEMOS ESE OBJETO COMO PARÁMETRO DEL SEGUNDO CALLBACK (DE NUESTRA INTERFACE) SI ES EXITOSO
+                        callback.onSuccess(recordedEntity);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        callback.onFailure(databaseError.toException());                        // EJECUTAMOS EL CALLBACK DE NUESTRA INTERFACE SI DA ERROR
+                        callback.onFailure(databaseError.toException());
                     }
                 });
             } else {
@@ -80,11 +80,11 @@ public class UserRepository {
     }
 // ------------------------------------------------------------------------------------------------------------
 
-    public void updateUserData(UserEntity userEntity, GetUpdateConfirmationCallback callback) { // IMPLEMENTA LA INTERFAZ QUE LE SERVIRÁ AL SERVICIO PARA OBTENER LA CONFIRMACIÓN DEL ÉXITO O FALLO DE LA ACTUALIZACIÓN
+    public void updateUserData(UserEntity userEntity, GetUpdateConfirmationCallback callback) {
 
         DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
 
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() { // PRIMERO VER EL CONTENIDO GUARDADO EN REALTIME DEL USUARIO ANTES DE GUARDAR EL NUEVO
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
@@ -104,23 +104,21 @@ public class UserRepository {
                             }
                         }
 
-                        UserEntity userEntityToBeSaved = new UserEntity(); // PODRÍA NO CREAR OTRO Y GRABARLO SOBRE EL MISMO QUE LLEGA, PERO LO HAGO ASÍ
+                        UserEntity userEntityToBeSaved = new UserEntity();
 
                         userEntityToBeSaved.setName(userEntity.getName() != null && !userEntity.getName().isEmpty() ? userEntity.getName() : currentName);
                         userEntityToBeSaved.setSurname(userEntity.getSurname() != null && !userEntity.getSurname().isEmpty() ? userEntity.getSurname() : currentSurname);
                         userEntityToBeSaved.setPhone(userEntity.getPhone() != null && !userEntity.getPhone().isEmpty() ? userEntity.getPhone() : currentPhone);
                         userEntityToBeSaved.setAllergens(userEntity.getAllergens() != null && !userEntity.getAllergens().isEmpty() ? userEntity.getAllergens() : currentAllergens);
-                        // LOS VALORES PARA EMAIL, CITY, UID Y ADDRESS SE MANTIENEN LOS QUE HABÍA GUARDADOS
                         userEntityToBeSaved.setEmail(currentEmail);
                         userEntityToBeSaved.setCity(currentCity);
                         userEntityToBeSaved.setAddress(currentAddress);
                         userEntityToBeSaved.setUid(currentUID);
                         userEntityToBeSaved.setPassword(null);
 
-                        // AHORA GUARDAMOS EL OBJETO ENTERO RECIÉN CONFIGURADO Y LLENADO EN REALTIME
                         userRef.setValue(userEntityToBeSaved, ((databaseError, databaseReference) -> {
-                            if(databaseError == null){                                            // SI NO HAY ERROR
-                                userRef.addListenerForSingleValueEvent(new ValueEventListener() { // VUELVO A ENTRAR EN EL NODO PARA VER SI SE HA GRABADO
+                            if(databaseError == null){
+                                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if(dataSnapshot.exists()){
@@ -177,7 +175,6 @@ public class UserRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    // DICE SI EL USUARIO EXISTE EN EL NODO "users" POR LO QUE DE EXISTIR SERÍA UN "user"
     public CompletableFuture<Boolean> existsByUid(String uid) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 

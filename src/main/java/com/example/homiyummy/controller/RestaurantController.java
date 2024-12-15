@@ -50,19 +50,17 @@ public class RestaurantController {
             try {
 
                 if(restaurantDTO.getEmail() == null || restaurantDTO.getEmail().isEmpty()){
-                    //System.out.println("Error:-------------x------------ ");
                     return ResponseEntity.badRequest().body("{\"uid\": \"\"}");
                 }
-                    String uid = authService.createUser(restaurantDTO.getEmail(), restaurantDTO.getPassword()); // REGISTRO EN AUTHENTICATION
-                    restaurantDTO.setUid(uid);                                                                  // AÑADO EL UID RECIÉN CREADO AL USERDTO
+                    String uid = authService.createUser(restaurantDTO.getEmail(), restaurantDTO.getPassword());
+                    restaurantDTO.setUid(uid);
 
-                    RestaurantResponse restaurantResponse = restaurantService.createRestaurant(restaurantDTO);  // PONGO EN MARCHA EL REGISTRO EN REALTIME
-                                                                                                                // COMO createRestaurant EN EL SERVICIO DEVUELVE UN UserResponse ENTREGADO POR UN FUTURO, LA OPERACIÓN ES ASÍNCRONA Y NO DA ERROR AQUÍ
-                    return ResponseEntity.ok("{\"uid\": \"" + restaurantResponse.getUid() + "\"}");       // METEMOS EL UID QUE TRAE EL RestaurantResponse DESDE REALTIME EN FORMATO JSON
+                    RestaurantResponse restaurantResponse = restaurantService.createRestaurant(restaurantDTO);
+
+                    return ResponseEntity.ok("{\"uid\": \"" + restaurantResponse.getUid() + "\"}");
             }
             catch (FirebaseAuthException e) {
-                //System.out.println("Error: " + e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": \"\" }");       // DEVOLVEMOS false AL FRONTEND SI HAY UN ERROR
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": \"\" }");
             }
     }
     // ----------------------------------------------------------------------------------------------------------------
@@ -74,9 +72,8 @@ public class RestaurantController {
         String uid = restaurantDTO.getUid();
 
         if (uid == null || uid.isEmpty()) {
-            //System.out.println("--------------------2");
             response.put("change", false);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND); // SI NO HAY UID DEVUELE UN  404
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         Boolean change = restaurantService.updateRestaurant(restaurantDTO);
@@ -90,7 +87,6 @@ public class RestaurantController {
     @PostMapping("/getByUID")
     public RestaurantReadResponse getRestaurant(@RequestBody RestaurantReadRequest request){
         String uid = request.getUid();
-        //System.out.println("--------------- uid       "+uid);
         return restaurantService.findByUid(uid);
     }
 
@@ -99,7 +95,7 @@ public class RestaurantController {
     @PostMapping("/getAllDishes")
     public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) {
 
-        String uid = userReadRequest.getUid(); // UID DEL RESTAURANTE
+        String uid = userReadRequest.getUid();
 
         if (!uid.isEmpty()) {
             return dishService.getAll(uid).thenApply(dishAllResponse ->
@@ -123,7 +119,6 @@ public class RestaurantController {
                 .exceptionally(ex -> {
                     ex.printStackTrace();
                     return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
     }
 

@@ -51,18 +51,18 @@ public class OrderController {
                                 .thenApply(orderCreatedResponse -> new ResponseEntity<>(orderCreatedResponse, HttpStatus.OK))
                                 .exceptionally(excepcion -> {
                                     excepcion.printStackTrace();
-                                    OrderCreatedResponse errorResponse = new OrderCreatedResponse(); // DEVUELVE 0 SI HAY UN ERROR
+                                    OrderCreatedResponse errorResponse = new OrderCreatedResponse();
                                     return new ResponseEntity<>(errorResponse, HttpStatus.OK);
                                 });
                     }
                     else{
-                        return CompletableFuture.completedFuture(                                           // -----X----X----> REVISAR ---X---X---
+                        return CompletableFuture.completedFuture(
                                 new ResponseEntity<>(new OrderCreatedResponse(), HttpStatus.NOT_FOUND));
                     }
                 })
                 .exceptionally(excepcion -> {
                     excepcion.printStackTrace();
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)                          // -----X----X----> REVISAR ---X---X---
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(new OrderCreatedResponse());
                 });
     }
@@ -79,7 +79,7 @@ public class OrderController {
                     System.err.println("Error during request processing: " + ex.getMessage());
                     ex.printStackTrace();
                     OrderGotByNumResponse errorResponse = new OrderGotByNumResponse();
-                    errorResponse.setReview(new ArrayList<>());//ESTABLECEMOS UN ARRAY VACÍO EN LAS REVIEWS PARA FORZAR A QUE NO DE VALORES VACÍOS A LAS PROPIEDADES
+                    errorResponse.setReview(new ArrayList<>());
                     return new ResponseEntity<>(errorResponse, HttpStatus.OK);
                 });
     }
@@ -103,9 +103,9 @@ public class OrderController {
     @PostMapping("review/create")
     public CompletableFuture<ResponseEntity<ReviewResponse>> createReview(@RequestBody ReviewRequest request) {
         return orderService.createReviewForOrder(request)
-                .thenApply(response -> ResponseEntity.ok(response)) // Respuesta 200 OK con la ReviewResponse
+                .thenApply(response -> ResponseEntity.ok(response))
                 .exceptionally(ex -> ResponseEntity.badRequest()
-                        .body(new ReviewResponse(false))); // En caso de error, respuesta 400 con success = false
+                        .body(new ReviewResponse(false)));
     }
     
 }

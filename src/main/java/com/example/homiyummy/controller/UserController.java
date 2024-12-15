@@ -21,10 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@RestController // RestController para que nos permita manejar peticiones entrantes
-@RequestMapping("/client") // Es el path base
+@RestController
+@RequestMapping("/client")
 public class UserController {
-
 
     private final UserService userService;
     private final AuthService authService;
@@ -43,7 +42,7 @@ public class UserController {
     /**
      *
      * @param userDTO recibo en un json todas las propiedades que tenddrá el usuario
-     *  1º Crea el usuarioo en Authentication (con el email y password que traen las propiedades)
+     *  1º Crea el usuario en Authentication (con el email y password que traen las propiedades)
      *  2º Añade el uid generado para añadírselo al objeto userDTO antes de enviarlo al servicio
      *  3º Se lo pasa al métod createUser del Servicio. El resultado devolverá un UserResponse y lo guarda en userResponse.
      * @return Devuelve ese ResponseEntity.ok si sale bien con la id que trae el userResponse desde Realtime.
