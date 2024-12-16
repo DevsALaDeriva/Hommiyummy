@@ -24,6 +24,12 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * RECIBE UN RestaurantDTO DEL CONTROLLER, LO CONVIERTE EN UN RestaurantEntity Y LO MANDA AL REPOSITORIO
+     * @param restaurantDTO RESTAURANTE ENVIADO POR EL FRONTEND
+     * @return SI TIENE ÉXITO, UN OBJETO EL OBJETO RestaurantResponse PROCEDENTE DEL REPOSITORIO
+     *         SI NO, UNA EXCEPCIÓN
+     */
     public RestaurantResponse createRestaurant(RestaurantDTO restaurantDTO) {
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
@@ -127,6 +133,12 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * SOLICITA AL REPOSITORIO QUE BUSQUE UN RESTARUANTE CON EL UID QUE LLEGA COMO PARÁMETRO.
+     * LLEGA EN FORMATO RestaurantReadResponse
+     * @param uid UID DEL RESTAURANTE
+     * @return SI TIENE EXITO, DEVUELVE EL RestaurantReadResponse, QUE LLEGARÁ CON DATOS (SI LOS HABÍA) O VACÍO
+     */
     public RestaurantReadResponse findByUid(String uid) {
 
         CompletableFuture<RestaurantReadResponse> future = new CompletableFuture<>();
@@ -152,6 +164,13 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * ENVÍA AL REPOSITORIO UNA PETICIÓN PARA EXTRAER TODOS LOS RESTAURANTES QUE CONTIENEN MENÚS.
+     * MANEJA LA RESPUESTA CON LA INTERFAZ RestaurantRepository.OnRestaurantListCallback
+     *
+     * @return SI TIENE EXITO CONVIERTE EL ARRAYLIST DE OBJETOS RestaurantEntity QUE LLEGA
+     *         EN UN ARRAYLIST CON OBJETOS RestaurantWithMenusResponse
+     */
     public CompletableFuture<ArrayList<RestaurantWithMenusResponse>> getAllRestaurantWithMenus(){
 
         CompletableFuture<ArrayList<RestaurantWithMenusResponse>> futureList = new CompletableFuture<>();
@@ -232,6 +251,13 @@ public class RestaurantService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * MANDA AL REPOSITORIO LA URL DEL RESTAURANTE QUE QUIERE OBTENER.
+     * COMO SEGUNDO PARÁMETRO USAMOS UNA INSTANCIA DE LA INTERFAZ RestaurantRepository.OnRestByUrlGot
+     * QUE USAREMOS PARA MANEJAR LA RESPUESTA
+     * @param url URL DEL RESTAURANTE
+     * @return SI ES EXITOSO RECIBIMOS UN OBJETO RestaurantGetByUrlEntity, LO CONVERTIMOS EN RestaurantGetByUrlResponse Y LO MANDAMOS AL CONTROLLER
+     */
     public CompletableFuture<RestaurantGetByUrlResponse> getRestaurantByUrl(String url){
 
         CompletableFuture<RestaurantGetByUrlResponse> futureResponse = new CompletableFuture<>();

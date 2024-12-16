@@ -41,12 +41,13 @@ public class UserController {
 // ------------------------------------------------------------------------------------------------------------
     /**
      *
-     * @param userDTO recibo en un json todas las propiedades que tenddrá el usuario
-     *  1º Crea el usuario en Authentication (con el email y password que traen las propiedades)
-     *  2º Añade el uid generado para añadírselo al objeto userDTO antes de enviarlo al servicio
-     *  3º Se lo pasa al métod createUser del Servicio. El resultado devolverá un UserResponse y lo guarda en userResponse.
-     * @return Devuelve ese ResponseEntity.ok si sale bien con la id que trae el userResponse desde Realtime.
-     *         Si sale mal, devuelve un ResponseEntity.badRequest
+     * @param userDTO ES UN JSON QUE COVERTIMOS EN CLASE UserDTO CON LAS PROPIEDADES QUE TIENE EL USUARIO ENTRANTE
+     *  1º CREAMOS AL USUARIO EN Authentication
+     *  2º AÑADIMOS EL UID GENERADO AL OBJETO UserDTO
+     *  3º Y LO MANDAMOS AL SERVICIO
+     *  4º GUARDAMOS EN UN OBJETO UserResponse LO QUE EL SERVICIO NOS DEVUELVE
+     * @return SI SALE BIEN DEVUELVE UN ResponseEntity.ok CON EL UID DE UserResponse.
+     *         SI SALE MAL, DEVUELVE UN ResponseEntity.badRequest, EL FRONTEND RECIBE UN JSON CON EL UID VACÍO.
      */
 
     @PostMapping("/register")
@@ -59,7 +60,7 @@ public class UserController {
 
             String uid = authService.createUser(userDTO.getEmail(), userDTO.getPassword());
             userDTO.setUid(uid);
-            UserResponse userResponse = userService.createUser(userDTO);                              // COMO createUser EN EL SERVICIO DEVUELVE UN UserResponse ENTREGADO POR UN FUTURO, LA OPERACIÓN ES ASÍNCRONA Y NO DA ERROR AQUÍ
+            UserResponse userResponse = userService.createUser(userDTO);
 
             return ResponseEntity.ok("{\"uid\": \"" + userResponse.getUid() + "\"}");
 
@@ -70,6 +71,13 @@ public class UserController {
 
 // ------------------------------------------------------------------------------------------------------------
 
+    /**
+     * OBTIENE EL UID DEL OBJETO ENTRANTE, SE ASEGURA QUE NI ES NULL NI ESTÁ VACÍO.
+     * HACE UNA LLAMADA AL SERVICE PARA VER SI EXISTE.
+     * SI EXISTE LO VUELVE A MANDAR AL SERVICE PARA ACTUALIZAR LOS DATOS.
+     * @param userDTO OBJETO OBTENIDO DEL JSON QUE ENVÍA EL FRONTEND
+     * @return PARA DEVOLVERLO EN UN JSON EMPLEA UN OBJETO  ResponseEntity QUE CONTIENE UN BOOLEAN.
+     */
     @PostMapping("/update")
     public CompletableFuture<ResponseEntity<Map<String, Boolean>>> updateUser( @RequestBody UserDTO userDTO) {
 
@@ -109,6 +117,11 @@ public class UserController {
 
 // ------------------------------------------------------------------------------------------------------------
 
+    /**
+     * RECIBE UNA PETINCIÓN DEL FRONTEND, EXTRAE EL UID DEL USUARIO Y SE LO PASA AL SERVICE
+     * @param userReadRequest OBJETO CON EL UID DEL USUARIO COMO ÚNICA PROPIEDAD
+     * @return DEVUELVE UN UserReadResponse CON DATOS DENTRO DE UN CompletableFuture, O VACÍO SI DIO CUALQUIER PROBLEMA
+     */
     @PostMapping("/getByUID")
     public CompletableFuture<UserReadResponse> getClient(@RequestBody UserReadRequest userReadRequest){
         String uid = userReadRequest.getUid();
@@ -117,6 +130,13 @@ public class UserController {
 
 // ------------------------------------------------------------------------------------------------------------
 
+    /**
+     * ENVÍA AL SERVICE EL UID DEL USUARIO.
+     * COMO EL FRONTEND ESPERA UNA KEY LLAMADA "orders" CREAMOS UN MAP CON ELLA, Y COMO VALOR LE DAMOS UN ARRAY DE TIPO OrderGetClientOrdersResponse
+     * QUE CONTIENE TODOS LOS PEDIDOS DE DICHO USUARIO
+     * @param userRequest OBJETO FORMADO CON EL JSON ENVIADO POR EL FRONT END. SOLO CONTIENE EL UID DEL USUARIO
+     * @return DEVUELVE UN ResponseEntity CON EL MAP, DENTRO DE UN CompletableFuture
+     */
     @PostMapping("getOrders")
     public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetClientOrdersResponse>>>> getClientOrders(@RequestBody UserReadRequest userRequest){
         return orderService.getClientOrders(userRequest.getUid())

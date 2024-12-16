@@ -25,6 +25,11 @@ public class RestaurantRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * CONVERTIMOS EL OBJETO RestaurantENtity EN UN MAP, QUE SERÁ LO QUE GUARDAMOS
+     * @param restaurantEntity OBJETO A GUARDAR
+     * @param callback SI EXITO -> DEVUELVE UN OBJETO RestaurantResponse
+     */
     public void saveRestaurant(RestaurantEntity restaurantEntity, getSaveRestaurantCallback callback) {
 
         Map<String, Object> restaurantEntityToSave = new HashMap<>();
@@ -76,6 +81,13 @@ public class RestaurantRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *   ACTUALIZAD UN RESTAURANTE EN LA BASE DE DATOS
+     *   USAMOS UN MAPA PQ QUEREMOS CONSERVAR PROPIEDADES QUE NO SE INCLUYEN EN EL OBJETO QUE LLEGA
+     *   ESTO CONSERVA EL VALOR DE LOS NODOS COMPLEJOS PQ 1º TOMAMOS SU VALOR Y 2º LO GUARDAMOS EN EL MAPA
+     * @param restaurantEntity OBJETO CON LOS DATOS DEL RESTAURANTE
+     * @param callback DEVUELVE true SI TIENE EXITO
+     */
     public void updateRestaurantData(RestaurantEntity restaurantEntity, GetUpdateRestaurantCallback callback) {
 
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(restaurantEntity.getUid());
@@ -87,8 +99,7 @@ public class RestaurantRepository {
                 if(dataSnapshot.exists()){
 
                     Map<String, Object> updates = new HashMap<>();
-                    // USAMOS UN MAPA PQ QUEREMOS CONSERVAR PROPIEDADES QUE NO SE INCLUYEN EN EL OBJETO QUE LLEGA
-                    // ESTO CONSERVA EL VALOR DE LOS NODOS COMPLEJOS. 1º COGEMOS SU VALOR 2º LO GUARDAMOS EN EL MAPA
+
                     if (dataSnapshot.child("dishes").exists()) {
                         updates.put("dishes", dataSnapshot.child("dishes").getValue());
                     }
@@ -221,6 +232,11 @@ public class RestaurantRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param callback SI EXITO -> DEVUELVE TODOS LOS RESTAURANTES QUE HAY EN FORMATO RestaurantEntity
+     *                 SI ERROR -> DEVUELVE UNA EXCEPCIÓN QUE VERÁ EL SERVICIO
+     */
     public void getAllRestaurantList(OnRestaurantListCallback callback){
 
         DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
@@ -358,6 +374,12 @@ public class RestaurantRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * RECUPERA TODOS LOS DATOS DE UN RESTAURANTE APORTÁNDOLE ÚNICAMENTE SU URL
+     * @param url URL DEL RESTAURANTE UQE SE BUSCA
+     * @param callback SI SUCCESS -> DEVUELVE UN OBJETO RestaurantGetByUrlEntity
+     *                 SI ERROR -> DEVUELVE UNA EXCEPCIÓN CON UN MENSAJE
+     */
     public void getByUrl(String url, OnRestByUrlGot callback ){
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -545,6 +567,13 @@ public class RestaurantRepository {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * OBTIENE DE LA BBDD LOS MENUS QUE UN RESTUARANTE TIENE ALMACENADOS
+     * @param uid NÚMERO DE USUARIO DEL RESTAURANTE
+     * @param callback SI ÉXITO DEVUELVE UN ARRAY CON LOS MENÚS EN FORMATO MenuGetAllMenusEntity
+     *                 SI HAY UN FALLO ENVÍA UNA EXCEPCIÓN PARA QUE LA VEA EL SERVICIO
+     */
 
     public void getMenus(String uid, OnMenusGot callback ) {
 

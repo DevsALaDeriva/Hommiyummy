@@ -29,6 +29,14 @@ public class UserService {
     }
 
     // ------------------------------------------------------------------------------------------------------------
+
+    /**
+     * RECIBE UN USUARIO UserDTO, LO CONVIERTE EN UserEntity Y LO MANDA AL REPOSITORIO PARA GRABARLO
+     * @param userDTO USUARIO PROCEDENTE DEL CONTROLLER (FRONTEND)
+     * @return SI TIENE ÉXITO DEVUELVE UN USUARIO TIPO UserResponse
+     *         SI NO, DEVUELVE UNA EXCEPCIÓN
+     */
+
     public UserResponse createUser(UserDTO userDTO) {
 
         UserEntity userEntity = new UserEntity();
@@ -65,7 +73,7 @@ public class UserService {
         });
 
         try {
-            return futureResponse.get(); // ESTO BLOQUEA EL CÓDIGO HASTA QUE ESTÉ DISPONIBLE EL DATO ANTES DE DEVOLVER
+            return futureResponse.get();
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar el usuario en Firebase", e);
         }
@@ -106,10 +114,10 @@ public class UserService {
 // ----------------------------------------------------------------------------------------------------------------
 
     /**
-     * SERVICIO CREADO SOLO PARA IDENTIFICAR SI UN USUARIO ES user o restaurant.
+     * SERVICIO CREADO SOLO PARA IDENTIFICAR SI UN USUARIO ES user O restaurant.
      * LE LLAMARÁ getUserTypeByUid DESDE UserTypeService PQ HAY QUE HACER UNA CONSULTA SIN SABER DE ENTRADA A CUÁL DE LOS DOS SERVICIOS SE LO MANDAMOS.
-     * @param uid el uid del usuario en Authentication
-     * @return el boolean que trae del repositorio
+     * @param uid IDENTIFICADOR ÚNICO DEL USUARIO
+     * @return BOOLEAN DESDE EL REPOSITORIO
      */
 
     public CompletableFuture<Boolean> existsByUid(String uid) {
@@ -118,6 +126,13 @@ public class UserService {
 
 // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * RECIBE DEL CONTROLLER EL UID DEL USUARIO, LO MANDA AL REPOSITORIO, EL CUAL DEVUELVE VÍA CALLBACK
+     * EL USUARIO EN FORMATO UserFindEntity OBTENIDO EN BASE DE DATOS
+     * Y, POR ÚLTIMO, LO TRANSFORMA  EN TIPO UserResponse
+     * @param uid IDENTIFICADOR DEL USUARIO
+     * @return DEVUELVE DENTRO DE UN CompletableFuture AL CONTROLLER ESE UserResponse
+     */
     public CompletableFuture<UserReadResponse> findUserByUid(String uid){
 
         CompletableFuture<UserReadResponse> futureUser = new CompletableFuture<>();
@@ -146,6 +161,5 @@ public class UserService {
     }
 
 // ----------------------------------------------------------------------------------------------------------------
-
 
 }

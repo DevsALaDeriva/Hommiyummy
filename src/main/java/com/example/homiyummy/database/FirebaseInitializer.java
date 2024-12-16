@@ -11,30 +11,30 @@ import java.nio.charset.StandardCharsets;
 
 public class FirebaseInitializer {
     public static FirebaseApp initializeFirebase() throws IOException {
-        // Obtén las variables de entorno
+        // OBTENEMOS Y GUARDAMOS LAS VARIABLES DE ENTORNO
         String serviceAccountKey = System.getenv("FIREBASE_SERVICE_ACCOUNT_KEY");
         String databaseUrl = System.getenv("FIREBASE_DATABASE_URL");
 
-        // Verifica que las variables de entorno estén configuradas
+        // COMPROBAMOS QUE ESTÁN
         if (serviceAccountKey == null || databaseUrl == null) {
             throw new IllegalStateException("Las variables de entorno FIREBASE_SERVICE_ACCOUNT_KEY o FIREBASE_DATABASE_URL no están configuradas");
         }
 
-        // Convierte la clave de servicio JSON en un InputStream
+        // PASAMOS LA CLAVE DE SERVICIO A UN InputStream
         InputStream serviceAccountStream = new ByteArrayInputStream(serviceAccountKey.getBytes(StandardCharsets.UTF_8));
 
-        // Configura FirebaseOptions usando las variables de entorno
+        // CON ESTAS VARIABLES CONFIGURAMOS FirebaseOptions
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
                 .setDatabaseUrl(databaseUrl)
                 .build();
 
-        // Inicializa Firebase solo si aún no está inicializado
+        // INICIA FIREBASE SI AUN NO LO ESTÁ
         if (FirebaseApp.getApps().isEmpty()) {
             FirebaseApp.initializeApp(options);
         }
 
-        // Devuelve la instancia de FirebaseApp
+        // DEVUEVLE INSTANCIA DE FIREBASEAPP
         return FirebaseApp.getInstance();
     }
 }

@@ -36,14 +36,14 @@ public class MenuService {
 
             @Override
             public void onFailure(DatabaseError error, Integer num) {
-                futureId.complete(num); // SI DA ERROR ENVÍA UN 0, QUE ES LO QUE ESPERA EL FRONTEND
+                futureId.complete(num);
             }
         });
         try {
-            return futureId.get();      // ENVIAMOS EL ID
+            return futureId.get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace(); // Log para identificar el error exacto
-            return 0; // Devuelve 0 en caso de fallo para cumplir con las expectativas del frontend
+            e.printStackTrace();
+            return 0;
         }
     }
     
@@ -93,7 +93,6 @@ public class MenuService {
     }
 
     public Boolean updateMenu(MenuDTO menuDTO){
-        //System.out.println("asfasdfasdfasdfasfd");
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
@@ -142,7 +141,7 @@ public class MenuService {
         menuRepository.findMenusWithSimpleDetails(uid, startDate, endDate, new MenuRepository.FindSimpleMenusCallback() {
             @Override
             public void onSuccess(List<MenuSimpleResponse> menus) {
-                futureMenus.complete(menus); // Completar el futuro con la lista de menús
+                futureMenus.complete(menus);
             }
 
             @Override
@@ -152,7 +151,7 @@ public class MenuService {
         });
 
         try {
-            return futureMenus.get(); // Bloquea hasta que el futuro se complete
+            return futureMenus.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException("Error al procesar los menús simples", e);
         }

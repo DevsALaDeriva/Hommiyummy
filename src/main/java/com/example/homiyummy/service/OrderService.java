@@ -13,8 +13,6 @@ import com.example.homiyummy.model.user.UserInGetTasksResponse;
 import com.example.homiyummy.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -29,6 +27,13 @@ public class OrderService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *  SOLICITA AL REPOSITORIO EL ID QUE TIENE EL ÚLTIOMO PEDIDO GUARDADO
+     *  Y SE LO DEVUELVE EN UN CompletableFuture AL CONTROLLER
+     *
+     * @param uid NÚMERO USUARIO DEL RESTAURANTE
+     * @return DEVUELVE UN CompletableFuture CON EL ÚLTIMO PEDIDO DENTRO
+     */
     public CompletableFuture<Integer> findLastId(String uid){
 
         CompletableFuture<Integer> futureId = new CompletableFuture<Integer>();
@@ -48,6 +53,13 @@ public class OrderService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *  RECIBE DEL CONTROLLER LA PETICIÓN DE CREAR UN NUEVO PEDIDO Y SE LA ENVÍA AL REPOSITORIO.
+     *
+     * @param orderDTO CONTIENE LOS DATOS DEL PEDIDO
+     * @param lastOrderId EL NÚMERO QUE TIENE EL ÚLTIMO PEDIDO GUARDADO
+     * @return DEVUELVE UN OBJETO CompletableFuture QUE CONTIENE LA RESPUESTA QUE ESPERA EL FRONTEND EN FORMATO OrderCreatedResponse
+     */
     public CompletableFuture<OrderCreatedResponse> createOrder(OrderDTO orderDTO, int lastOrderId){
 
         int newOrderId = lastOrderId + 1;
@@ -68,6 +80,12 @@ public class OrderService {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     *  OBTIENE EL PEDIDO DEL RESTAURANTE EN FORMATO OrderGotByNumResponse
+     * @param orderNumber NÚMERO DEL PEDIDO
+     * @return SI SUCCESS -> DEVUELVE TODOS LOS DATOS DEL PEDIDO EN UN OrderGotByNumResponse
+     */
 
     public CompletableFuture<OrderGotByNumResponse> getRestaurantData (String orderNumber){
 
@@ -126,7 +144,6 @@ public class OrderService {
                 }
                 orderResponse.setMenus(allMenusResponse);
 
-                //-------A PARTIR DE AQUÍ------
                 Object review = orderGotByNumEntity.getReview();
                 if (review instanceof ReviewsGetByNumOrderEntity) {
                     ReviewsGetByNumOrderEntity reviewEntity = (ReviewsGetByNumOrderEntity) review;
@@ -138,7 +155,6 @@ public class OrderService {
                     ArrayList<String> emptyReview = (ArrayList<String>) review;
                     orderResponse.setReview(emptyReview);
                 }
-                //-------HASTA AQUÍ------
 
                 orderResponse.setStatus(orderGotByNumEntity.getStatus());
                 orderResponse.setTotal(orderGotByNumEntity.getTotal());
@@ -156,6 +172,11 @@ public class OrderService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *  ENVÍA AL REPOSITORIO LA PETICIÓN DE BUSCAR TODOS LOS PEDIDOS DE UN CLIENTE
+     * @param clientUID NUMERO DE ID DEL CLIENTE
+     * @return DEVUELVE EN UN OBJETO CompletableFuture UN ARRAY CON TODOS LOS PEDIDOS (EN FORMATO OrderGetClientOrdersResponse)
+     */
     public CompletableFuture< ArrayList<OrderGetClientOrdersResponse>> getClientOrders(String clientUID){
 
         CompletableFuture< ArrayList<OrderGetClientOrdersResponse>> futureResponse = new CompletableFuture<>();
@@ -193,6 +214,11 @@ public class OrderService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * SOLICITA AL REPOSITORIO TODOS LOS PEDIDOS DE UN RESTAURANTE PARA MANDÁRSELOS AL FRONT
+     * @param restUID NÚMERO DE ID DEL RESTAURANTE
+     * @return DEVUEVLE UN CompletableFuture CON UN ARRAY CONLOS PEDIDOS (EN FORMATO OrderGetRestaurantOrdersResponse)
+     */
     public CompletableFuture<ArrayList<OrderGetRestaurantOrdersResponse>> getRestOrders(String restUID) {
 
         CompletableFuture<ArrayList<OrderGetRestaurantOrdersResponse>> futureResponse = new CompletableFuture<>();
@@ -229,6 +255,12 @@ public class OrderService {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * SOLICITA AL REPOSITORIO LOS PEDIDOS QUE UN RESTAURANTE TIENE EN UN TIEMPO DADO
+     * @param request OBJETO QUE CONTIENE EL UID DEL RESTAURANTE Y LAS FECHAS ENTRE LAS QUE HAY QUE BUSCAR
+     * @return CompletableFuture CON UN OBJETO OrderGetTasksResponse DENTRO , QUE ES LA RESPUESTA PARA EL FRONTEND
+     */
 
     public CompletableFuture<ArrayList<OrderGetTasksResponse>> getTasks(OrderGetTasksRequest request){
 
@@ -328,6 +360,15 @@ public class OrderService {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * ENVÍA AL REPOSITORIO UNA REVIEW
+     * @param request OBJETO RECIBIDO DEL FRONTEND CON:
+     *                - num_order
+     *                - review (OPICNION DEL CLIETE A GRABAR)
+     *                - rate (NOTA QUE LE PONE EL CLIENTE)
+     * @return DEVUELVE UN FUTURO CON UN OBJETO ReviewResponse DENTRO QUE VERÁ EL CONTROLADOR PARA DEVOLVER RESPUESTA AL FRONT
+     */
+
     public CompletableFuture<ReviewResponse> createReviewForOrder(ReviewRequest request) {
         CompletableFuture<ReviewResponse> future = new CompletableFuture<>();
 
@@ -342,7 +383,7 @@ public class OrderService {
                         response.setSave(success);
 
                         if (success) {
-                            future.complete(response); // Completar el CompletableFuture en caso de éxito
+                            future.complete(response);
                         } else {
                             future.completeExceptionally(new RuntimeException("Error al guardar la review.")); // En caso de fallo
                         }
@@ -350,6 +391,6 @@ public class OrderService {
                 }
         );
 
-        return future; // Devolver el CompletableFuture
+        return future;
     }
 }

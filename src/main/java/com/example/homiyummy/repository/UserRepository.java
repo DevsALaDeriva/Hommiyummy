@@ -80,6 +80,16 @@ public class UserRepository {
     }
 // ------------------------------------------------------------------------------------------------------------
 
+    /**
+     * ACTUALIZA DATOS DEL USUARIO EN BASE DE DATOS.
+     * PARA NO PERDER DATOS EN ALGUNAS PROPIEDADES, PRIMERO GUARDA LOS VALORES EXISTENTES (SI LOS HUBIERA),
+     * CREAMOS CON ELLOS OTRO USUARIO DE TIPO UserEntity
+     * Y ESTE ES EL OBJETO QUE SOBRESCRIBIMOS.
+     * @param userEntity OBJETO QUE REPRESENTA AL USUARIO (ENVIADO DESDE EL SERVICIO)
+     * @param callback
+     *      SI TIENE ÉXITO -> DEVUELVE true
+     *      SI NO, -> DEVUELVE false
+     */
     public void updateUserData(UserEntity userEntity, GetUpdateConfirmationCallback callback) {
 
         DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
@@ -195,6 +205,14 @@ public class UserRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * OBTIENE EL USUARIO GUARDADO EN BBDD. LO GUARDA EN FORMATO UserFindEntity
+     * @param uid UID DEL USUARIO BUSCADO
+     * @param callback USA LA INTERFAZ FindUserCallback.
+     *                 SI LO ENCUENTRA DEVUELVE EL UserFindEntity AL SERVICIO
+     *                 SI NO, LE ENVÍA UNA EXCEPCIÓN
+     *
+     */
     public void find(String uid, FindUserCallback callback){
         DatabaseReference userRef = databaseReference.child("users").child(uid);
 

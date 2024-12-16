@@ -48,7 +48,6 @@ public class RestaurantController {
     @PostMapping("/register")
     public ResponseEntity<String> registerRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
             try {
-
                 if(restaurantDTO.getEmail() == null || restaurantDTO.getEmail().isEmpty()){
                     return ResponseEntity.badRequest().body("{\"uid\": \"\"}");
                 }
@@ -63,6 +62,7 @@ public class RestaurantController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": \"\" }");
             }
     }
+
     // ----------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/update")
@@ -151,7 +151,6 @@ public class RestaurantController {
                 .exceptionally(ex -> {
                     ex.printStackTrace();
                     return new RestaurantGetByUrlResponse();
-                    // TODO PERSONALIZAR ERROR ------------------------XXXXXXXX
                 });
     }
 

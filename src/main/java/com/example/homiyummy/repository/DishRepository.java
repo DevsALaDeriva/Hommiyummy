@@ -24,6 +24,11 @@ public class DishRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *  OBTIENE ÚLTIMO ID GRABADO PARA UN PLATO
+     * @param uid IDENTIFICADOR ÚNICO DEL RESTAURANTE
+     * @param callback DEVUELVE EL ID DEL ÚLTIMO PLATO GUARDADO O 0 SI NO LO HAY
+     */
     public void findId(String uid, FindPlatoIdCallback callback){
 
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
@@ -49,7 +54,6 @@ public class DishRepository {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 callback.onFailure(databaseError, 0);
-                //System.err.println("Error al obtener el ID: " + databaseError.getMessage());
             }
         });
     }
@@ -124,8 +128,13 @@ public class DishRepository {
 
     // -----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * ACTUALIZA UN PLATO YA GUARDADO EN LA BASE DE DATOS
+     * PARA HACERLO PRIMERO GUARDA LOS VALORES QUE TIENE GUARDADOS ACTUALMENTE PARA QUE LOS MANTENGA SI NO VIENEN EN EL OBJETO
+     * @param dishEntity OBJETO QUE HAY QUE GUARDAR
+     * @param callback SI EXITO: true, SI NO, false
+     */
     public void update(DishEntity dishEntity, UpdateDishCallback callback){
-        //System.out.println("asfasdfasdfasdfasfd");
         DatabaseReference dishRef = databaseReference.child("restaurants")
                 .child(dishEntity.getUid())
                 .child("dishes/items")
@@ -180,18 +189,28 @@ public class DishRepository {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                            // TODO -------------
+                callback.onFailure(databaseError.toException());
             }
         });
     }
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * DEVUELVE TODOS LOS PLATOS DEL RESTARUANTE QUE SE PASA POR PARÁMETRO
+     * 1º COMPRUEBA QUE EL RESTAURANTE EXISTA CON UNA LLAMADA A existsByUid DE RestaurantService
+     * 2º CUANDO TERMINA LA PETICIÓN Y TENEMOS RESPUESTA CONTINUAMOS AQUÍ
+     *      SI EXISTE EL RESTAURANTE COMPRUEBA SI TIENE PLATOS.
+     *      SI LOS TIENE, DEVUELVE UN DishAllResponse VÍA CALLBACK
+     * @param uid UID DEL RESTAURANTE
+     *
+     * @param callback SI TIENE ÉXITO DEVUELVE UN ArrayList CON TODOS LOS PLATOS EN FORMATO DishAllResponse (O VACÍO)
+     */
     public void getAll(String uid, FindAllDishesCallback callback) {
 
-        CompletableFuture<Boolean> futureExists = restaurantService.existsByUid(uid); // MÉTOD O ASÍNCRONO QUE COMPRUEBA SI EL RESTAURANTE EXISTE
+        CompletableFuture<Boolean> futureExists = restaurantService.existsByUid(uid);
 
-        futureExists.thenAccept(exists -> { // LA MEJOR SOLUCIÓN. ENCADENAR EL RESULTADO DEL FUTURO  -----
+        futureExists.thenAccept(exists -> {
             if (exists) {
 
                 DatabaseReference dishesRef = databaseReference.child("restaurants")
@@ -216,7 +235,7 @@ public class DishRepository {
                         } else {
                             DishAllResponse emptyResponse = new DishAllResponse();
                             emptyResponse.setDishes(new ArrayList<>());
-                            callback.onSuccess(emptyResponse); // SI NO HAY PLATOS OBJETO VACÍO
+                            callback.onSuccess(emptyResponse);
                         }
                     }
 
@@ -228,7 +247,7 @@ public class DishRepository {
             } else {
                 DishAllResponse emptyResponse = new DishAllResponse();
                 emptyResponse.setDishes(new ArrayList<>());
-                callback.onSuccess(emptyResponse); // SI EL RESTAURANTE NO EXISTE DEVOLVEMOS UN OBJETO VACÍO
+                callback.onSuccess(emptyResponse);
             }
         }).exceptionally(ex -> {
             callback.onFailure(new Exception("Error al verificar la existencia del restaurante: " + ex.getMessage())); // MANEJAMSO CUALQUIER EXCPECIÓN
@@ -238,6 +257,12 @@ public class DishRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * ELIMINA UN PLATO DE LA BASE DE DATOS
+     * @param uid UID DEL RESTAURANTE EN AUTHENTICATION
+     * @param dishId ID DLE PLATO EN EL NODO DEL RESTAURANTE
+     * @return DEVUELVE EN UN CompletableFuture True SI TUVO ÉXITO O false SI NO LO TUVO
+     */
     public CompletableFuture<Boolean> delete(String uid, int dishId) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
@@ -273,8 +298,14 @@ public class DishRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * RECUPERA DE LA BSE DE DATOS UN OBJETO DishEntity
+     * @param uid  UID DEL RESTAURANTE EN AUTHENTICATION
+     * @param id   ID DEL PLATO EN EL RESTAURANTE
+     * @param callback SI ÉXITO DEVUELVE UN OBJETO DishEntity
+     *                 SI NO EXITO DEVUELVE UN DishEntity vacío
+     */
     public void get(String uid, int id, OnDishGotCallback callback){
-
 
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
         DatabaseReference dishesRef = restaurantRef.child("dishes/items");
@@ -289,7 +320,7 @@ public class DishRepository {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                    callback.onSuccess(new DishEntity()); // MANDAMOS UN DISH VACÍO
+                    callback.onSuccess(new DishEntity());
             }
         });
 

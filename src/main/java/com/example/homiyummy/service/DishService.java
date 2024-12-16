@@ -32,7 +32,7 @@ public class DishService {
 
             @Override
             public void onFailure(DatabaseError error, Integer num) {
-                futureId.complete(num); // SI DA ERROR ENVÍA UN 0, QUE ES LO QUE ESPERA EL FRONTEND
+                futureId.complete(num);
             }
         });
         try {
@@ -50,7 +50,7 @@ public class DishService {
         CompletableFuture<DishResponse> futurePlatoResponse = new CompletableFuture<>();
 
         DishEntity dishEntity = new DishEntity();
-        dishEntity.setId(newDishId);                       // AÑADIMOS EL ID AL PLATO
+        dishEntity.setId(newDishId);
         dishEntity.setUid((dishDTO.getUid()));
         dishEntity.setName(dishDTO.getName());
         dishEntity.setType(dishDTO.getType());

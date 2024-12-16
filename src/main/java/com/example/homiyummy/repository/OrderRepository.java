@@ -1,6 +1,5 @@
 package com.example.homiyummy.repository;
 
-//import com.example.homiyummy.model.course.CourseEntity;
 import com.example.homiyummy.model.dish.DishGetByEntity;
 import com.example.homiyummy.model.dish.DishGetDayTaskEntity;
 import com.example.homiyummy.model.menu.MenuGetByUrlEntity;
@@ -14,7 +13,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,33 +28,31 @@ public class OrderRepository {
 
 
     // ----------------------------------------------------------------------------------------------------------------
-    // -> OK REVISITÓN DE CALLBACKS Y EXCEPCIONES
 
     /**
-     * La 1ª vez que se compruebe si un Id existe, crea el nodo "counter",si no existe de antes.
-     * Con dataSnapshot.exists() lo que realmente se comprueba es si este nodo contiene datos, no si existe.
-     * Por eso, la primera vez devuelve false y salta al else, en el que asignamos 0.
+     * CREAMOS NODO COUNTER PARA GUARDAR EL ID ACTUAL.
+     * CON DATASNAPSHOT.EXISTS() COMPROBAMOS SI EL NODO CONTIENE DATOS, NO SI EXISTE.
+     * POR ESO, LA PRIMERA VEZ DEVUELVE FALSE Y SALTA AL ELSE, EN EL QUE ASIGNAMOS 0.
      *
-     * @param callback: usamos la versión exitosa cuando:
-     *                              - encuentra un dato guardado en el nodo
-     *                              - y cuando no lo encuentra (que asigna 0)
-     *                  usamos la versión errónea cuando:
-     *                              - se encuentra como dato un null
-     *                              - o cuando directamente ha entrado en onCancelled, por un error de conexión, mala configuración del acceso...
-     *
-     *  @param uid el identificador único del restaurante
+     * @PARAM CALLBACK: ONFINDINGSUCCESS CUANDO:
+     *                              - ENCUENTRA UN DATO GUARDADO EN EL NODO
+     *                              - Y CUANDO NO LO ENCUENTRA (QUE ASIGNA 0)
+     *                  ONFINDINGFAILURE CUANDO:
+     *                              - SE ENCUENTRA COMO DATO UN NULL
+     *                              - O CUANDO ENTRA EN ONCANCELLED
+     * @PARAM UID EL IDENTIFICADOR ÚNICO DEL RESTAURANTE
      */
 
     public void findId(String uid, OnOrderIdGot callback) {
 
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
         DatabaseReference ordersRef = restaurantRef.child("orders");
-        DatabaseReference counterRef = ordersRef.child("counter");       //----> ESTO SOLO CREA LA UBICACIÓN
+        DatabaseReference counterRef = ordersRef.child("counter");
 
         counterRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){                                        //----> LA 1º VEZ QUE SE VAYA A USAR DARÁ FALSE PQ ESA UBICACIÓN RECIÉN CREADA ESTÁ VACÍA
+                if(dataSnapshot.exists()){
                     Integer actualCounter = dataSnapshot.getValue(Integer.class);
                     if(actualCounter != null) {
                         callback.onFindingSuccess(actualCounter);
@@ -66,8 +62,7 @@ public class OrderRepository {
                     }
                 }
                 else{
-                    //System.out.println("Ha dado false pq, al ser la 1ª vez, el nodo se acaba de crear y no tiene datos");
-                    callback.onFindingSuccess(0);                              //----> LA 1ª VEZ, SALTA AQUÍ Y LE ASIGNAMOS UN 0
+                    callback.onFindingSuccess(0);
                 }
             }
 
@@ -79,8 +74,14 @@ public class OrderRepository {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-    // -> OK REVISITÓN DE CALLBACKS Y EXCEPCIONES
 
+    /**
+     *
+     * @param orderDTO EL OBJETO ENTRANTE QUE HAY Q CONVERTIR EN ENTITY ANTES DE GUARDAR
+     * @param newId EL ID QUE SE LE VA A ASIGNAR AL PEDIDO
+     * @param callback SI SUCCESS -> DEVUELVE EL OBJETO GUARDADO
+     *                 SI ERRROR -> DEVUELVE UNA EXCEPCIÓN CON EL TEXTO PERTINENTE
+     */
     public void save(OrderDTO orderDTO, int newId, OnSavingOrderCallback callback){
 
         OrderEntity orderEntity = new OrderEntity();
@@ -103,10 +104,10 @@ public class OrderRepository {
                 return;
             }
 
-            counterRef.addListenerForSingleValueEvent(new ValueEventListener() {// NOS DIRIGIMOS A COUNTER, PQ QUIERO LEER EL VALOR QUE ACABO DE GRABAR EN COUNTER
+            counterRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Integer orderId = dataSnapshot.getValue(Integer.class); // OBTENEMOS EL VALOR QUE ACABAMOS DE GUARDAR PARA ASEGURARNOS Q USAMOS EL CORRECTO
+                    Integer orderId = dataSnapshot.getValue(Integer.class);
                     if(orderId != null){
                         thisOrderRef.setValue(orderEntity, (databaseOrderError, databaseOrderReference) -> {
                             if(databaseOrderError != null){
@@ -147,31 +148,35 @@ public class OrderRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * PROVEE DE LOS DATOS DE UN PEDIDO DE CARA AL RESTAURANTE
+     *
+     * @param orderNumber NÚMERO DE PEDIDO
+     * @param callback SI SUCCESS -> DEVUEVLE UN OBJETO OrderGotByNumEntity CON LOS DATOS DEL PEDIDO OBTENIDOS DIRECTAMENTE DE LA BBDD
+     *                 SI ERROR   -> DEVUELVE CON onFindingFailure UNA EXCEPCIÓN CON EL MENSAJE DE LO OCURRIDO
+     */
 
     public void getOrderDataInRestaurantSide(String orderNumber, OnOrderGotCallback callback){
 
         DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
-        allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {               // TODOS LOS RESTAURANTES
+        allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    for(DataSnapshot restNode : dataSnapshot.getChildren()){            // RECORREMOS TODOS LOS RESTAURANTES
+                    for(DataSnapshot restNode : dataSnapshot.getChildren()){
 
-                        DataSnapshot ordersRef = restNode.child("orders/items");   // ENTRAMOS EN LOS PEDIDOS DE CADA RESTAURANTE SI LOS TIENE
+                        DataSnapshot ordersRef = restNode.child("orders/items");
 
                         if(ordersRef.exists()){
                             for(DataSnapshot order : ordersRef.getChildren()){
 
                                 String value = order.child("num_order").getValue(String.class);
 
-                                if(order.child("num_order").getValue(String.class).equals(orderNumber)){
-                                    String restUID = restNode.getKey();                             // GUARDAMOS EL UID DEL RESTAURANTE QUE TIENE EL PEDIDO
-                                    String customerUID = order.child("uidCustomer").getValue(String.class); // GUARDAMOS EL UID DEL CLIENTE
-                                    //String restName = restNode.child("name").getValue(String.class); // GUARDAMOS NOMBRE DEL RESTAURANTE
-                                    int date = order.child("date").getValue(Integer.class); // GUARDAMOS FECHA DEL PEDIDO
-                                    float totalOrder = order.child("total").getValue(Float.class); // GUARDAMOS TOTAL DEL PEDIDO
-
-
+                                if(value.equals(orderNumber)){
+                                    String restUID = restNode.getKey();
+                                    String customerUID = order.child("uidCustomer").getValue(String.class);
+                                    int date = order.child("date").getValue(Integer.class);
+                                    float totalOrder = order.child("total").getValue(Float.class);
 
                                     DataSnapshot menusSnapshot = order.child("menus");
 
@@ -188,7 +193,7 @@ public class OrderRepository {
                                             int menuId = menu.child("id").getValue(Integer.class);
                                             int menuDate = restNode.child("menus/items").child(String.valueOf(menuId)).child("date").getValue(Integer.class);
 
-                                            //-- FIRST COURSE
+
                                             int firstCourseID = menu.child("first_course").getValue(Integer.class);
                                             String firstCourseName = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("name").getValue(String.class);
                                             String firstCourseIngs = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("ingredients").getValue(String.class);
@@ -198,15 +203,12 @@ public class OrderRepository {
                                             for(DataSnapshot allergen: firstCourseAllergens.getChildren()){
                                                 firstAllergens.add(allergen.getValue(String.class));
                                             }
-//                                            if(firstAllergens.length() > 4) {
-//                                                firstAllergens = firstAllergens.substring(0, firstAllergens.length() - 2);
-//                                            }
+
                                             String firstCourseImg = restNode.child("dishes/items").child(String.valueOf(firstCourseID)).child("image").getValue(String.class);
 
                                             DishGetByEntity firstCourseEntity = new DishGetByEntity(firstCourseID, firstCourseName, firstCourseIngs, firstAllergens, firstCourseImg);
 
 
-                                            //-- SECOND COURSE
                                             int secondCourseID = menu.child("second_course").getValue(Integer.class);
                                             String secondCourseName = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("name").getValue(String.class);
                                             String secondCourseIngs = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("ingredients").getValue(String.class);
@@ -216,14 +218,11 @@ public class OrderRepository {
                                             for(DataSnapshot allergen : secondCourseAllergens.getChildren()){
                                                 secondAllergens.add(allergen.getValue(String.class));
                                             }
-//                                            if(secondAllergens.length() > 4) {
-//                                                secondAllergens = secondAllergens.substring(0, secondAllergens.length() - 2);
-//                                            }
+
                                             String secondCourseImg = restNode.child("dishes/items").child(String.valueOf(secondCourseID)).child("image").getValue(String.class);
                                             DishGetByEntity secondCourseEntity = new DishGetByEntity(secondCourseID, secondCourseName, secondCourseIngs, secondAllergens, secondCourseImg);
 
 
-                                            //-- DESSERT COURSE
                                             int dessertID = menu.child("dessert").getValue(Integer.class);
                                             String dessertName = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("name").getValue(String.class);
                                             String dessertIngs = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("ingredients").getValue(String.class);
@@ -233,9 +232,7 @@ public class OrderRepository {
                                             for(DataSnapshot allergen : dessertCourseAllergens.getChildren()){
                                                 dessertAllergens.add(allergen.getValue(String.class));
                                             }
-//                                            if(dessertAllergens.length() > 4) {
-//                                                dessertAllergens = dessertAllergens.substring(0, dessertAllergens.length() - 2);
-//                                            }
+
                                             String dessertImg = restNode.child("dishes/items").child(String.valueOf(dessertID)).child("image").getValue(String.class);
                                             DishGetByEntity dessertEntity = new DishGetByEntity(dessertID, dessertName, dessertIngs, dessertAllergens, dessertImg);
 
@@ -252,14 +249,10 @@ public class OrderRepository {
                                                 orderStatus = "in_progress";
                                             }
 
-
                                             MenuGetByNumEntity singleMenu = new MenuGetByNumEntity(menuId, menuDate, firstCourseEntity, secondCourseEntity, dessertEntity, totalMenu, status); // CREAMOS CADA MENU
-                                            menusInOrder.add(singleMenu); // Y LO METEMOS DENTRO DEL ARRAY DE MENÚS DEL PEDIDO
+                                            menusInOrder.add(singleMenu);
                                         }
 
-
-                                        //-------IMPORTANTE ------ ADAPTAMOS LA CLASE OrderGotByNumEntity DANDO A reviews UN TIPO Object PQ NECESITAMOS QUE SEA AMBIVALENTE (OBJETO O ReviewsGetByNumOrderEntity)
-                                                // SI EL PEDIDIO TIENE REVIEW DEVUELVO UN OBJETO ReviewsGetByNumOrderEntity
                                         ReviewsGetByNumOrderEntity reviewEntity = null;
                                         DataSnapshot reviewSnapshot = order.child("reviews");
                                         if (reviewSnapshot.exists()) {
@@ -272,14 +265,10 @@ public class OrderRepository {
                                             OrderGotByNumEntity dataEntity = new OrderGotByNumEntity(restUID, date, customerUID, menusInOrder, reviewEntity, orderStatus, totalOrder);
                                             callback.onFindingSuccess(dataEntity);
                                         } else {
-                                            // SI EL PEDIDIO NO TIENE REVIEW DEVUELVO UN ARRAYLIST VACÍO
                                             ArrayList<String> emptyReview = new ArrayList<>();
                                             OrderGotByNumEntity dataEntity = new OrderGotByNumEntity(restUID, date, customerUID, menusInOrder, emptyReview, orderStatus, totalOrder);
                                             callback.onFindingSuccess(dataEntity);
                                         }
-                                        //-------------
-
-
                                     }
                                 }
                             }
@@ -306,84 +295,16 @@ public class OrderRepository {
         void onFindingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
-
-    // ESTO OBTIENE TODOS LOS MENUS COMPRADOS DE UN CLIENTE
-
-//    public void getClientOrders(String clientUID, OnClientOrdersGotCallback callback){
-//
-//        DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
-//
-//        allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                //System.out.println("DataSnapshot: " + dataSnapshot.getValue());
-//                if(dataSnapshot.exists()){
-//
-//                    ArrayList<OrderGetClientOrdersEntity> allOrdersEntity = new ArrayList<>(); // GUARDA TODOS LOS PEDIDOS DEL CLIENTE
-//
-//                    for(DataSnapshot restNode : dataSnapshot.getChildren()){
-//
-//                        DataSnapshot ordersRef = restNode.child("orders/items");
-//
-//                        if(ordersRef.exists()){
-//                            for(DataSnapshot ord : ordersRef.getChildren()){
-//                                //System.out.println("orden: " + ord.getKey());
-//                                //System.out.println("orden: " + restNode.child("name").getValue(String.class));
-//                                String clientSavedUid = ord.child("uidCustomer").getValue(String.class);
-//                                //System.out.println("clienteUID en la orden: " + clientSavedUid);
-//                                //System.out.println("clienteUID q llega: " + clientUID);
-//                                if(clientSavedUid.equals(clientUID)){
-//                                    //System.out.println("es igual");
-//                                    DataSnapshot menusRef = ord.child("menus");
-//
-//                                    if (menusRef.exists()){
-//
-//                                        for(DataSnapshot menu : menusRef.getChildren()){
-//
-//                                            OrderGetClientOrdersEntity orderEntity = new OrderGetClientOrdersEntity();
-//
-//                                            String restName = restNode.child("name").getValue(String.class);
-//                                            String restImage = restNode.child("image").getValue(String.class);
-//                                            Integer date = ord.child("date").getValue(Integer.class);
-//                                            String numOrder = ord.child("num_order").getValue(String.class);
-//                                            Float total = ord.child("total").getValue(Float.class);
-//                                            String status = menu.child("status").getValue(String.class);
-//
-//                                            //System.out.println("Pedido: " + numOrder + " - Status : " + status);
-//
-//                                            orderEntity.setName_restaurant(restName);
-//                                            orderEntity.setImage_restaurant(restImage);
-//                                            orderEntity.setDate(date);
-//                                            orderEntity.setNum_order(numOrder);
-//                                            orderEntity.setTotal(total);
-//                                            orderEntity.setStatus(status);
-//
-//                                            allOrdersEntity.add(orderEntity);
-//                                        }
-//                                        callback.onFindingSuccess(allOrdersEntity);
-//                                    }
-//                                    callback.onFindingFailure(new Exception("No hay menús a nombre del cliente"));
-//                                }
-//                            }
-//                        }
-//                    }
-//                    callback.onFindingFailure(new Exception("No hay pedidos en ningún restaurante"));
-//                }
-//                else{
-//                    //System.err.println("No tiene hijos.");
-//                    callback.onFindingFailure(new Exception("No existen restaurantes registrados."));
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                    callback.onFindingFailure(new Exception("Error de conexión."));
-//            }
-//        });
-//    }
-
 // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     *  RECORRE TODOS LOS RESTAURANTES Y OBTIENE LOS PEDIDOS QUE EL CLIENTE TENGA
+     *
+     * @param clientUID EL NÚMERO DE USUARIO DEL CLIENTE EN LA APLICACIÓN (ASIGNADO EN AUTHENTICATION DE FIREBASE)
+     * @param callback SI SUCCESS -> UN ARRAYLIST CON TODOS LOS PEDIDOS EN FORMATO OrderGetClientOrdersEntity
+     *                 SI ERROR -> DEVUELVE UNA EXCECPIÓN CON UN MENSAJE
+     */
+
     public void getClientOrders(String clientUID, OnClientOrdersGotCallback callback){
 
         DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
@@ -393,7 +314,7 @@ public class OrderRepository {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
 
-                    ArrayList<OrderGetClientOrdersEntity> allOrdersEntity = new ArrayList<>(); // GUARDA TODOS LOS PEDIDOS DEL CLIENTE
+                    ArrayList<OrderGetClientOrdersEntity> allOrdersEntity = new ArrayList<>();
 
                     for(DataSnapshot restNode : dataSnapshot.getChildren()){
                         DataSnapshot ordersRef = restNode.child("orders/items");
@@ -447,7 +368,6 @@ public class OrderRepository {
                     callback.onFindingSuccess(allOrdersEntity);
                 }
                 else{
-                    //System.err.println("No tiene hijos.");
                     callback.onFindingFailure(new Exception("No existen restaurantes registrados."));
                 }
             }
@@ -468,6 +388,13 @@ public class OrderRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *  PROVEE DE TODOS LOS PEDIDOS DE UN RESTAURANTE
+     *
+     * @param uid EL NUMERO DE USUARIO DEL RESTAURANTE EN LA APP (ASIGNADO EN AUTHENTICATION DE FIREBASE)
+     * @param callback SI SUCCESS -> DEVUELVE UN ARRAY CON TODOS LOS PEDIDOS EN FORMATO OrderGetRestaurantOrdersEntity, O VACÍO SI NO TIENE
+     *                 SI FALLO   -> DEVUELVE UNA EXCEPCIÓN CON EL ERROR
+     */
     public void getAllOrdersInARestaurant(String uid, OnRestaurantOrdersGotCallback callback){
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -550,14 +477,14 @@ public class OrderRepository {
                                 });
                             } else {
                                 rounds[0]++;
-                                if(rounds[0] == totalOrders){ // AUNQUE SEA NULO AUMENTAMOS EN 1
+                                if(rounds[0] == totalOrders){
                                     callback.onFindingSuccess(orders);
                                 }
                             }
                         }
                     }
                 } else {
-                    callback.onFindingSuccess(new ArrayList<>()); // PQ NO EXISTEN DATOS
+                    callback.onFindingSuccess(new ArrayList<>());
                 }
             }
 
@@ -577,6 +504,16 @@ public class OrderRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *  OBTIENE TODOS LOS PEDIDOS QUE UN RESTAURANTE TIENE QUE TRAMITAR EN EL PERIODO DADO
+     *
+     * @param request OBJETO TIPO OrderGetTasksRequest QUE CONTIENE:
+     *                uid: Nº DE USUARIO DEL RESTAURANTE
+     *                start_date: ESPECIFICA EL "DESDE" (FECHA DE INICIO)
+     *                end_date: ESPECIFICA EL "HASTA DONDE" (FECHA FINAL)
+     * @param callback SI EXITO: DEVUELVE UN ARRAYLIST CON LOS PEDIDOS EN FORMATO OrderGetTasksEntity
+     *                 SI FALLO: DEVUELVE UNA EXCEPCIÓN
+     */
     public void getDaylyTask (OrderGetTasksRequest request, OnDaylyTaskFindingCallback callback){
 
         int start_date = request.getStart_date();
@@ -602,7 +539,7 @@ public class OrderRepository {
                                 int menuDate = restSnap.child("menus/items").child(String.valueOf(menuId)).child("date").getValue(Integer.class);
 
                                 if( menuDate >= start_date && menuDate <= end_date){
-
+                                    System.out.println(menuDate >= start_date && menuDate <= end_date);
                                     // 1º --- OBTENEMOS EL NÚMERO DE PEDIDO
                                     String num_order = order.child("num_order").getValue(String.class);
 
@@ -615,9 +552,7 @@ public class OrderRepository {
                                     for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(firstNum)).child("allergens").getChildren()){
                                         allAllergensFirst.add(allergen.getValue(String.class));
                                     }
-//                                    if(allAllergensFirst.length() > 4){
-//                                        allAllergensFirst = allAllergensFirst.substring(0, allAllergensFirst.length() - 2);
-//                                    }
+
                                     DishGetDayTaskEntity first_course = new DishGetDayTaskEntity(firstNum, firstName, ingsFirst, allAllergensFirst, imgFirst);
 
 
@@ -629,9 +564,7 @@ public class OrderRepository {
                                     for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(secondNum)).child("allergens").getChildren()){
                                         allergensSecond.add(allergen.getValue(String.class));
                                     }
-//                                    if(allergensSecond.length() > 4) {
-//                                        allergensSecond = allergensSecond.substring(0, allergensSecond.length() - 2);
-//                                    }
+
                                     DishGetDayTaskEntity second_course = new DishGetDayTaskEntity(secondNum, secondName, ingsSecond, allergensSecond, imgSecond);
 
 
@@ -643,9 +576,7 @@ public class OrderRepository {
                                     for(DataSnapshot allergen : restSnap.child("dishes/items").child(String.valueOf(dessertNum)).child("allergens").getChildren()){
                                         allergensDessert.add(allergen.getValue(String.class));
                                     }
-//                                    if(allergensDessert.length() > 4){
-//                                        allergensDessert = allergensDessert.substring(0, allergensDessert.length() - 2);
-//                                    }
+
                                     DishGetDayTaskEntity dessert = new DishGetDayTaskEntity(dessertNum, dessertName, ingsDessert, allergensDessert, imgDessert);
 
                                     String status = menu.child("status").getValue(String.class);
@@ -700,6 +631,17 @@ public class OrderRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *  ACTUALIZA LOS DATOS DE UN PEDIDO
+     *
+     * @param request ES UN OBJETO DE TIPO OrderUpdateStatusRequest CON:
+     *                uid: Nº DE USUARIO DEL RESTAURANTE
+     *                num_order: Nº DEL PEDIDO EN ESE RESTAURANTE
+     *                id_menu: Nº DEL MENÚ EN ESE RESTAURANTE
+     *                status: SITUACIÓN DEL PEDIDO
+     *
+     * @param callback DEVUELVE UN true SI SALE BIEN O UNA EXCEPCIÓN SI SALE MAL
+     */
     public void updateMenu (OrderUpdateStatusRequest request, OnStatusFindingCallback callback){
 
         DatabaseReference ordersRef = databaseReference.child("restaurants").child(request.getUid()).child("orders/items");
@@ -772,60 +714,69 @@ public class OrderRepository {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *  AÑADE UNA REVIEW A UN PEDIDO
+     *
+     * @param numOrder NÚMERO DEL PEDIDO EN EL RESTAURANTE QUE ES USADO PARA RECORRER LA BBDD HASTA ENCONTRARLO
+     * @param review OPINIÓN DEL CLIENTE SOBRE EL PEDIDO
+     * @param rate NOTA DEL CLIENTE SOBRE EL PEDIDO
+     * @param callback DESPUES DE ACCEDER A LA BBDD DE NUEVO:
+     *                 SI PUEDE HACERLO DEVUELVE  true
+     *                 SI DA ERROR DEVUELVE false
+     */
     public void addReviewToOrder(String numOrder, String review, int rate, OnReviewAddedCallback callback) {
         DatabaseReference restaurantsRef = databaseReference.child("restaurants");
 
-        // Recorremos todos los restaurantes
         restaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean orderFound = false;
 
                 if (dataSnapshot.exists()) {
-                    for (DataSnapshot restaurantSnapshot : dataSnapshot.getChildren()) { // Nodo de cada restaurante
+                    for (DataSnapshot restaurantSnapshot : dataSnapshot.getChildren()) {
                         DataSnapshot ordersSnapshot = restaurantSnapshot.child("orders").child("items");
 
                         if (ordersSnapshot.exists()) {
-                            for (DataSnapshot orderSnapshot : ordersSnapshot.getChildren()) { // Recorremos los pedidos
+                            for (DataSnapshot orderSnapshot : ordersSnapshot.getChildren()) {
                                 String currentNumOrder = orderSnapshot.child("num_order").getValue(String.class);
 
                                 // Verificamos si coincide el num_order
                                 if (currentNumOrder != null && currentNumOrder.equals(numOrder)) {
                                     orderFound = true;
 
-                                    // Creamos la estructura de reviews
+
                                     Map<String, Object> reviewsMap = new HashMap<>();
                                     reviewsMap.put("rate", rate);
                                     reviewsMap.put("review", review);
 
-                                    // Actualizamos el nodo "reviews"
+
                                     orderSnapshot.getRef().child("reviews").updateChildren(reviewsMap, new DatabaseReference.CompletionListener() {
                                         @Override
                                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                             if (databaseError == null) {
-                                                callback.onResult(true); // Éxito
+                                                callback.onResult(true);
                                             } else {
-                                                callback.onResult(false); // Error al actualizar
+                                                callback.onResult(false);
                                             }
                                         }
                                     });
-                                    break; // Salimos del bucle interno
+                                    break;
                                 }
                             }
                         }
 
-                        if (orderFound) break; // Salimos si ya encontramos el pedido
+                        if (orderFound) break;
                     }
                 }
 
                 if (!orderFound) {
-                    callback.onResult(false); // No se encontró el pedido
+                    callback.onResult(false);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                callback.onResult(false); // Error en la base de datos
+                callback.onResult(false);
             }
         });
     }
