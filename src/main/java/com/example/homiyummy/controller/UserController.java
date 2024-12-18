@@ -46,8 +46,8 @@ public class UserController {
      *  2º AÑADIMOS EL UID GENERADO AL OBJETO UserDTO
      *  3º Y LO MANDAMOS AL SERVICIO
      *  4º GUARDAMOS EN UN OBJETO UserResponse LO QUE EL SERVICIO NOS DEVUELVE
-     * @return SI SALE BIEN DEVUELVE UN ResponseEntity.ok CON EL UID DE UserResponse.
-     *         SI SALE MAL, DEVUELVE UN ResponseEntity.badRequest, EL FRONTEND RECIBE UN JSON CON EL UID VACÍO.
+     * @return SI SALE BIEN DEVUELVE UN STRING (FORMATO JSON) CON EL UID DE UserResponse.
+     *         SI SALE MAL, DEVUELVE UN STRING (FORMATO JSON) CON EL UID VACÍO.
      */
 
     @PostMapping("/register")
@@ -125,7 +125,7 @@ public class UserController {
     @PostMapping("/getByUID")
     public CompletableFuture<UserReadResponse> getClient(@RequestBody UserReadRequest userReadRequest){
         String uid = userReadRequest.getUid();
-        return userService.findUserByUid(uid).exceptionally(ex -> new UserReadResponse()); // SI HAY ALGUN ERROR ENVÍA AL FRONT UN OBJETO VACÍO
+        return userService.findUserByUid(uid).exceptionally(ex -> new UserReadResponse());
     }
 
 // ------------------------------------------------------------------------------------------------------------

@@ -25,7 +25,6 @@ public class OrderService {
     }
 
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  SOLICITA AL REPOSITORIO EL ID QUE TIENE EL ÚLTIOMO PEDIDO GUARDADO
@@ -51,7 +50,6 @@ public class OrderService {
         return futureId;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  RECIBE DEL CONTROLLER LA PETICIÓN DE CREAR UN NUEVO PEDIDO Y SE LA ENVÍA AL REPOSITORIO.
@@ -79,14 +77,12 @@ public class OrderService {
         return futureOrder;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  OBTIENE EL PEDIDO DEL RESTAURANTE EN FORMATO OrderGotByNumResponse
      * @param orderNumber NÚMERO DEL PEDIDO
      * @return SI SUCCESS -> DEVUELVE TODOS LOS DATOS DEL PEDIDO EN UN OrderGotByNumResponse
      */
-
     public CompletableFuture<OrderGotByNumResponse> getRestaurantData (String orderNumber){
 
         CompletableFuture<OrderGotByNumResponse> futureRestData = new CompletableFuture<>();
@@ -170,7 +166,6 @@ public class OrderService {
         return futureRestData;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  ENVÍA AL REPOSITORIO LA PETICIÓN DE BUSCAR TODOS LOS PEDIDOS DE UN CLIENTE
@@ -212,7 +207,6 @@ public class OrderService {
         return futureResponse;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * SOLICITA AL REPOSITORIO TODOS LOS PEDIDOS DE UN RESTAURANTE PARA MANDÁRSELOS AL FRONT
@@ -254,14 +248,12 @@ public class OrderService {
         return futureResponse;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * SOLICITA AL REPOSITORIO LOS PEDIDOS QUE UN RESTAURANTE TIENE EN UN TIEMPO DADO
      * @param request OBJETO QUE CONTIENE EL UID DEL RESTAURANTE Y LAS FECHAS ENTRE LAS QUE HAY QUE BUSCAR
      * @return CompletableFuture CON UN OBJETO OrderGetTasksResponse DENTRO , QUE ES LA RESPUESTA PARA EL FRONTEND
      */
-
     public CompletableFuture<ArrayList<OrderGetTasksResponse>> getTasks(OrderGetTasksRequest request){
 
         CompletableFuture<ArrayList<OrderGetTasksResponse>> future = new CompletableFuture<>();
@@ -314,7 +306,6 @@ public class OrderService {
                         menuResponse = new MenuInGetTasksResponse(menuId, menuDate, firstResponse, secondResponse, emptyDessert, menuStatus);
                     }
 
-                    // CREAMOS USUARIO
                     UserInGetTasksResponse userResponse = new UserInGetTasksResponse();
                     userResponse.setName(task.getCustomer().getName());
                     userResponse.setSurname(task.getCustomer().getSurname());
@@ -338,7 +329,6 @@ public class OrderService {
         return future;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<OrderUpdateStatusResponse> updateMenu (OrderUpdateStatusRequest request){
         CompletableFuture<OrderUpdateStatusResponse> future = new CompletableFuture<>();
@@ -358,7 +348,6 @@ public class OrderService {
         return future;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * ENVÍA AL REPOSITORIO UNA REVIEW
@@ -368,7 +357,6 @@ public class OrderService {
      *                - rate (NOTA QUE LE PONE EL CLIENTE)
      * @return DEVUELVE UN FUTURO CON UN OBJETO ReviewResponse DENTRO QUE VERÁ EL CONTROLADOR PARA DEVOLVER RESPUESTA AL FRONT
      */
-
     public CompletableFuture<ReviewResponse> createReviewForOrder(ReviewRequest request) {
         CompletableFuture<ReviewResponse> future = new CompletableFuture<>();
 
@@ -385,7 +373,7 @@ public class OrderService {
                         if (success) {
                             future.complete(response);
                         } else {
-                            future.completeExceptionally(new RuntimeException("Error al guardar la review.")); // En caso de fallo
+                            future.completeExceptionally(new RuntimeException("Error al guardar la review."));
                         }
                     }
                 }

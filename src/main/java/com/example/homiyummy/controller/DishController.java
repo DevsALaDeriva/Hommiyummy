@@ -30,6 +30,11 @@ public class DishController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     * @param dishDTO EL FRONT MANDA UN JSON QUE RECIBIMOS COMO ESTE OBJETO DishDTO
+     * @return UN STRING CON FORMATO JSON CON EL ID DEL PLATO CREADO. SI HAY UN ERROR EL NÚMERO QUE SE ASIGNA ES 0
+     */
+
     @PostMapping("/create")
     public ResponseEntity<String> create(@RequestBody DishDTO dishDTO){
 
@@ -74,6 +79,12 @@ public class DishController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param dishDTO EL FRONT MANDA UN JSON QUE RECIBIMOS COMO ESTE OBJETO DishDTO
+     * @return UN STRING CON FORMATO JSON CON change: true SI  SALE BIEN, O change: false SI ALGO SALE MAL
+     */
+
     @PostMapping("/update")
     public ResponseEntity<String> update(@RequestBody DishDTO dishDTO) {
 
@@ -106,6 +117,13 @@ public class DishController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param dishRequest OBJETO EN QUE CONVERTIMOS EL JSON ENTRANTE. CONTIENE:
+     *                    - UID DEL RESTAURANTE
+     *                    - ID DEL PLATO
+     * @return DEVUELVE True o False DEPENDIENDO DEL RESULTADO
+     */
 
     @PostMapping("/delete")
     public CompletableFuture<ResponseEntity<DishDeleteResponse>> delete(@RequestBody DishRequest dishRequest) {
@@ -127,6 +145,14 @@ public class DishController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param dishRequest OBJETO EN QUE CONVERTIMOS EL JSON ENTRANTE. CONTIENE:
+     *                    - UID DEL RESTAURANTE
+     *                    - ID DEL PLATO
+     * @return DEVUELVE EL PLATO OBTENIDO EN FORMATO DishResponse CON TODAS SUS PROPIEDADES.
+     *                  SI HAY ALGÚN ERROR, LAS PROPIEDADES VIENEN VACÍAS
+     */
     @PostMapping("/getById")
     public CompletableFuture<ResponseEntity<DishResponse>> getById(@RequestBody DishRequest dishRequest) {
 

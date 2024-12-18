@@ -31,10 +31,4 @@ public class DishEntity {
         this.type = type;
     }
 
-//    public DishEntity(String name, String ingredients, ArrayList<String> allergens, String image){
-//        this.name = name;
-//        this.ingredients = ingredients;
-//        this.allergens = allergens;
-//        this.image = image;
-//    }
 }

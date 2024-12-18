@@ -31,8 +31,6 @@ public class RestaurantDTO {
     private RestaurantLocation location = new RestaurantLocation(0.0F,0.0F);
 
 
-
-    // USADO PARA EL endpoint DE UPDATE
     public RestaurantDTO (String uid,
                           String name,
                           String description_mini,

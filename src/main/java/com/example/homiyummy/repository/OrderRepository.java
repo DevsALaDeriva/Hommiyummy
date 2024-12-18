@@ -2,7 +2,6 @@ package com.example.homiyummy.repository;
 
 import com.example.homiyummy.model.dish.DishGetByEntity;
 import com.example.homiyummy.model.dish.DishGetDayTaskEntity;
-import com.example.homiyummy.model.menu.MenuGetByUrlEntity;
 import com.example.homiyummy.model.menu.MenuGetByNumEntity;
 import com.example.homiyummy.model.menu.MenuInGetTaskEntity;
 import com.example.homiyummy.model.order.*;
@@ -27,7 +26,6 @@ public class OrderRepository {
     }
 
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * CREAMOS NODO COUNTER PARA GUARDAR EL ID ACTUAL.
@@ -42,7 +40,6 @@ public class OrderRepository {
      *                              - O CUANDO ENTRA EN ONCANCELLED
      * @PARAM UID EL IDENTIFICADOR ÚNICO DEL RESTAURANTE
      */
-
     public void findId(String uid, OnOrderIdGot callback) {
 
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
@@ -73,7 +70,6 @@ public class OrderRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *
@@ -96,7 +92,7 @@ public class OrderRepository {
         DatabaseReference allOrdersRef = restaurantRef.child("orders");
         DatabaseReference counterRef = allOrdersRef.child("counter");
         DatabaseReference itemsRef = allOrdersRef.child("items");
-        DatabaseReference thisOrderRef = itemsRef.child(String.valueOf(newId)); // A LA VEZ QUE CREAMOS EL NODO DEL NUEVO PEDIDO, LO REFERENCIAMOS
+        DatabaseReference thisOrderRef = itemsRef.child(String.valueOf(newId));
 
         counterRef.setValue(newId, (databaseCounterError, databaseCounterReference) -> {
             if(databaseCounterError != null){
@@ -132,21 +128,18 @@ public class OrderRepository {
 
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnOrderIdGot{
         void onFindingSuccess(int id);
         void onFindingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnSavingOrderCallback{
         void onSavingOrderSuccess(OrderCreatedResponse orderCreatedResponse);
         void onSavingOrderFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * PROVEE DE LOS DATOS DE UN PEDIDO DE CARA AL RESTAURANTE
@@ -155,7 +148,6 @@ public class OrderRepository {
      * @param callback SI SUCCESS -> DEVUEVLE UN OBJETO OrderGotByNumEntity CON LOS DATOS DEL PEDIDO OBTENIDOS DIRECTAMENTE DE LA BBDD
      *                 SI ERROR   -> DEVUELVE CON onFindingFailure UNA EXCEPCIÓN CON EL MENSAJE DE LO OCURRIDO
      */
-
     public void getOrderDataInRestaurantSide(String orderNumber, OnOrderGotCallback callback){
 
         DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
@@ -288,14 +280,12 @@ public class OrderRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnOrderGotCallback{
         void onFindingSuccess(OrderGotByNumEntity orderEntity);
         void onFindingFailure(Exception exception);
     }
 
-// ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  RECORRE TODOS LOS RESTAURANTES Y OBTIENE LOS PEDIDOS QUE EL CLIENTE TENGA
@@ -304,7 +294,6 @@ public class OrderRepository {
      * @param callback SI SUCCESS -> UN ARRAYLIST CON TODOS LOS PEDIDOS EN FORMATO OrderGetClientOrdersEntity
      *                 SI ERROR -> DEVUELVE UNA EXCECPIÓN CON UN MENSAJE
      */
-
     public void getClientOrders(String clientUID, OnClientOrdersGotCallback callback){
 
         DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
@@ -379,14 +368,12 @@ public class OrderRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnClientOrdersGotCallback{
         void onFindingSuccess(ArrayList<OrderGetClientOrdersEntity> ordersEntity);
         void onFindingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  PROVEE DE TODOS LOS PEDIDOS DE UN RESTAURANTE
@@ -495,14 +482,12 @@ public class OrderRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnRestaurantOrdersGotCallback{
         void onFindingSuccess(ArrayList<OrderGetRestaurantOrdersEntity> ordersEntity);
         void onFindingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  OBTIENE TODOS LOS PEDIDOS QUE UN RESTAURANTE TIENE QUE TRAMITAR EN EL PERIODO DADO
@@ -622,14 +607,13 @@ public class OrderRepository {
             }
         });
     }
-    // ----------------------------------------------------------------------------------------------------------------
+
 
     public interface OnDaylyTaskFindingCallback{
         void onFindingSuccess(ArrayList<OrderGetTasksEntity> tasksEntity);
         void onFindingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  ACTUALIZA LOS DATOS DE UN PEDIDO
@@ -705,14 +689,12 @@ public class OrderRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnStatusFindingCallback{
         void onFindingSuccess(Boolean result);
         void onFindingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  AÑADE UNA REVIEW A UN PEDIDO
@@ -780,7 +762,6 @@ public class OrderRepository {
             }
         });
     }
-
 
 
     public interface OnReviewAddedCallback {

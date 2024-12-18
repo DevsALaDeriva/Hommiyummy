@@ -10,7 +10,6 @@ import java.util.concurrent.CompletableFuture;
  * NO PODEMOS USAR RestauranteService PORQUE ES EXCLUSIVO DE RESTAURANT
  * CREAMOS UN SERVICE NUEVO QUE DERIVE LA CONSULTA A UserService Y RestauranteService
  */
-
 @Service
 public class UserTypeService {
 

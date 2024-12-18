@@ -22,7 +22,6 @@ public class RestaurantService {
         this.firebaseDatabase = firebaseDatabase;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * RECIBE UN RestaurantDTO DEL CONTROLLER, LO CONVIERTE EN UN RestaurantEntity Y LO MANDA AL REPOSITORIO
@@ -69,7 +68,6 @@ public class RestaurantService {
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public Boolean updateRestaurant(RestaurantDTO restaurantDTO) {
 
@@ -111,7 +109,6 @@ public class RestaurantService {
 
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<Boolean> existsByUid(String uid) {
 
@@ -131,7 +128,6 @@ public class RestaurantService {
         return future;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * SOLICITA AL REPOSITORIO QUE BUSQUE UN RESTARUANTE CON EL UID QUE LLEGA COMO PARÁMETRO.
@@ -162,7 +158,6 @@ public class RestaurantService {
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * ENVÍA AL REPOSITORIO UNA PETICIÓN PARA EXTRAER TODOS LOS RESTAURANTES QUE CONTIENEN MENÚS.
@@ -179,7 +174,7 @@ public class RestaurantService {
             @Override
             public void onSearchingSuccess(ArrayList<RestaurantEntity> allRestaurantsInApp) {
 
-                ArrayList<RestaurantEntity> restaurantsWithMenus = new ArrayList<>(); // PARA METER LOS RESTAURANTES QUE LLEGUEN DEL REPOSITORIO Y CUMPLAN LA CONDICIÓN
+                ArrayList<RestaurantEntity> restaurantsWithMenus = new ArrayList<>();
 
                 for(RestaurantEntity restaurant : allRestaurantsInApp){
                     if(!restaurant.getMenus().isEmpty()) {
@@ -188,7 +183,7 @@ public class RestaurantService {
                 }
 
                 if(restaurantsWithMenus.isEmpty()){
-                    futureList.complete(new ArrayList<RestaurantWithMenusResponse>());                                      // MANDO UN OBJETO VACÍO
+                    futureList.complete(new ArrayList<RestaurantWithMenusResponse>());
                 }
                 else {
 
@@ -249,7 +244,6 @@ public class RestaurantService {
         return futureList;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * MANDA AL REPOSITORIO LA URL DEL RESTAURANTE QUE QUIERE OBTENER.
@@ -313,7 +307,6 @@ public class RestaurantService {
         return futureResponse;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public CompletableFuture<RestaurantGetAllMenusResponse> getAllMenus(String uid){
 
@@ -352,7 +345,5 @@ public class RestaurantService {
         });
         return futureMenus;
     }
-
-    // ----------------------------------------------------------------------------------------------------------------
 
 }

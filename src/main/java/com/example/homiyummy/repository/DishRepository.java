@@ -22,7 +22,6 @@ public class DishRepository {
         this.restaurantService = restaurantService;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *  OBTIENE ÚLTIMO ID GRABADO PARA UN PLATO
@@ -58,17 +57,22 @@ public class DishRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param dishEntity OJBETO EN QUE RECIBIMOS EL JSON ENTRANTE (FORMATO DishEntity)
+     *                   LO CONVERTIMOS EN UN DishSaveEntity (ES LO MISMO, SIN EL UID DEL RESTAURATE)
+     * @param callback DEVUELVE EN UN DishResponse EL PLATO RECIÉN GUARDADO Y RECIÉN OBTENIDO
+     */
     public void save(DishEntity dishEntity, SavePlatoCallback callback){
 
-        String uid = dishEntity.getUid();                                                                       // UID DEL RESTAURANTE QUE GUARDA EL PLATO
+        String uid = dishEntity.getUid();
         DatabaseReference restaurantRef = databaseReference.child("restaurants").child(uid);
-        DatabaseReference allDishesRef = restaurantRef.child("dishes");                                   // NODO DONDE SE GUARDAN LOS PLATOS DEL RESTAURANTE
-        DatabaseReference counterRef = allDishesRef.child("counter");                                     // NODO DONDE ESTÁ EL CONTADOR DE PLATOS DEL RESTAURANTE
+        DatabaseReference allDishesRef = restaurantRef.child("dishes");
+        DatabaseReference counterRef = allDishesRef.child("counter");
         DatabaseReference itemsRef = allDishesRef.child("items");
 
-        DatabaseReference dishRef = itemsRef.child(String.valueOf(dishEntity.getId()));                        // CREAMOS EL NODO DEL NUEVO PLATO CON SU PROPIO ID
+        DatabaseReference dishRef = itemsRef.child(String.valueOf(dishEntity.getId()));
 
         DishSaveEntity dishSaveEntity = new DishSaveEntity(
                 dishEntity.getId(),
@@ -78,7 +82,7 @@ public class DishRepository {
                 dishEntity.getImage(),
                 dishEntity.getType());
 
-        counterRef.setValue(dishSaveEntity.getId(), (databaseCounterError, databaseCounterReference) -> {                // AUNQUE NO TIENE QUE VER CON LA FOTO DEL PLATO, APROVECHAMOS PARA ASIGNAR EL NUEVO ID A CONTADOR (PARA QUE LO TENGA DE REFERENCIA EL PRÓXIMO PLATO Q SE GUARDE)
+        counterRef.setValue(dishSaveEntity.getId(), (databaseCounterError, databaseCounterReference) -> {
             if(databaseCounterError != null){
                 callback.onFailure(new Exception("Error al actualizar el contador: " + databaseCounterError.getMessage()));
                 return;
@@ -90,7 +94,7 @@ public class DishRepository {
                     return;
                 }
 
-                dishRef.addListenerForSingleValueEvent(new ValueEventListener() {                                       // FOTO DE ESE PLATO
+                dishRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){
@@ -109,7 +113,7 @@ public class DishRepository {
                             else {
                                 DishResponse dishResponse = new DishResponse();
                                 dishResponse.setId(0);
-                                callback.onSuccess(dishResponse); // DEVUELVO UN DISRESPONSE VACIO, CON EL ID:0
+                                callback.onSuccess(dishResponse);
                             }
                         }
                         else {
@@ -126,7 +130,6 @@ public class DishRepository {
         });
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * ACTUALIZA UN PLATO YA GUARDADO EN LA BASE DE DATOS
@@ -152,7 +155,7 @@ public class DishRepository {
                     String currentType = dataSnapshot.child("type").getValue(String.class);
                     ArrayList<String> currentAllergens =  (ArrayList<String>) dataSnapshot.child("allergens").getValue();
 
-                    DishUpdateEntity dishEntityToBeSaved = new DishUpdateEntity(); // PLATO A GUARDAR
+                    DishUpdateEntity dishEntityToBeSaved = new DishUpdateEntity();
 
                     dishEntityToBeSaved.setId(dishEntity.getId() != null && dishEntity.getId() != 0 ? dishEntity.getId() : currentId);
                     dishEntityToBeSaved.setName(dishEntity.getName() != null && !dishEntity.getName().isEmpty() ? dishEntity.getName() : currentName);
@@ -194,7 +197,6 @@ public class DishRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * DEVUELVE TODOS LOS PLATOS DEL RESTARUANTE QUE SE PASA POR PARÁMETRO
@@ -250,12 +252,11 @@ public class DishRepository {
                 callback.onSuccess(emptyResponse);
             }
         }).exceptionally(ex -> {
-            callback.onFailure(new Exception("Error al verificar la existencia del restaurante: " + ex.getMessage())); // MANEJAMSO CUALQUIER EXCPECIÓN
+            callback.onFailure(new Exception("Error al verificar la existencia del restaurante: " + ex.getMessage()));
             return null;
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * ELIMINA UN PLATO DE LA BASE DE DATOS
@@ -296,7 +297,6 @@ public class DishRepository {
         return future;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * RECUPERA DE LA BSE DE DATOS UN OBJETO DishEntity
@@ -326,50 +326,35 @@ public class DishRepository {
 
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface SavePlatoCallback{
         void onSuccess(DishResponse dishResponse);
         void onFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface FindPlatoIdCallback{
         void onSuccess(Integer id);
         void onFailure(DatabaseError exception, Integer id);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface UpdateDishCallback{
         void onSuccess(Boolean result);
         void onFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface FindAllDishesCallback{
         void onSuccess(DishAllResponse allDish);
         void onFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
-
-    public interface DeleteDishCallback{
-        void onSuccess(DishDeleteResponse dishDeleteResponse);
-        void onFailure(Exception exception);
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnDishGotCallback{
         void onSuccess(DishEntity dishEntity);
         void onFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
-    
-    
 
 }

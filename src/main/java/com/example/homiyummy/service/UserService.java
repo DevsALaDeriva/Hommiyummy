@@ -1,7 +1,5 @@
 package com.example.homiyummy.service;
 
-import com.example.homiyummy.model.order.OrderGotByNumResponse;
-import com.example.homiyummy.model.order.OrderWithRestaurantDataEntity;
 import com.example.homiyummy.model.user.*;
 import com.example.homiyummy.repository.UserRepository;
 import com.google.firebase.FirebaseApp;
@@ -10,9 +8,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserService {
@@ -24,11 +20,10 @@ public class UserService {
     private final DatabaseReference bbddRef;
 
     public UserService(FirebaseAuth firebaseAuth, FirebaseApp firebaseApp){
-        bbddRef = FirebaseDatabase.getInstance().getReference(); // INYECTA LA REFERENCIA DE LA BBDD
+        bbddRef = FirebaseDatabase.getInstance().getReference();
         this.firebaseAuth = firebaseAuth;
     }
 
-    // ------------------------------------------------------------------------------------------------------------
 
     /**
      * RECIBE UN USUARIO UserDTO, LO CONVIERTE EN UserEntity Y LO MANDA AL REPOSITORIO PARA GRABARLO
@@ -36,7 +31,6 @@ public class UserService {
      * @return SI TIENE ÉXITO DEVUELVE UN USUARIO TIPO UserResponse
      *         SI NO, DEVUELVE UNA EXCEPCIÓN
      */
-
     public UserResponse createUser(UserDTO userDTO) {
 
         UserEntity userEntity = new UserEntity();
@@ -80,8 +74,11 @@ public class UserService {
 
     }
 
-// ------------------------------------------------------------------------------------------------------------
-
+    /**
+     *
+     * @param userDTO OBJETO UserDTO ENTRANTE PARA ACTUALIZAR AL SUARIO
+     * @return TRUE SI VA BIEN, O FALSE SI SE PRODUCE ALGÚN ERROR
+     */
     public CompletableFuture<Boolean> updateUser(UserDTO userDTO)  {
 
         CompletableFuture<Boolean> futureBoolean = new CompletableFuture<>();
@@ -93,7 +90,7 @@ public class UserService {
         userEntity.setPhone(userDTO.getPhone());
         userEntity.setAllergens(userDTO.getAllergens());
 
-        userRepository.updateUserData(userEntity, new UserRepository.GetUpdateConfirmationCallback() { // PASAMOS UNA IMPLEMENTACIÓN ANÓNIMA DE LA INTERFAZ AL REPOSITORIO
+        userRepository.updateUserData(userEntity, new UserRepository.GetUpdateConfirmationCallback() {
             @Override
             public void onSuccess(Boolean confirmation) {
                 futureBoolean.complete(confirmation);
@@ -111,7 +108,6 @@ public class UserService {
         }
     }
 
-// ----------------------------------------------------------------------------------------------------------------
 
     /**
      * SERVICIO CREADO SOLO PARA IDENTIFICAR SI UN USUARIO ES user O restaurant.
@@ -119,12 +115,10 @@ public class UserService {
      * @param uid IDENTIFICADOR ÚNICO DEL USUARIO
      * @return BOOLEAN DESDE EL REPOSITORIO
      */
-
     public CompletableFuture<Boolean> existsByUid(String uid) {
         return userRepository.existsByUid(uid);
     }
 
-// ----------------------------------------------------------------------------------------------------------------
 
     /**
      * RECIBE DEL CONTROLLER EL UID DEL USUARIO, LO MANDA AL REPOSITORIO, EL CUAL DEVUELVE VÍA CALLBACK
@@ -160,6 +154,5 @@ public class UserService {
         return futureUser;
     }
 
-// ----------------------------------------------------------------------------------------------------------------
 
 }

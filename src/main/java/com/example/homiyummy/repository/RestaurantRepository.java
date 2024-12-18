@@ -23,7 +23,6 @@ public class RestaurantRepository {
         this.databaseReference = databaseReference;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * CONVERTIMOS EL OBJETO RestaurantENtity EN UN MAP, QUE SERÁ LO QUE GUARDAMOS
@@ -71,7 +70,6 @@ public class RestaurantRepository {
         }));
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface getSaveRestaurantCallback{
         void onRestaurantGot(RestaurantResponse restaurantResponse);
@@ -79,7 +77,6 @@ public class RestaurantRepository {
 
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *   ACTUALIZAD UN RESTAURANTE EN LA BASE DE DATOS
@@ -157,16 +154,14 @@ public class RestaurantRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface GetUpdateRestaurantCallback{
         void onSuccess(Boolean confirmation);
         void onFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
-    // USADO PARA VER SI UN RESTAURANTE EXISTE
+
     public void exists(String uid, ExistsRestaurantCallback callback) {
 
         DatabaseReference restaurantRef = firebaseDatabase.getReference("restaurants").child(uid);
@@ -187,7 +182,7 @@ public class RestaurantRepository {
             }
         });
     }
-    // ----------------------------------------------------------------------------------------------------------------
+
 
     public void findByUid(String uid, FindRestaurantCallback callback) {
 
@@ -218,7 +213,6 @@ public class RestaurantRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface FindRestaurantCallback{
         void onSuccess(RestaurantReadResponse response);
@@ -230,7 +224,6 @@ public class RestaurantRepository {
         void onFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      *
@@ -241,20 +234,20 @@ public class RestaurantRepository {
 
         DatabaseReference allRestaurantsRef = databaseReference.child("restaurants");
 
-        allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {                                     // UBICACIÓN DEL NODO "restaurants"
+        allRestaurantsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
 
-                    ArrayList<RestaurantEntity> restaurantList = new ArrayList<>();                                     // ARRAY DONDE GUARDAREMOS TODOS LOS RESTAURANTES
+                    ArrayList<RestaurantEntity> restaurantList = new ArrayList<>();
 
                     int totalRestaurants = (int)dataSnapshot.getChildrenCount();
                     int[] contados = {0};
 
-                    for(DataSnapshot restaurantSnapshot: dataSnapshot.getChildren()){                                   // RECORRO EL SNAPSHOT DEL NODO "RESTAURANTS"
+                    for(DataSnapshot restaurantSnapshot: dataSnapshot.getChildren()){
                         String uid = "";
                         if(restaurantSnapshot.exists()){
-                            uid = restaurantSnapshot.getKey();                                           // GUARDAMOS EL VALOR DE CADA PROPIEDAD DEL RESTAURANTE
+                            uid = restaurantSnapshot.getKey();
                             String email = restaurantSnapshot.child("email").getValue(String.class);
                             String name = restaurantSnapshot.child("name").getValue(String.class);
                             String description_mini = restaurantSnapshot.child("description_mini").getValue(String.class);
@@ -286,7 +279,7 @@ public class RestaurantRepository {
                             }
 
                             ArrayList<DishEntity> dishes = new ArrayList<>();
-                            DataSnapshot dishesSnapshot = restaurantSnapshot.child("dishes/items");        // COMO YA TENEMOS EL DATASNAPSHOT PRINCIPAL, DESDE EL PODEMOS ACCEDER A "HIJOS" SIN TENER QUE VOLVER A HACER UNA PETICIÓN A LA BBDD
+                            DataSnapshot dishesSnapshot = restaurantSnapshot.child("dishes/items");
                             if(dishesSnapshot.exists()) {
 
                                 for(DataSnapshot dishSnapSoht : dishesSnapshot.getChildren()){
@@ -365,14 +358,11 @@ public class RestaurantRepository {
     }
 
 
-    // ----------------------------------------------------------------------------------------------------------------
-
     public interface OnRestaurantListCallback{
         void onSearchingSuccess(ArrayList<RestaurantEntity> restaurants);
         void onSearchingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * RECUPERA TODOS LOS DATOS DE UN RESTAURANTE APORTÁNDOLE ÚNICAMENTE SU URL
@@ -559,14 +549,13 @@ public class RestaurantRepository {
         });
 
     }
-    // ----------------------------------------------------------------------------------------------------------------
+
 
     public interface OnRestByUrlGot{
         void onSearchingSuccess(RestaurantGetByUrlEntity restaurantGetByUrlEntity);
         void onSearchingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * OBTIENE DE LA BBDD LOS MENUS QUE UN RESTUARANTE TIENE ALMACENADOS
@@ -574,7 +563,6 @@ public class RestaurantRepository {
      * @param callback SI ÉXITO DEVUELVE UN ARRAY CON LOS MENÚS EN FORMATO MenuGetAllMenusEntity
      *                 SI HAY UN FALLO ENVÍA UNA EXCEPCIÓN PARA QUE LA VEA EL SERVICIO
      */
-
     public void getMenus(String uid, OnMenusGot callback ) {
 
         DatabaseReference restRef = databaseReference.child("restaurants").child(uid);
@@ -689,14 +677,12 @@ public class RestaurantRepository {
 
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface OnMenusGot{
         void onSearchingSuccess(RestaurantGetAllMenusEntity restaurantGetAllMenusEntity);
         void onSearchingFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
 }
 

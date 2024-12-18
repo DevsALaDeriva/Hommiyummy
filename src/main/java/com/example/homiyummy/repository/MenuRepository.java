@@ -94,7 +94,7 @@ public class MenuRepository {
                     return;
                 }
 
-                menuRef.addListenerForSingleValueEvent(new ValueEventListener() {                                       // FOTO DE ESE PLATO
+                menuRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
@@ -114,7 +114,7 @@ public class MenuRepository {
                             } else {
                                 MenuResponse menuResponse = new MenuResponse();
                                 menuResponse.setId(0);
-                                callback.onSuccess(menuResponse); // DEVUELVO UN DISRESPONSE VACIO, CON EL ID:0
+                                callback.onSuccess(menuResponse);
                             }
                         } else {
                             callback.onFailure(new Exception("No se encontró el menu guardado en la base de datos"));

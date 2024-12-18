@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ChangePassRequest { // CLASE CREADA PARA MANDAR UN OBJETO DE ESTE TIPO AL CONSTRUCTOR DEL CONTROLLER CON endpoint "/changePassword"
+public class ChangePassRequest {
     private String uid = "";
     private String password = "";
 

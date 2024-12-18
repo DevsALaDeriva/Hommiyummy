@@ -45,6 +45,13 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     *  RECOGE UNA PETICIÓN DEL FRONTEND PARA GUARDAR UN RESTAURANTE EN BBDD
+     * @param restaurantDTO OBJETO RestaurantDTO EN QUE GUARDAMOS EL JSON ENTRANTE
+     * @return  SI SALE BIEN -> DEVUELVE UN STRING (CON FORMATO JSON) CON EL UID ASIGNADO AL RESTAURANTE CREADO
+     *          SI SALE MAL  -> DEVOLVEMOS ESE MISMO STRING CON EL UID VACÍO
+     */
     @PostMapping("/register")
     public ResponseEntity<String> registerRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
             try {
@@ -92,6 +99,11 @@ public class RestaurantController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param userReadRequest CONTIENE EL UID DE UN RESTAURANTE
+     * @return DEVUELVE TODOS LOS PLATOS DEL RESTAURANTE (FORMATO DishAllResponse)
+     */
     @PostMapping("/getAllDishes")
     public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) {
 
@@ -111,9 +123,12 @@ public class RestaurantController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    // OBTIENE TODOS LOS RESTAURANTES QUE TIENEN MENÚS
+    /**
+     *
+     * @return DEVUELVE TODOS LOS RESTAURANTES QUE TIENEN MENÚS GRABADOS, EN FORMATO RestaurantWithMenusResponse, EN UN JSON
+     */
     @PostMapping("/getAll")
-    public CompletableFuture<ResponseEntity<ArrayList<RestaurantWithMenusResponse>>> getALLFeaturedRestaurant() {
+    public CompletableFuture<ResponseEntity<ArrayList<RestaurantWithMenusResponse>>> getRestaurantsWithMenus() {
         return restaurantService.getAllRestaurantWithMenus()
                 .thenApply(restaurants -> new ResponseEntity<>(restaurants, HttpStatus.OK))
                 .exceptionally(ex -> {
@@ -135,7 +150,6 @@ public class RestaurantController {
         }
 
         try {
-            System.out.println("PruebaController");
             List<MenuSimpleResponse> menus = menuService.getSimpleMenusByDateRange(uid, startDate, endDate);
             return new ResponseEntity<>(menus, HttpStatus.OK);
         } catch (RuntimeException e) {
@@ -144,6 +158,12 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * @param request CONTIENE LA URL DEL RESTAURANTE A BUSCAR
+     * @return DEVUELVE TODOS LOS DATOS DEL RESTAURANTE EN FORMATO RestaurantGetByUrlResponse
+     */
 
     @PostMapping("/getByURL")
     public CompletableFuture<RestaurantGetByUrlResponse> getByUrl(@RequestBody RestaurantGetByUrlRequest request) {
@@ -155,6 +175,12 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * @param request JSON QUE CONTIENE UNICAMENTE EL UID DEL RESTAURANTE
+     * @return DEVUELVE TODOS LOS PEDIDOS DE ESE RESTAURANTE
+     */
 
     @PostMapping("getOrders")
     public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetRestaurantOrdersResponse>>>> getRestaurantOrders(@RequestBody RestaurantReadRequest request){
@@ -174,6 +200,16 @@ public class RestaurantController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param request JSON CON TRES PARÁMETROS
+     *                - UID DEL RESTAURANTE
+     *                - FECHA DE INICIO
+     *                - FECHA DE FIN
+     *
+     * @return DEVUELVE TODOS LOS PEDIDOS QUE HAY (FORMATO OrderGetTasksResponse) PARA LA FRANJA DE FECHAS BUSCADA
+     */
+
     @PostMapping("getDayWork")
     public CompletableFuture<ResponseEntity<Map<String,ArrayList<OrderGetTasksResponse>>>> getTasks(@RequestBody OrderGetTasksRequest request){
         //System.out.println(request.getUid() + " - " + request.getStart_date() + " - " + request.getEnd_date());
@@ -192,6 +228,15 @@ public class RestaurantController {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * @param request JSON CON TRES PARÁMETROS
+     *                - UID DEL RESTAURANTE
+     *                - FECHA DE INICIO
+     *                - FECHA DE FIN
+     * @return DEVUELVE (EN FORMATO RestaurantGetAllMenusResponse) TODOS LOS MENUS DEL RESTAURANTE CON EL UID APORTADO
+     */
 
     @PostMapping("getAllMenus")
     public CompletableFuture<RestaurantGetAllMenusResponse> getAllMenus(@RequestBody RestaurantReadRequest request){

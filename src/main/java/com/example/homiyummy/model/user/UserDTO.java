@@ -5,7 +5,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-@AllArgsConstructor // CONSTRUCTOR PRINCIPAL USADO PARA CREAR UN USUARIO
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Getter
@@ -23,7 +23,6 @@ public class UserDTO implements Serializable {
     private String password = "";
     private ArrayList<String> allergens = new ArrayList<>();
 
-    // CONSTRUCTOR SIN PASSWORD QUE USO PARA DEVOLVER USUARIO EN ALGÚN MÉTODO
     public UserDTO(String uid, String name,String surName, String phone, ArrayList<String> allergens ) { // USADO PARA UPDATE USERS
         this.uid = uid;
         this.name = name;

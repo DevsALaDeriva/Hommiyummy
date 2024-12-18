@@ -28,8 +28,14 @@ public class UserRepository {
         this.databaseReference = databaseReference;
     }
 
-    // ------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param userEntity USUARIO ENTRANTE (UserEntity) PARA SER GRABADO
+     *                   - LO TRANSFORMAMOS EN OTRO USUARIO DEL MISMO TIPO, ESTABLECIENDO EL PASSWORD A NULL PARA QUE NO SE GUARDE EN REALTIME Y LO GUARDAMOS
+     *                   - VOLVEMOS A RECUPERARLO (PARA ASEGURAR QUE SE HA GUARDADO)
+     * @param callback   Y DEVOLVEMOS ESTE OBJETO UserEntity RECUPERADO Y RECIÉN OBTENIDO
+     */
     public void saveUser(UserEntity userEntity, SaveUserCallback callback)  {
 
         DatabaseReference userRef = firebaseDatabase.getReference("users").child(userEntity.getUid());
@@ -72,14 +78,11 @@ public class UserRepository {
         });
     }
 
-// ------------------------------------------------------------------------------------------------------------
 
     public interface SaveUserCallback {
         void onSuccess(UserEntity userEntity);
         void onFailure(Exception exception);
     }
-// ------------------------------------------------------------------------------------------------------------
-
     /**
      * ACTUALIZA DATOS DEL USUARIO EN BASE DE DATOS.
      * PARA NO PERDER DATOS EN ALGUNAS PROPIEDADES, PRIMERO GUARDA LOS VALORES EXISTENTES (SI LOS HUBIERA),
@@ -176,14 +179,14 @@ public class UserRepository {
         });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
+
 
     public interface GetUpdateConfirmationCallback {
         void onSuccess(Boolean confirmation);
         void onFailure(Exception exception);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
+
 
     public CompletableFuture<Boolean> existsByUid(String uid) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -203,7 +206,6 @@ public class UserRepository {
         return future;
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     /**
      * OBTIENE EL USUARIO GUARDADO EN BBDD. LO GUARDA EN FORMATO UserFindEntity
@@ -256,12 +258,10 @@ public class UserRepository {
             });
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
 
     public interface FindUserCallback{
         void onSuccess(UserFindEntity userFindEntity);
         void onFailure(Exception exception);
     }
-    // ----------------------------------------------------------------------------------------------------------------
 
 }
