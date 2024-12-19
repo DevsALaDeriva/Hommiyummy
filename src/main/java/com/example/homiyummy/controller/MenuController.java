@@ -20,12 +20,6 @@ public class MenuController {
     
     private final MenuService menuService;
     private final RestaurantService restaurantService;
-    //HOLA DESDE LA RAMA DEVELOP
-
-    // ALFREDO ---------__> nuevo cambio
-    
-    //Adrian -------> nuevo cambio desde mi rama
-
 
     public MenuController(MenuService menuService, RestaurantService restaurantService) {
         this.menuService = menuService;
@@ -54,19 +48,17 @@ public class MenuController {
 
             if(restaurantExists){ // SI EXISTE SEGUIMOS
 
-                // 2º AVERIGÜAMOS EL ID DEL ÚLTIMO PLATO GUARDADO
+                // 2º AVERIGÜAMOS EL ID DEL ÚLTIMO MENU GUARDADO
                 int lastIdSaved = menuService.findLastId(uid);
                 int newDishId = lastIdSaved + 1;
-                //System.out.println("NEW DISH ID -1--------------> " + newDishId);
 
                 // 3º TRAMITAMOS EL GUARDADO DE DATOS
                 try{
                     MenuResponse menuResponse = menuService.create(menuDTO, newDishId);
-                    //System.out.println("NEW DISH ID -2--------------> " + newDishId);
                     return new ResponseEntity<>("{\"id\": \"" + menuResponse.getId() + "\"}", HttpStatus.OK);
                 }
                 catch (RuntimeException e) {
-                    e.printStackTrace(); // Log para identificar el error exacto
+                    e.printStackTrace();
                     return new ResponseEntity<>("{\"id\": 0}", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }

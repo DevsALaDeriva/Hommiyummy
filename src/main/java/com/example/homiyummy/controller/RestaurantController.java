@@ -55,17 +55,24 @@ public class RestaurantController {
     @PostMapping("/register")
     public ResponseEntity<String> registerRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
             try {
+                // SI EL EMAIL ESTÁ VACÍO O ES NULO
                 if(restaurantDTO.getEmail() == null || restaurantDTO.getEmail().isEmpty()){
+                    // MANDAMOS UNA RESPUESTA VACÍA
                     return ResponseEntity.badRequest().body("{\"uid\": \"\"}");
                 }
+                // SI NO LO ESTÁ, LO MANDAMOS AL SERVICE Y GUARDAMOS EL UID EUN UNA VARIABLE
                     String uid = authService.createUser(restaurantDTO.getEmail(), restaurantDTO.getPassword());
+                    // ASIGNAMOS ESE UID AL OBJETO QUE LLEGÓ
                     restaurantDTO.setUid(uid);
 
+                    // MANDAMOS EL OBJETO, AHORA COMPLETO, AL SERVICE
                     RestaurantResponse restaurantResponse = restaurantService.createRestaurant(restaurantDTO);
 
+                    // MANDAMOS RESPUESTA CON EL UID
                     return ResponseEntity.ok("{\"uid\": \"" + restaurantResponse.getUid() + "\"}");
             }
             catch (FirebaseAuthException e) {
+                // SI HAY UN ERROR MANDAMOS UNA RESPUESTA VACÍA
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"uid\": \"\" }");
             }
     }
@@ -74,26 +81,40 @@ public class RestaurantController {
 
     @PostMapping("/update")
     public ResponseEntity<Map<String, Boolean>> updateRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
+
+        // CREAMOS MAP EN EL QUE ENVIAREMOS LA RESPUESTA AL FRONT
         Map<String, Boolean> response = new HashMap<>();
 
+        // EXTRAEMOS EL UID DEL USUARIO ENTRANTE
         String uid = restaurantDTO.getUid();
 
+        // SI NO ES VÁLIDO
         if (uid == null || uid.isEmpty()) {
+            // GUARDAMOS false EN EL MAP
             response.put("change", false);
+            // Y LO ENVIAMOS AL FRONT
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
+        // SI ES VÁLIDO LO MANDAMOS AL SERVICE
         Boolean change = restaurantService.updateRestaurant(restaurantDTO);
 
+        // ASIGNAMOS AL MAP LA RESPUESTA OBTENIDA
         response.put("change", change);
+
+        // LO ENVIAMOS AL FRONT
         return ResponseEntity.ok(response);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    // ENDP0INT QUE DEVUELVE LOS DATOS DE UN RESTAURANTE PASÁNDOLE EL UID
     @PostMapping("/getByUID")
     public RestaurantReadResponse getRestaurant(@RequestBody RestaurantReadRequest request){
+        // EXTRAEMOS EL UID DEL OBJETO ENTRANTE
         String uid = request.getUid();
+
+        // LO MANDAMOS AL SERVICE (QUE NOS DEVOLVERÁ EL OBJETO EN FORMATO RestaurantReadResponse) Y SE LO ENVIAMOS AL FRONT
         return restaurantService.findByUid(uid);
     }
 
@@ -107,13 +128,19 @@ public class RestaurantController {
     @PostMapping("/getAllDishes")
     public CompletableFuture<ResponseEntity<DishAllResponse>> getAll(@RequestBody UserReadRequest userReadRequest) {
 
+        // EXTRAEMOS EL UID DEL JSON ENTRANTE
         String uid = userReadRequest.getUid();
 
+        // SI NO ESTÁ VACÍO
         if (!uid.isEmpty()) {
-            return dishService.getAll(uid).thenApply(dishAllResponse ->
+            // LO MANDAMOS AL SERVICE
+            return dishService.getAll(uid)
+                    // SI SALE BIEN DEVOLVEMOS AL FRONT UN OBJETO DishAllResponse DENTRO DE UN JSON
+                    .thenApply(dishAllResponse ->
                     new ResponseEntity<>(dishAllResponse, HttpStatus.OK));
         }
         else {
+            // SI EL UID ESTÁ VACÍO MANDAMOS UNA RESPUESTA VACÍA EN UN JSON
             DishAllResponse dishAllResponse = new DishAllResponse();
             dishAllResponse.setDishes(new ArrayList<>());
             return CompletableFuture.completedFuture(
@@ -139,18 +166,26 @@ public class RestaurantController {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    // ENDPOINT QUE DEVUELVE LOS MENÚS EN  UN DETERMINADO PERÍODO DE TIEMPO
     @PostMapping("/getMenuByPeriod")
     public ResponseEntity<List<MenuSimpleResponse>> getMenuByPeriod(@RequestBody MenuByPeriodRequest menuByPeriodRequest) {
+        // EXTRAEMOS EL UID DEL RESTAURANTE DEL JSON ENTRANTE
         String uid = menuByPeriodRequest.getUid();
+        // EXTRAEMOS FECHA DE INICIO
         int startDate = menuByPeriodRequest.getStart_date();
+        // EXTRAEMOS FECHA FIN
         int endDate = menuByPeriodRequest.getEnd_date();
 
+        // SI EL UID ESTÁ VACÍO DEVOLVEMOS UNA RESPUESTA VACÍA
         if (uid.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
         }
 
+        // SI EL UID EXISTE
         try {
+            // LANZAMOS PETICIÓN AL SERVICE PARA QUE NOS DE LOS MENÚS
             List<MenuSimpleResponse> menus = menuService.getSimpleMenusByDateRange(uid, startDate, endDate);
+            // MANDAMOS RESPUESTA AL FRONT CON LOS MENÚS
             return new ResponseEntity<>(menus, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -167,9 +202,11 @@ public class RestaurantController {
 
     @PostMapping("/getByURL")
     public CompletableFuture<RestaurantGetByUrlResponse> getByUrl(@RequestBody RestaurantGetByUrlRequest request) {
+        // PEDIMOS AL SERVICE QUE OBTENGA EL RESTAURANTE PASÁNDOLE LA URL Y LO DEVOLVEMOS
         return restaurantService.getRestaurantByUrl(request.getUrl())
-                .exceptionally(ex -> {
+                .exceptionally(ex -> { // SI SALE MAL
                     ex.printStackTrace();
+                    // DEVOLVEMOS  UN OBJETO VACÍO
                     return new RestaurantGetByUrlResponse();
                 });
     }
@@ -179,21 +216,27 @@ public class RestaurantController {
     /**
      *
      * @param request JSON QUE CONTIENE UNICAMENTE EL UID DEL RESTAURANTE
-     * @return DEVUELVE TODOS LOS PEDIDOS DE ESE RESTAURANTE
+     * @return DEVUELVE TODOS LOS PEDIDOS DE ESE RESTAURANTE EN FORMATO Map<String, ArrayList<OrderGetRestaurantOrdersResponse>
      */
 
+    // OBTIENE TODOS LOS PEDIDOS DE UN RESTAURANTE
     @PostMapping("getOrders")
     public CompletableFuture<ResponseEntity<Map<String, ArrayList<OrderGetRestaurantOrdersResponse>>>> getRestaurantOrders(@RequestBody RestaurantReadRequest request){
+        // LANZAMOS PETICIÓN AL SERVICE APORTÁNDOLE EL UID DEL RESTAURANTE
         return orderService.getRestOrders(request.getUid())
-                .thenApply(ordersResponse ->{
+                .thenApply(ordersResponse ->{ // SI SALE MAL
+                    // LLENAMOS UN MAP CON LOS PEDIDOS ENTRANTES EN FORMATO OrderResponse
                     Map<String, ArrayList<OrderGetRestaurantOrdersResponse>> response = new HashMap<>();
                     response.put("orders", ordersResponse);
+                    // Y LO ENVIAMOS
                     return new ResponseEntity<>(response, HttpStatus.OK);
-                }).exceptionally(ex -> {
+                }).exceptionally(ex -> {// SI SALE MAL
                     ex.printStackTrace();
+                    // CREAMOS UN MAP Y LE AÑADIMOS COMO VALOR UN ARRAY VACÍO
                     Map<String, ArrayList<OrderGetRestaurantOrdersResponse>> emptyResponse = new HashMap<>();
                     ArrayList<OrderGetRestaurantOrdersResponse> errorResponse = new ArrayList<>();
                     emptyResponse.put("orders", errorResponse);
+                    // Y LO ENVIAMOS
                     return new ResponseEntity<>(emptyResponse, HttpStatus.OK);
                 });
     }
@@ -212,17 +255,24 @@ public class RestaurantController {
 
     @PostMapping("getDayWork")
     public CompletableFuture<ResponseEntity<Map<String,ArrayList<OrderGetTasksResponse>>>> getTasks(@RequestBody OrderGetTasksRequest request){
-        //System.out.println(request.getUid() + " - " + request.getStart_date() + " - " + request.getEnd_date());
+        // MANDAMOS AL SERVICE LA PETICIÓN
         return orderService.getTasks(request)
-                .thenApply(tasks -> {
+                .thenApply(tasks -> { // SI SALE BIEN
+                    // CREAMOS  UN MAP
                     Map<String,ArrayList<OrderGetTasksResponse>> mapResponse = new HashMap<>();
+                    // LE PONEMOS COMO VALOR EL RESULTADO
                     mapResponse.put("menus", tasks);
+                    // LO ENVIAMOS AL FRONT
                     return new ResponseEntity<>(mapResponse, HttpStatus.OK);
-                }).exceptionally(ex -> {
+                }).exceptionally(ex -> { // SI SALE MAL
                     ex.printStackTrace();
+                    // CREAMOS UN ARRAY
                     ArrayList<OrderGetTasksResponse> emptyArray = new ArrayList<>();
+                    // CREAMOS UN MAP
                     Map<String, ArrayList<OrderGetTasksResponse>> mapEmpty = new HashMap<>();
+                    // METEMOS EL ARRAY VACÍO COMO VALOR DEL MAP PPARA LA KEY "menus"
                     mapEmpty.put("menus", emptyArray);
+                    // LO ENVIAMOS AL FRONT
                     return new ResponseEntity<>(mapEmpty, HttpStatus.OK);
                 });
     }
