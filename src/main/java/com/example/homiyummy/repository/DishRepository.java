@@ -51,7 +51,7 @@ public class DishRepository {
                         callback.onSuccess(id);
                     } else {
                         // SI NO EXISTE MANDAMOS 0 COMO VALOR
-                        callback.onSuccess(0); // En caso de datos no válidos
+                        callback.onSuccess(0);
                     }
                 }
                 else{

@@ -784,6 +784,9 @@ public class RestaurantRepository {
                         // Y  LO MANDAMOS AL SERVICE
                         callback.onSearchingSuccess(entity);
                     }
+                    else{
+                        callback.onSearchingFailure(new Exception("El restaurante no tiene menús"));
+                    }
                 }
                 else{
                     // SI NO EXISTE MANDAMOS UNA EXCEPCIOÓN
